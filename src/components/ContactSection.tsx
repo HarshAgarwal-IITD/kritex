@@ -1,6 +1,22 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 
 const ContactSection = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    organization: "",
+    email: "",
+    requirements: ""
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const subject = `Inquiry from ${formData.name} ${formData.organization ? `- ${formData.organization}` : ""}`;
+    const body = `Name: ${formData.name}\nOrganization: ${formData.organization || "N/A"}\nEmail: ${formData.email}\n\nRequirements:\n${formData.requirements}`;
+    
+    window.location.href = `mailto:procurement@kritex.in?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  };
+
   return (
     <section id="contact" className="py-20 md:py-32 border-t border-border">
       <div className="container">
@@ -46,12 +62,15 @@ const ContactSection = () => {
             transition={{ duration: 0.5, delay: 0.1, ease: [0.19, 1, 0.22, 1] }}
             className="md:col-span-7"
           >
-            <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+            <form className="space-y-6" onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="font-display text-[10px] text-muted-foreground block mb-2">Name</label>
                   <input
                     type="text"
+                    required
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className="w-full bg-secondary border border-border px-4 py-3 text-sm text-foreground font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
                     placeholder="Full Name"
                   />
@@ -60,6 +79,8 @@ const ContactSection = () => {
                   <label className="font-display text-[10px] text-muted-foreground block mb-2">Organization</label>
                   <input
                     type="text"
+                    value={formData.organization}
+                    onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
                     className="w-full bg-secondary border border-border px-4 py-3 text-sm text-foreground font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
                     placeholder="Ministry / Unit"
                   />
@@ -69,6 +90,9 @@ const ContactSection = () => {
                 <label className="font-display text-[10px] text-muted-foreground block mb-2">Email</label>
                 <input
                   type="email"
+                  required
+                  value={formData.email}
+                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   className="w-full bg-secondary border border-border px-4 py-3 text-sm text-foreground font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
                   placeholder="official@gov.in"
                 />
@@ -77,6 +101,9 @@ const ContactSection = () => {
                 <label className="font-display text-[10px] text-muted-foreground block mb-2">Requirements</label>
                 <textarea
                   rows={4}
+                  required
+                  value={formData.requirements}
+                  onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
                   className="w-full bg-secondary border border-border px-4 py-3 text-sm text-foreground font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none"
                   placeholder="Describe your procurement requirements, quantities, and timeline..."
                 />
