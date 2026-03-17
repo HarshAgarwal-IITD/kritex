@@ -28,6 +28,11 @@ const ContactSection = () => {
                 <p className="font-display text-sm text-foreground">procurement@kritex.in</p>
               </div>
               <div>
+                <p className="font-display text-[10px] text-muted-foreground mb-1">Phone</p>
+                <p className="font-display text-sm text-foreground">+91 74774 59459</p>
+                <p className="font-display text-sm text-foreground">+91 94348 09707</p>
+              </div>
+              <div>
                 <p className="font-display text-[10px] text-muted-foreground mb-1">Operations</p>
                 <p className="font-display text-sm text-foreground">India · Bhutan</p>
               </div>

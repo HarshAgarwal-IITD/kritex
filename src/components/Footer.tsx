@@ -5,7 +5,7 @@ const Footer = () => {
         <div className="flex items-center gap-6">
           <span className="font-display text-sm text-foreground">KRITEX</span>
           <span className="font-display text-[10px] text-muted-foreground">
-            Industrial Military Supply
+            Defense & Industrial Supply
           </span>
         </div>
         <p className="font-display text-[10px] text-muted-foreground">

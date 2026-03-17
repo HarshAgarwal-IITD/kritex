@@ -13,17 +13,17 @@ const HeritageSection = () => {
             transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
             className="md:col-span-5"
           >
-            <p className="font-display text-xs text-primary mb-3">Heritage</p>
+            <p className="font-display text-xs text-primary mb-3">Our Legacy</p>
             <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-6">
-              From Father
+              Three Generations
               <br />
-              to Force
+              of Reliability
             </h2>
             <p className="font-body text-muted-foreground text-sm leading-relaxed max-w-md">
-              For over three decades, Kritex has been the trusted supply partner for 
-              India's armed forces and the Royal Bhutan Army. What began as a family 
-              enterprise has evolved into a precision-grade military supply operation, 
-              serving procurement officers and defense ministries across two nations.
+              For 50 years, Kritex has stood as an unwavering partner to the tactical 
+              frontlines of India and Bhutan. What began as a single supply store in 1976 has 
+              been forged across three generations into a highly specialized manufacturing 
+              and procurement operation, dedicated to outfitting the modern soldier without compromise.
             </p>
           </motion.div>
 
@@ -39,18 +39,18 @@ const HeritageSection = () => {
               {[
                 {
                   title: "Indian Army & Air Force",
-                  desc: "Primary supplier of combat apparel, load-bearing equipment, and tactical footwear across multiple battalions and air force divisions.",
-                  status: "Active Supply Contract",
+                  desc: "A trusted supplier outfitting multiple battalions and air force divisions with resilient combat apparel, load-bearing equipment, and essential gear.",
+                  status: "Wholesale & Retail",
                 },
                 {
                   title: "Royal Bhutan Army",
-                  desc: "Exclusive export partner for standard-issue uniforms and field gear, meeting international compliance standards for cross-border military supply.",
-                  status: "Export Ready",
+                  desc: "Dedicated export partner providing standard-issue uniforms and tactical field gear designed to endure challenging border environments.",
+                  status: "Export Operations",
                 },
                 {
                   title: "Tender & Bulk Procurement",
-                  desc: "Equipped to handle high-volume government tenders with rapid turnaround, quality assurance documentation, and MIL-SPEC compliance certification.",
-                  status: "ISO Certified",
+                  desc: "Fully equipped to execute high-volume government and institutional tenders with stringent quality control and rapid manufacturing turnaround.",
+                  status: "Bulk Capacity",
                 },
               ].map((item, i) => (
                 <motion.div

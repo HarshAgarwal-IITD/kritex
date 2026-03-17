@@ -17,9 +17,11 @@ const HeroSection = () => {
 
       {/* Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
-        <span className="font-display text-[12vw] text-foreground/[0.03] leading-none">
-          KRITEX
-        </span>
+        <img
+          src="/logo_flower.png"
+          alt=""
+          className="w-[60vw] max-w-[600px] opacity-[0.05] invert brightness-0"
+        />
       </div>
 
       {/* Content */}
@@ -31,7 +33,7 @@ const HeroSection = () => {
             transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
             className="font-display text-xs text-primary mb-4 tabular"
           >
-            Est. 1994 — Industrial Military Supply
+            Trusted by Forces Since 1976
           </motion.p>
           <motion.h1
             initial={{ opacity: 0, y: 30 }}
@@ -39,11 +41,11 @@ const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.1, ease: [0.19, 1, 0.22, 1] }}
             className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[0.95] mb-6"
           >
-            Standard Issue.
+            Built for Duty.
             <br />
-            Exceptional
+            Crafted for
             <br />
-            Performance.
+            Endurance.
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -51,8 +53,7 @@ const HeroSection = () => {
             transition={{ duration: 0.6, delay: 0.2, ease: [0.19, 1, 0.22, 1] }}
             className="font-body text-muted-foreground max-w-lg mb-8 text-sm md:text-base"
           >
-            Supplying the frontlines of India and Bhutan with mission-critical 
-            textiles and hardware since 1994.
+            Engineering defense-grade apparel and tactical hardware for the armed forces of India and Bhutan since 1976.
           </motion.p>
           <motion.div
             initial={{ opacity: 0, y: 20 }}

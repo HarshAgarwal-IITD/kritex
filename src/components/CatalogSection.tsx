@@ -7,25 +7,25 @@ import tshirtsImg from "@/assets/product-tshirts.jpg";
 const categories = [
   {
     title: "Combat Apparel",
-    spec: "MIL-STD Compliant · 240 GSM Ripstop",
+    spec: "",
     image: apparelImg,
     alt: "Military combat uniform jacket",
   },
   {
     title: "Load Bearing",
-    spec: "1000D Cordura · MOLLE Compatible",
+    spec: "",
     image: bagsImg,
     alt: "Military tactical rucksack",
   },
   {
     title: "Tactical Footwear",
-    spec: "Full Grain Leather · Vibram Sole",
+    spec: "",
     image: bootsImg,
     alt: "Military tactical combat boots",
   },
   {
     title: "Base Layers",
-    spec: "Moisture-Wicking · Anti-Microbial",
+    spec: "",
     image: tshirtsImg,
     alt: "Military olive tactical t-shirt",
   },

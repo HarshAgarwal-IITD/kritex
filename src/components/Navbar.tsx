@@ -15,10 +15,12 @@ const Navbar = () => {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+    <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/10 bg-[#3a3f2f]/30 backdrop-blur-lg">
       <div className="container flex h-16 items-center justify-between">
-        <a href="#" className="font-display text-lg tracking-tight text-foreground">
-          KRITEX
+        <a href="#" className="font-display text-lg tracking-tight text-foreground -ml-2">
+          <div className="bg-white/95 backdrop-blur-md px-4 py-1.5 rounded-full border border-white/20 shadow-sm flex items-center justify-center">
+            <img src="/logo_full.png" alt="Logo" className="h-[36px] object-contain drop-shadow-sm"/>
+          </div>
         </a>
         
         {/* Desktop */}

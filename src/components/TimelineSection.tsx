@@ -1,13 +1,10 @@
 import { motion } from "framer-motion";
 
 const milestones = [
-  { year: "1974", event: "Founded as a family-run army goods store, supplying local cantonments and regiments." },
-  { year: "1985", event: "Secured first government tender for bulk uniform supply to the Indian Army." },
-  { year: "1994", event: "Expanded operations with dedicated manufacturing for combat apparel and accessories." },
-  { year: "2002", event: "Began export operations — first shipment to the Royal Bhutan Army." },
-  { year: "2010", event: "Awarded preferred supplier status for BSF and SSB border forces." },
-  { year: "2018", event: "Modernized production line — automated cutting, digital QA, and MIL-SPEC testing lab." },
-  { year: "2024", event: "Rebranded as Kritex. Next-generation military supply — precision-grade, export-ready." },
+  { year: "1976", event: "Founded by Mr. Puranmal Agarwal as a dedicated supply store, outfitting local cantonments and regiments with essential gear." },
+  { year: "1994", event: "Under the leadership of Mr. Hanuman Agarwal, operations expanded to become a premier wholesale supplier of tactical apparel and accessories." },
+  { year: "2018", event: "Aditya Agarwal spearheaded modernization efforts, scaling the business to serve international defense forces, beginning with Bhutan." },
+  { year: "2026", event: "Rebranded as Kritex. Delivering next-generation, precision-grade military supply engineered for global deployment." },
 ];
 
 const TimelineSection = () => {

@@ -2,8 +2,8 @@ import { motion } from "framer-motion";
 
 const stats = [
   { value: "50+", label: "Years of Service" },
-  { value: "1.2M+", label: "Units Deployed" },
-  { value: "0.04%", label: "Failure Rate" },
+  { value: "100%", label: "Tender Compliance" },
+  { value: "Tier 1", label: "Supplier Status" },
   { value: "8+", label: "Forces Served" },
 ];
 
