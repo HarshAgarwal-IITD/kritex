@@ -9,54 +9,54 @@ import {
 } from "@/components/ui/accordion";
 
 const primaryClients = [
-  { 
-    name: "Indian Army", 
-    abbr: "IA", 
-    logo: "/ia_logo.svg" 
+  {
+    name: "Indian Army",
+    abbr: "IA",
+    logo: "/ia_logo.svg"
   },
-  { 
-    name: "Indian Air Force", 
-    abbr: "IAF", 
-    logo: "/iaf_logo.png" 
+  {
+    name: "Indian Air Force",
+    abbr: "IAF",
+    logo: "/iaf_logo.png"
   },
-  { 
-    name: "Sashastra Seema Bal", 
-    abbr: "SSB", 
+  {
+    name: "Sashastra Seema Bal",
+    abbr: "SSB",
     logo: "/ssb_logo.svg"
   },
-  { 
-    name: "Border Security Force", 
-    abbr: "BSF", 
-    logo: "/bsf_logo.png" 
+  {
+    name: "Border Security Force",
+    abbr: "BSF",
+    logo: "/bsf_logo.png"
   },
-  { 
-    name: "Central Reserve Police Force", 
-    abbr: "CRPF", 
-    logo: "/CRPF_Logo.svg"
+  {
+    name: "Royal Bodyguards (Bhutan)",
+    abbr: "RBG",
+    logo: "/royal_bodyguards.png"
   },
-  { 
-    name: "Royal Bhutan Police", 
-    abbr: "RBP", 
+  {
+    name: "Royal Bhutan Police",
+    abbr: "RBP",
     logo: "/rbp.png"
   },
-  { 
-    name: "Gyalsung", 
-    abbr: "Gyalsung", 
+  {
+    name: "Gyalsung",
+    abbr: "Gyalsung",
     logo: "/gyalsung_logo.png"
   },
-  { 
-    name: "Royal Bhutan Army", 
-    abbr: "RBA", 
+  {
+    name: "Royal Bhutan Army",
+    abbr: "RBA",
     logo: "/rba_logo.png"
   },
 ];
 
 const secondaryClients = [
-  { name: "West Bengal Police", abbr: "WBP", logo: "https://upload.wikimedia.org/wikipedia/en/e/e0/West_Bengal_Police_Logo.png" },
+  { name: "West Bengal Police", abbr: "WBP", logo: "/wbp.png" },
   { name: "Bihar Police", abbr: "BP", logo: "https://upload.wikimedia.org/wikipedia/commons/7/7f/Bihar_Police_Logo.svg" },
-  { name: "Royal Bodyguards (Bhutan)", abbr: "RBG", logo: "https://upload.wikimedia.org/wikipedia/commons/a/ae/Flag_of_Royal_Bodyguard_of_Bhutan.svg" },
+  { name: "Central Reserve Police Force", abbr: "CRPF", logo: "/CRPF_Logo.svg" },
   { name: "Indo-Tibetan Border Police", abbr: "ITBP", logo: "/ITBP_Logo.svg.png" },
-  { name: "DeSuung (Guardians of Peace)", abbr: "DeSuung", logo: "https://upload.wikimedia.org/wikipedia/commons/8/83/Logo_DESU.png" },
+  { name: "DeSuung (Guardians of Peace)", abbr: "DeSuung", logo: "/desunng_logo.jpeg" },
   { name: "Assam Rifles", abbr: "AR", logo: "/Assam_Rifles_LOGO.svg.png" },
   { name: "Penden Cement", abbr: "Penden" },
   { name: "Lhaki Cement", abbr: "Lhaki" },
@@ -82,7 +82,7 @@ const ClientsSection = () => {
             Forces & Organizations We Serve
           </h2>
           <p className="font-body text-muted-foreground text-sm max-w-lg mx-auto">
-            Proud supplier to India and Bhutan's premier defence, paramilitary, 
+            Proud supplier to India and Bhutan's premier defence, paramilitary,
             and industrial organizations.
           </p>
         </motion.div>
@@ -100,8 +100,8 @@ const ClientsSection = () => {
             >
               <div className="w-16 h-16 mb-4 flex items-center justify-center relative">
                 {client.logo ? (
-                  <img 
-                    src={client.logo} 
+                  <img
+                    src={client.logo}
                     alt={`${client.name} logo`}
                     className="w-full h-full object-contain filter drop-shadow-md transition-transform duration-500 group-hover:scale-110"
                     onError={(e) => {
@@ -119,7 +119,7 @@ const ClientsSection = () => {
         </div>
 
         {/* Other Clients Dropdown */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -128,7 +128,7 @@ const ClientsSection = () => {
         >
           <Accordion type="single" collapsible className="w-full" onValueChange={(val) => setIsOpen(val === "other-clients")}>
             <AccordionItem value="other-clients" className="border-b-0">
-              
+
               <AccordionContent className="pt-0 pb-0">
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border mt-px">
                   {secondaryClients.flatMap((client, i) => {
@@ -147,8 +147,8 @@ const ClientsSection = () => {
                       >
                         <div className="w-16 h-16 mb-4 flex items-center justify-center relative">
                           {client.logo ? (
-                            <img 
-                              src={client.logo} 
+                            <img
+                              src={client.logo}
                               alt={`${client.name} logo`}
                               className="w-full h-full object-contain filter drop-shadow-md transition-transform duration-500 group-hover:scale-110"
                               onError={(e) => {
@@ -176,13 +176,13 @@ const ClientsSection = () => {
                   })}
                 </div>
               </AccordionContent>
-              
+
               <div className="flex justify-center mt-8">
                 <AccordionTrigger className="font-display text-xs text-muted-foreground hover:text-primary transition-colors uppercase tracking-widest py-2 px-6 border border-border rounded-full hover:no-underline hover:border-primary/50 [&[data-state=open]>svg]:rotate-180 gap-2">
                   {isOpen ? "View Less" : "View More"}
                 </AccordionTrigger>
               </div>
-              
+
             </AccordionItem>
           </Accordion>
         </motion.div>
