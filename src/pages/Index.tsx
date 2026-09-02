@@ -7,6 +7,7 @@ import CapabilitiesSection from "@/components/CapabilitiesSection";
 import CommitmentSection from "@/components/CommitmentSection";
 import TimelineSection from "@/components/TimelineSection";
 import HeritageSection from "@/components/HeritageSection";
+import AchievementsSection from "@/components/AchievementsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
@@ -16,6 +17,7 @@ const Index = () => {
       <Navbar />
       <HeroSection />
       <StatsBar />
+      <AchievementsSection />
       <ClientsSection />
       <CatalogSection />
       <CapabilitiesSection />
