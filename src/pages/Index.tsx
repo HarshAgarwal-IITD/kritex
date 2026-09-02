@@ -8,6 +8,7 @@ import CommitmentSection from "@/components/CommitmentSection";
 import TimelineSection from "@/components/TimelineSection";
 import HeritageSection from "@/components/HeritageSection";
 import AchievementsSection from "@/components/AchievementsSection";
+import PartnershipsSection from "@/components/PartnershipsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
@@ -18,6 +19,7 @@ const Index = () => {
       <HeroSection />
       <StatsBar />
       <AchievementsSection />
+      <PartnershipsSection />
       <ClientsSection />
       <CatalogSection />
       <CapabilitiesSection />
