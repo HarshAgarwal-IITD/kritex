@@ -18,7 +18,7 @@ const HeroSection = () => {
       {/* Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
         <img
-          src="/logo_flower.png"
+          src="/brand/logo_flower.png"
           alt=""
           className="w-[60vw] max-w-[600px] opacity-[0.05] invert brightness-0"
         />

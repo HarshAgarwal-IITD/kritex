@@ -12,52 +12,52 @@ const primaryClients = [
   {
     name: "Indian Army",
     abbr: "IA",
-    logo: "/ia_logo.svg"
+    logo: "/logos/clients/ia_logo.svg"
   },
   {
     name: "Indian Air Force",
     abbr: "IAF",
-    logo: "/iaf_logo.png"
+    logo: "/logos/clients/iaf_logo.png"
   },
   {
     name: "Sashastra Seema Bal",
     abbr: "SSB",
-    logo: "/ssb_logo.svg"
+    logo: "/logos/clients/ssb_logo.svg"
   },
   {
     name: "Border Security Force",
     abbr: "BSF",
-    logo: "/bsf_logo.png"
+    logo: "/logos/clients/bsf_logo.png"
   },
   {
     name: "Royal Bodyguards (Bhutan)",
     abbr: "RBG",
-    logo: "/royal_bodyguards.png"
+    logo: "/logos/clients/royal_bodyguards.png"
   },
   {
     name: "Royal Bhutan Police",
     abbr: "RBP",
-    logo: "/rbp.png"
+    logo: "/logos/clients/rbp.png"
   },
   {
     name: "Gyalsung",
     abbr: "Gyalsung",
-    logo: "/gyalsung_logo.png"
+    logo: "/logos/clients/gyalsung_logo.png"
   },
   {
     name: "Royal Bhutan Army",
     abbr: "RBA",
-    logo: "/rba_logo.png"
+    logo: "/logos/clients/rba_logo.png"
   },
 ];
 
 const secondaryClients = [
-  { name: "West Bengal Police", abbr: "WBP", logo: "/wbp.png" },
+  { name: "West Bengal Police", abbr: "WBP", logo: "/logos/clients/wbp.png" },
   { name: "Bihar Police", abbr: "BP", logo: "https://upload.wikimedia.org/wikipedia/commons/7/7f/Bihar_Police_Logo.svg" },
-  { name: "Central Reserve Police Force", abbr: "CRPF", logo: "/CRPF_Logo.svg" },
-  { name: "Indo-Tibetan Border Police", abbr: "ITBP", logo: "/ITBP_Logo.svg.png" },
-  { name: "DeSuung (Guardians of Peace)", abbr: "DeSuung", logo: "/desunng_logo.jpeg" },
-  { name: "Assam Rifles", abbr: "AR", logo: "/Assam_Rifles_LOGO.svg.png" },
+  { name: "Central Reserve Police Force", abbr: "CRPF", logo: "/logos/clients/CRPF_Logo.svg" },
+  { name: "Indo-Tibetan Border Police", abbr: "ITBP", logo: "/logos/clients/ITBP_Logo.svg.png" },
+  { name: "DeSuung (Guardians of Peace)", abbr: "DeSuung", logo: "/logos/clients/desunng_logo.jpeg" },
+  { name: "Assam Rifles", abbr: "AR", logo: "/logos/clients/Assam_Rifles_LOGO.svg.png" },
   { name: "Penden Cement", abbr: "Penden" },
   { name: "Lhaki Cement", abbr: "Lhaki" },
   { name: "BCCL", abbr: "BCCL" },

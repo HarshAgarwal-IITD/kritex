@@ -6,7 +6,7 @@ import { useState, useCallback } from "react";
 const achievements = [
   {
     id: "01",
-    image: "/achievement01.jpeg",
+    image: "/achievements/achievement01.jpeg",
     objectPosition: "center 20%",
     title: "Gyalsung Contract Signing",
     subtitle: "Exclusive Distributor — Gyalsung, Bhutan",
@@ -18,7 +18,7 @@ const achievements = [
   },
   {
     id: "02",
-    image: "/achievement02.jpeg",
+    image: "/achievements/achievement02.jpeg",
     objectPosition: "center center",
     title: "Contract Review & Finalisation",
     subtitle: "Partnership Ratified — Gyalsung HQ, Thimphu",
@@ -294,7 +294,7 @@ const AchievementsSection = () => {
               <div className="relative shrink-0">
                 <div className="absolute inset-0 rounded-full bg-primary/10 blur-md scale-150" />
                 <img
-                  src="/gyalsung_logo.png"
+                  src="/logos/clients/gyalsung_logo.png"
                   alt="Gyalsung Logo"
                   className="relative h-9 w-9 sm:h-11 sm:w-11 object-contain drop-shadow-md"
                 />

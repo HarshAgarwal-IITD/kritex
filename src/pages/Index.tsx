@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
 import StatsBar from "@/components/StatsBar";
@@ -13,6 +15,16 @@ import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 
 const Index = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (!location.hash) return;
+    const el = document.querySelector(location.hash);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [location]);
+
   return (
     <div className="min-h-screen bg-background">
       <Navbar />

@@ -2,11 +2,11 @@ import { motion } from "framer-motion";
 import { Handshake } from "lucide-react";
 
 const partners = [
-  { name: "Liberty", logo: "/liberty_logo.svg" },
-  { name: "Goldstar", logo: "/logo-goldstar.png" },
+  { name: "Liberty", logo: "/logos/partners/liberty_logo.svg" },
+  { name: "Goldstar", logo: "/logos/partners/logo-goldstar.png" },
   { name: "Active", isText: true },
-  { name: "Cosmo", logo: "/cosmo_logo.jpg" },
-  { name: "Sega", logo: "/sega_logo.png" },
+  { name: "Cosmo", logo: "/logos/partners/cosmo_logo.jpg" },
+  { name: "Sega", logo: "/logos/partners/sega_logo.png" },
 ];
 
 const PartnershipsSection = () => {
@@ -70,3 +70,4 @@ const PartnershipsSection = () => {
 };
 
 export default PartnershipsSection;
+ 
