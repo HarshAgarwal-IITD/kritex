@@ -76,11 +76,13 @@ const TacticalFootwear = () => {
             {filtered.map((product, i) => (
               <ProductCard
                 key={product.id}
+                id={product.id}
                 name={product.name}
                 category={product.category}
                 description={product.description}
                 images={product.images}
                 specs={product.specs}
+                colorVariants={product.colorVariants}
                 index={i}
               />
             ))}
