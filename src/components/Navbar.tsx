@@ -5,7 +5,6 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import { productCategories } from "@/data/productCategories";
 
 const navLinks = [
-  { label: "Achievements", href: "#achievements" },
   { label: "Clients", href: "#clients" },
   { label: "Timeline", href: "#timeline" },
 ];
