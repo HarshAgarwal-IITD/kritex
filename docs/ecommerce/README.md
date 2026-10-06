@@ -5,6 +5,7 @@ into a full ecommerce platform. Update these files as decisions are made and wor
 
 | File | Purpose |
 |---|---|
+| [PROGRESS.md](PROGRESS.md) | **What has been built so far**: per-stage log, how to run, owner to-dos |
 | [PLAN.md](PLAN.md) | Master plan: goals, scope, phases, milestones, exit criteria |
 | [DECISIONS.md](DECISIONS.md) | Decision log (ADR-style) + open questions awaiting the business |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System design, data model, API contract, folder layout |
