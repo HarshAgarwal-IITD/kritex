@@ -4,6 +4,766 @@
  */
 
 export interface paths {
+    "/api/v1/admin/business-profiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** B2B applications */
+        get: operations["adminListBusinessProfiles"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/business-profiles/{id}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Approve a B2B application (user role → B2B_CUSTOMER) */
+        post: operations["adminApproveBusinessProfile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/business-profiles/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Reject a B2B application */
+        post: operations["adminRejectBusinessProfile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** All categories (incl. inactive) */
+        get: operations["adminListCategories"];
+        put?: never;
+        /** Create a category */
+        post: operations["adminCreateCategory"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/categories/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete an empty category */
+        delete: operations["adminDeleteCategory"];
+        options?: never;
+        head?: never;
+        /** Update a category (partial) */
+        patch: operations["adminUpdateCategory"];
+        trace?: never;
+    };
+    "/api/v1/admin/coupons": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List coupons */
+        get: operations["adminListCoupons"];
+        put?: never;
+        /** Create a coupon */
+        post: operations["adminCreateCoupon"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/coupons/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Coupon detail */
+        get: operations["adminGetCoupon"];
+        put?: never;
+        post?: never;
+        /** Delete a coupon (deactivates it instead if it has been used) */
+        delete: operations["adminDeleteCoupon"];
+        options?: never;
+        head?: never;
+        /** Update a coupon (partial) */
+        patch: operations["adminUpdateCoupon"];
+        trace?: never;
+    };
+    "/api/v1/admin/customers": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Customers (CUSTOMER, B2B_CUSTOMER) */
+        get: operations["adminListCustomers"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/customers/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Customer detail */
+        get: operations["adminGetCustomer"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/dashboard": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Revenue, orders by status, low stock, pending quotes/enquiries/B2B approvals */
+        get: operations["adminGetDashboard"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/inventory": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Variant stock levels */
+        get: operations["adminListInventory"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List / filter / search orders */
+        get: operations["adminListOrders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orders/export.csv": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** CSV export of orders matching the filters (one row per order item) */
+        get: operations["adminExportOrders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orders/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Order detail (payments, refunds, events) */
+        get: operations["adminGetOrder"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orders/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel (restock + refund by default) */
+        post: operations["adminCancelOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orders/{id}/mark-paid": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Record an offline (bank transfer / PO) payment: AWAITING_PAYMENT → PAID */
+        post: operations["adminMarkOrderPaid"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orders/{id}/note": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a note to the order timeline */
+        post: operations["adminAddOrderNote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orders/{id}/refund": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Full or partial Razorpay refund (final status via refund.processed webhook) */
+        post: operations["adminRefundOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orders/{id}/ship": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Manual ship: record carrier/AWB, status → SHIPPED (fallback to Shiprocket) */
+        post: operations["adminShipOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orders/{id}/shiprocket": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create a Shiprocket shipment: order + AWB + label (+ pickup) */
+        post: operations["adminCreateShiprocketShipment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/orders/{id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Move the order through the state machine (see allowedTransitions) */
+        post: operations["adminUpdateOrderStatus"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List products (all statuses) */
+        get: operations["adminListProducts"];
+        put?: never;
+        /** Create a product */
+        post: operations["adminCreateProduct"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/products/import": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bulk upsert products/variants from the product-data CSV template (by SKU) */
+        post: operations["adminImportProducts"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/products/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Product with variants (incl. stock) */
+        get: operations["adminGetProduct"];
+        put?: never;
+        post?: never;
+        /** Delete a product (archives it instead if it has orders) */
+        delete: operations["adminDeleteProduct"];
+        options?: never;
+        head?: never;
+        /** Update a product (partial) */
+        patch: operations["adminUpdateProduct"];
+        trace?: never;
+    };
+    "/api/v1/admin/products/{id}/variants": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** A product's variants (incl. stock) */
+        get: operations["adminListVariants"];
+        put?: never;
+        /** Bulk-generate variants from the product options (size × colour); idempotent */
+        post: operations["adminGenerateVariants"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/queries": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List enquiries, newest first (same shape as GET /queries) */
+        get: operations["adminListQueries"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/queries/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update enquiry status */
+        patch: operations["adminUpdateQuery"];
+        trace?: never;
+    };
+    "/api/v1/admin/quotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Quotes inbox */
+        get: operations["adminListQuotes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/quotes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Quote detail */
+        get: operations["adminGetQuote"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/quotes/{id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Decline an RFQ (status → REJECTED) */
+        post: operations["adminRejectQuote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/quotes/{id}/respond": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Send prices + validity (status → QUOTED; re-respond allowed while QUOTED) */
+        post: operations["adminRespondQuote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/uploads": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Presigned R2 upload URL (local-disk driver in dev) */
+        post: operations["adminCreateUpload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Staff accounts (filter by role) */
+        get: operations["adminListUsers"];
+        put?: never;
+        /** Invite a STAFF/ADMIN user (emails a set-password link) */
+        post: operations["adminCreateStaffUser"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/users/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Change role / disable a user */
+        patch: operations["adminUpdateUser"];
+        trace?: never;
+    };
+    "/api/v1/admin/variants/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update SKU, title, price, active */
+        patch: operations["adminUpdateVariant"];
+        trace?: never;
+    };
+    "/api/v1/admin/variants/{id}/stock": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Adjust stock by a delta with a reason (writes an InventoryMovement) */
+        patch: operations["adminAdjustStock"];
+        trace?: never;
+    };
+    "/api/v1/cart": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Cart with live prices/stock and a totals preview (empty cart if none yet) */
+        get: operations["getCart"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cart/coupon": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply a coupon code */
+        post: operations["applyCartCoupon"];
+        /** Remove the applied coupon */
+        delete: operations["removeCartCoupon"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cart/items": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add a variant (adds to the existing quantity) */
+        post: operations["addCartItem"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cart/items/{variantId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Remove a line */
+        delete: operations["removeCartItem"];
+        options?: never;
+        head?: never;
+        /** Set a line quantity (0 removes it) */
+        patch: operations["updateCartItem"];
+        trace?: never;
+    };
+    "/api/v1/categories": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Active categories with product counts */
+        get: operations["listCategories"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/checkout": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Create the order from the cart: reserve stock, create a Razorpay order (or bank-transfer instructions) */
+        post: operations["placeOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/checkout/quote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Final totals incl. tax split for an address. No side effects. */
+        post: operations["getCheckoutQuote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/checkout/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Verify the Razorpay Checkout signature and mark the order PAID (idempotent) */
+        post: operations["verifyPayment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/health": {
         parameters: {
             query?: never;
@@ -13,6 +773,264 @@ export interface paths {
         };
         /** Liveness + database check */
         get: operations["getHealth"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Profile, role and business-profile status */
+        get: operations["getMe"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update name / phone */
+        patch: operations["updateMe"];
+        trace?: never;
+    };
+    "/api/v1/me/addresses": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Saved addresses (default first) */
+        get: operations["listMyAddresses"];
+        put?: never;
+        /** Save an address */
+        post: operations["createMyAddress"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/addresses/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete a saved address */
+        delete: operations["deleteMyAddress"];
+        options?: never;
+        head?: never;
+        /** Update a saved address */
+        patch: operations["updateMyAddress"];
+        trace?: never;
+    };
+    "/api/v1/me/business-profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Apply for a B2B account (re-apply allowed after REJECTED); admin approves */
+        post: operations["applyBusinessProfile"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/orders": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The signed-in user's orders, newest first */
+        get: operations["listMyOrders"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/orders/{number}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Order detail with timeline and shipments */
+        get: operations["getMyOrder"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/orders/{number}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Cancel an order before it ships (releases stock; refunds if paid) */
+        post: operations["cancelMyOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/orders/{number}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request a return / size exchange (status → RETURN_REQUESTED) */
+        post: operations["requestOrderReturn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/quotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** The signed-in user's quotes */
+        get: operations["listMyQuotes"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/quotes/{number}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Quote detail */
+        get: operations["getMyQuote"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/quotes/{number}/accept": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Accept a QUOTED quote: creates an order at the quoted prices (→ Razorpay or bank transfer) */
+        post: operations["acceptMyQuote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orders/{number}/invoice": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Signed URL to the GST invoice PDF (order owner, or STAFF/ADMIN) */
+        get: operations["getOrderInvoice"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/orders/{number}/tracking": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Public order tracking (order number + order email) */
+        get: operations["getOrderTracking"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Product cards (ACTIVE only): filter, sort, paginate */
+        get: operations["listProducts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/products/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Product detail page data (priceTiers only for approved B2B users) */
+        get: operations["getProductBySlug"];
         put?: never;
         post?: never;
         delete?: never;
@@ -39,10 +1057,1357 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/quotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Request for quote (guest or signed in; linked to the user when signed in) */
+        post: operations["createQuote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/search/suggest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Typeahead suggestions (pg_trgm) */
+        get: operations["searchSuggest"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks/razorpay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Razorpay events: payment.captured, payment.failed, refund.processed */
+        post: operations["handleRazorpayWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/webhooks/shiprocket": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Shiprocket tracking updates (provider-defined body) */
+        post: operations["handleShiprocketWebhook"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        AcceptQuoteDto: {
+            billingAddress?: {
+                city: string;
+                /**
+                 * @default IN
+                 * @enum {string}
+                 */
+                country: "IN";
+                line1: string;
+                line2?: string;
+                name: string;
+                /** @example +919876543210 */
+                phone: string;
+                /** @example 400001 */
+                pincode: string;
+                /** @description State name, e.g. Maharashtra */
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            };
+            businessName?: string;
+            /**
+             * @description Defaults to the quote GSTIN
+             * @example 27AAPFU0939F1ZV
+             */
+            gstin?: string;
+            /**
+             * @description RAZORPAY → pay now; BANK_TRANSFER → AWAITING_PAYMENT (approved B2B only)
+             * @enum {string}
+             */
+            paymentMethod: "RAZORPAY" | "BANK_TRANSFER";
+            /**
+             * @description Defaults to the quote phone
+             * @example +919876543210
+             */
+            phone?: string;
+            /** @description Customer PO reference */
+            poNumber?: string;
+            shippingAddress: {
+                city: string;
+                /**
+                 * @default IN
+                 * @enum {string}
+                 */
+                country: "IN";
+                line1: string;
+                line2?: string;
+                name: string;
+                /** @example +919876543210 */
+                phone: string;
+                /** @example 400001 */
+                pincode: string;
+                /** @description State name, e.g. Maharashtra */
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            };
+        };
+        AddCartItemDto: {
+            /** @default 1 */
+            quantity: number;
+            variantId: string;
+        };
+        AddOrderNoteDto: {
+            /** @default true */
+            internal: boolean;
+            message: string;
+        };
+        AdjustStockDto: {
+            /** @description Units to add (positive) or remove (negative) */
+            delta: number;
+            note?: string;
+            /** @enum {string} */
+            reason: "RESTOCK" | "ADJUST" | "RETURN";
+        };
+        AdminBusinessProfileDto_Output: {
+            /** Format: date-time */
+            createdAt: string;
+            gstin: string;
+            id: string;
+            legalName: string;
+            /** @description Set when REJECTED (shown to the customer) */
+            rejectionReason: string | null;
+            /**
+             * Format: date-time
+             * @description When approved/rejected (BusinessProfile.approvedAt)
+             */
+            reviewedAt: string | null;
+            reviewedBy: {
+                id: string;
+                name: string;
+            } | null;
+            /** @enum {string} */
+            status: "PENDING" | "APPROVED" | "REJECTED";
+            user: {
+                email: string;
+                id: string;
+                name: string;
+            };
+        };
+        AdminBusinessProfileListDto_Output: {
+            items: {
+                /** Format: date-time */
+                createdAt: string;
+                gstin: string;
+                id: string;
+                legalName: string;
+                /** @description Set when REJECTED (shown to the customer) */
+                rejectionReason: string | null;
+                /**
+                 * Format: date-time
+                 * @description When approved/rejected (BusinessProfile.approvedAt)
+                 */
+                reviewedAt: string | null;
+                reviewedBy: {
+                    id: string;
+                    name: string;
+                } | null;
+                /** @enum {string} */
+                status: "PENDING" | "APPROVED" | "REJECTED";
+                user: {
+                    email: string;
+                    id: string;
+                    name: string;
+                };
+            }[];
+            limit: number;
+            page: number;
+            total: number;
+        };
+        AdminCancelOrderDto: {
+            /** @default true */
+            notifyCustomer: boolean;
+            reason: string;
+            /**
+             * @description Refund captured payments in full
+             * @default true
+             */
+            refund: boolean;
+            /** @default true */
+            restock: boolean;
+        };
+        AdminCategoryDto_Output: {
+            description: string | null;
+            id: string;
+            image: string | null;
+            isActive: boolean;
+            name: string;
+            /** @description All statuses */
+            productCount: number;
+            slug: string;
+            sortOrder: number;
+        };
+        AdminCategoryListDto_Output: {
+            items: {
+                description: string | null;
+                id: string;
+                image: string | null;
+                isActive: boolean;
+                name: string;
+                /** @description All statuses */
+                productCount: number;
+                slug: string;
+                sortOrder: number;
+            }[];
+        };
+        AdminCustomerDetailDto_Output: {
+            addresses: {
+                city: string;
+                /** @enum {string} */
+                country: "IN";
+                id: string;
+                isDefault: boolean;
+                line1: string;
+                line2: string | null;
+                name: string;
+                phone: string;
+                pincode: string;
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            }[];
+            businessProfile: {
+                /** Format: date-time */
+                createdAt: string;
+                gstin: string;
+                id: string;
+                legalName: string;
+                /** @description Set when REJECTED (shown to the customer) */
+                rejectionReason: string | null;
+                /**
+                 * Format: date-time
+                 * @description When approved/rejected (BusinessProfile.approvedAt)
+                 */
+                reviewedAt: string | null;
+                /** @enum {string} */
+                status: "PENDING" | "APPROVED" | "REJECTED";
+            } | null;
+            /** @enum {string|null} */
+            businessStatus: "PENDING" | "APPROVED" | "REJECTED" | null;
+            /** Format: date-time */
+            createdAt: string;
+            email: string;
+            emailVerified: boolean;
+            id: string;
+            name: string;
+            orderCount: number;
+            phone: string | null;
+            recentOrders: {
+                /** Format: date-time */
+                createdAt: string;
+                id: string;
+                number: string;
+                /** @enum {string} */
+                status: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                total: number;
+            }[];
+            /** @enum {string} */
+            role: "CUSTOMER" | "B2B_CUSTOMER" | "STAFF" | "ADMIN";
+            /**
+             * @description Sum of paid order totals, paise
+             * @example 129900
+             */
+            totalSpent: number;
+        };
+        AdminCustomerListDto_Output: {
+            items: {
+                /** @enum {string|null} */
+                businessStatus: "PENDING" | "APPROVED" | "REJECTED" | null;
+                /** Format: date-time */
+                createdAt: string;
+                email: string;
+                emailVerified: boolean;
+                id: string;
+                name: string;
+                orderCount: number;
+                phone: string | null;
+                /** @enum {string} */
+                role: "CUSTOMER" | "B2B_CUSTOMER" | "STAFF" | "ADMIN";
+                /**
+                 * @description Sum of paid order totals, paise
+                 * @example 129900
+                 */
+                totalSpent: number;
+            }[];
+            limit: number;
+            page: number;
+            total: number;
+        };
+        AdminOrderDetailDto_Output: {
+            /** @description Statuses POST /admin/orders/{id}/status accepts next */
+            allowedTransitions: ("PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED")[];
+            billingAddress: {
+                city: string;
+                /** @enum {string} */
+                country: "IN";
+                line1: string;
+                line2: string | null;
+                name: string;
+                phone: string;
+                pincode: string;
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            };
+            businessName: string | null;
+            canCancel: boolean;
+            canRequestReturn: boolean;
+            couponCode: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            email: string;
+            /** @description Full timeline incl. notes */
+            events: {
+                actor: {
+                    id: string;
+                    name: string;
+                } | null;
+                /** Format: date-time */
+                createdAt: string;
+                id: string;
+                /** @description Hidden from the customer (e.g. notes) */
+                internal: boolean;
+                message: string;
+                type: string;
+            }[];
+            gstin: string | null;
+            id: string;
+            /** @description Download via GET /orders/{number}/invoice */
+            invoice: {
+                /** Format: date-time */
+                issuedAt: string;
+                number: string;
+            } | null;
+            items: {
+                /** @description GST rate in percent */
+                gstRate: number;
+                hsnCode: string | null;
+                id: string;
+                image: string | null;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                lineTotal: number;
+                productName: string;
+                productSlug: string | null;
+                quantity: number;
+                sku: string;
+                /**
+                 * @description GST included in lineTotal
+                 * @example 129900
+                 */
+                taxAmount: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                unitPrice: number;
+                /** @description null if the variant was since deleted */
+                variantId: string | null;
+                variantTitle: string;
+            }[];
+            number: string;
+            /** @enum {string} */
+            paymentMethod: "RAZORPAY" | "COD" | "BANK_TRANSFER";
+            /**
+             * @description Latest payment status; null before a payment record exists
+             * @enum {string|null}
+             */
+            paymentStatus: "CREATED" | "CAPTURED" | "FAILED" | "REFUNDED" | null;
+            payments: {
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                amount: number;
+                /** Format: date-time */
+                createdAt: string;
+                id: string;
+                /** @enum {string} */
+                provider: "RAZORPAY" | "COD" | "BANK_TRANSFER";
+                providerOrderId: string | null;
+                providerPaymentId: string | null;
+                /** @description Bank transfer UTR / PO number */
+                reference: string | null;
+                /** @enum {string} */
+                status: "CREATED" | "CAPTURED" | "FAILED" | "REFUNDED";
+            }[];
+            phone: string;
+            quoteNumber: string | null;
+            refunds: {
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                amount: number;
+                /** Format: date-time */
+                createdAt: string;
+                id: string;
+                paymentId: string;
+                providerRefundId: string | null;
+                reason: string | null;
+                /** @enum {string} */
+                status: "PENDING" | "PROCESSED" | "FAILED";
+            }[];
+            /**
+             * Format: date-time
+             * @description PENDING_PAYMENT: unpaid orders are cancelled after this
+             */
+            reservedUntil: string | null;
+            shipments: {
+                awb: string | null;
+                /** @example Delhivery */
+                carrier: string | null;
+                /** Format: date-time */
+                deliveredAt: string | null;
+                events: {
+                    /** Format: date-time */
+                    at: string;
+                    description: string | null;
+                    location: string | null;
+                    /** @description Carrier status text */
+                    status: string;
+                }[];
+                id: string;
+                /** @description Shiprocket label PDF, when generated */
+                labelUrl: string | null;
+                /** @description Created by the manual ship fallback (no Shiprocket) */
+                manual: boolean;
+                /** Format: date-time */
+                shippedAt: string | null;
+                shiprocketOrderId: string | null;
+                shiprocketShipmentId: string | null;
+                /** @enum {string} */
+                status: "PENDING" | "READY_TO_SHIP" | "SHIPPED" | "IN_TRANSIT" | "OUT_FOR_DELIVERY" | "DELIVERED" | "RTO" | "CANCELLED";
+                trackingUrl: string | null;
+            }[];
+            shippingAddress: {
+                city: string;
+                /** @enum {string} */
+                country: "IN";
+                line1: string;
+                line2: string | null;
+                name: string;
+                phone: string;
+                pincode: string;
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            };
+            /** @enum {string} */
+            status: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+            totals: {
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                cgst: number;
+                /** @enum {string} */
+                currency: "INR";
+                /**
+                 * @description Coupon / quote discount, paise
+                 * @example 129900
+                 */
+                discount: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                igst: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                sgst: number;
+                /**
+                 * @description Shipping fee (GST-inclusive), paise
+                 * @example 129900
+                 */
+                shipping: number;
+                /**
+                 * @description Sum of line totals (GST-inclusive), paise
+                 * @example 129900
+                 */
+                subtotal: number;
+                /**
+                 * @description GST included in total = cgst + sgst + igst, paise
+                 * @example 129900
+                 */
+                taxTotal: number;
+                /**
+                 * @description Amount payable, paise
+                 * @example 129900
+                 */
+                total: number;
+            };
+            /** Format: date-time */
+            updatedAt: string;
+            userId: string | null;
+        };
+        AdminOrderListDto_Output: {
+            items: {
+                /** Format: date-time */
+                createdAt: string;
+                customerName: string;
+                email: string;
+                id: string;
+                /** @description Has a GSTIN */
+                isB2B: boolean;
+                isGuest: boolean;
+                itemCount: number;
+                number: string;
+                /** @enum {string} */
+                paymentMethod: "RAZORPAY" | "COD" | "BANK_TRANSFER";
+                /** @enum {string|null} */
+                paymentStatus: "CREATED" | "CAPTURED" | "FAILED" | "REFUNDED" | null;
+                phone: string;
+                /** @enum {string} */
+                status: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                total: number;
+            }[];
+            limit: number;
+            page: number;
+            total: number;
+        };
+        AdminProductDto_Output: {
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            basePrice: number | null;
+            category: {
+                id: string;
+                name: string;
+                slug: string;
+            };
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            compareAtPrice: number | null;
+            /** Format: date-time */
+            createdAt: string;
+            description: string | null;
+            /** @description GST rate in percent */
+            gstRate: number | null;
+            heightCm: number | null;
+            hsnCode: string | null;
+            id: string;
+            images: {
+                alt: string | null;
+                id: string;
+                sortOrder: number;
+                url: string;
+                /** @description Option value this image belongs to (e.g. colour "Olive Green") */
+                variantOptionValue: string | null;
+            }[];
+            lengthCm: number | null;
+            name: string;
+            options: {
+                /** @example Size */
+                name: string;
+                /** @description value → CSS colour or image URL */
+                swatches: {
+                    [key: string]: string;
+                } | null;
+                values: string[];
+            }[];
+            priceTiers: {
+                minQty: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                unitPrice: number;
+            }[];
+            /** @enum {string} */
+            saleChannel: "RETAIL" | "B2B_ONLY" | "ENQUIRY_ONLY";
+            seoDescription: string | null;
+            seoTitle: string | null;
+            slug: string;
+            specSheets: {
+                id: string;
+                sortOrder: number;
+                title: string;
+                url: string;
+            }[];
+            specs: {
+                label: string;
+                value: string;
+            }[];
+            /** @enum {string} */
+            status: "DRAFT" | "ACTIVE" | "ARCHIVED";
+            subCategory: string | null;
+            /** Format: date-time */
+            updatedAt: string;
+            variants: {
+                /** @description stock - reserved */
+                available: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                effectivePrice: number | null;
+                id: string;
+                isActive: boolean;
+                options: {
+                    [key: string]: string;
+                };
+                /**
+                 * @description Override; null = product basePrice
+                 * @example 129900
+                 */
+                price: number | null;
+                productId: string;
+                /** @description Held by unpaid orders */
+                reserved: number;
+                sku: string;
+                /** @description On hand */
+                stock: number;
+                title: string;
+            }[];
+            weightGrams: number | null;
+            widthCm: number | null;
+        };
+        AdminProductListDto_Output: {
+            items: {
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                basePrice: number | null;
+                category: {
+                    id: string;
+                    name: string;
+                    slug: string;
+                };
+                id: string;
+                image: string | null;
+                name: string;
+                /** @enum {string} */
+                saleChannel: "RETAIL" | "B2B_ONLY" | "ENQUIRY_ONLY";
+                slug: string;
+                /** @enum {string} */
+                status: "DRAFT" | "ACTIVE" | "ARCHIVED";
+                totalAvailable: number;
+                /** Format: date-time */
+                updatedAt: string;
+                variantCount: number;
+            }[];
+            limit: number;
+            page: number;
+            total: number;
+        };
+        AdminQuoteDetailDto_Output: {
+            contactName: string;
+            /** Format: date-time */
+            createdAt: string;
+            email: string;
+            gstin: string | null;
+            id: string;
+            items: {
+                id: string;
+                image: string | null;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                lineTotal: number | null;
+                productId: string;
+                productName: string;
+                productSlug: string | null;
+                quantity: number;
+                /**
+                 * @description GST-inclusive; set once QUOTED
+                 * @example 129900
+                 */
+                quotedUnitPrice: number | null;
+                requestedNotes: string | null;
+                sku: string | null;
+                variantId: string | null;
+                variantTitle: string | null;
+            }[];
+            notes: string | null;
+            number: string;
+            orderId: string | null;
+            /** @description Set once CONVERTED */
+            orderNumber: string | null;
+            organization: string;
+            phone: string;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            quotedTotal: number | null;
+            /** Format: date-time */
+            respondedAt: string | null;
+            /** @description Kritex's message sent with the quote (Quote.adminNotes) */
+            responseMessage: string | null;
+            /** @enum {string} */
+            status: "REQUESTED" | "QUOTED" | "ACCEPTED" | "EXPIRED" | "REJECTED" | "CONVERTED";
+            userId: string | null;
+            /** Format: date-time */
+            validUntil: string | null;
+        };
+        AdminQuoteListDto_Output: {
+            items: {
+                contactName: string;
+                /** Format: date-time */
+                createdAt: string;
+                email: string;
+                id: string;
+                itemCount: number;
+                number: string;
+                organization: string;
+                /**
+                 * @description Sum of quoted lines; null until QUOTED
+                 * @example 129900
+                 */
+                quotedTotal: number | null;
+                /** @enum {string} */
+                status: "REQUESTED" | "QUOTED" | "ACCEPTED" | "EXPIRED" | "REJECTED" | "CONVERTED";
+                /** Format: date-time */
+                validUntil: string | null;
+            }[];
+            limit: number;
+            page: number;
+            total: number;
+        };
+        AdminShipmentDto_Output: {
+            awb: string | null;
+            /** @example Delhivery */
+            carrier: string | null;
+            /** Format: date-time */
+            deliveredAt: string | null;
+            events: {
+                /** Format: date-time */
+                at: string;
+                description: string | null;
+                location: string | null;
+                /** @description Carrier status text */
+                status: string;
+            }[];
+            id: string;
+            /** @description Shiprocket label PDF, when generated */
+            labelUrl: string | null;
+            /** @description Created by the manual ship fallback (no Shiprocket) */
+            manual: boolean;
+            /** Format: date-time */
+            shippedAt: string | null;
+            shiprocketOrderId: string | null;
+            shiprocketShipmentId: string | null;
+            /** @enum {string} */
+            status: "PENDING" | "READY_TO_SHIP" | "SHIPPED" | "IN_TRANSIT" | "OUT_FOR_DELIVERY" | "DELIVERED" | "RTO" | "CANCELLED";
+            trackingUrl: string | null;
+        };
+        AdminUserDto_Output: {
+            /** Format: date-time */
+            createdAt: string;
+            /** @description Banned: cannot sign in, sessions revoked */
+            disabled: boolean;
+            email: string;
+            emailVerified: boolean;
+            id: string;
+            name: string;
+            /** @enum {string} */
+            role: "CUSTOMER" | "B2B_CUSTOMER" | "STAFF" | "ADMIN";
+        };
+        AdminUserListDto_Output: {
+            items: {
+                /** Format: date-time */
+                createdAt: string;
+                /** @description Banned: cannot sign in, sessions revoked */
+                disabled: boolean;
+                email: string;
+                emailVerified: boolean;
+                id: string;
+                name: string;
+                /** @enum {string} */
+                role: "CUSTOMER" | "B2B_CUSTOMER" | "STAFF" | "ADMIN";
+            }[];
+            limit: number;
+            page: number;
+            total: number;
+        };
+        AdminVariantDto_Output: {
+            /** @description stock - reserved */
+            available: number;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            effectivePrice: number | null;
+            id: string;
+            isActive: boolean;
+            options: {
+                [key: string]: string;
+            };
+            /**
+             * @description Override; null = product basePrice
+             * @example 129900
+             */
+            price: number | null;
+            productId: string;
+            /** @description Held by unpaid orders */
+            reserved: number;
+            sku: string;
+            /** @description On hand */
+            stock: number;
+            title: string;
+        };
+        AdminVariantListDto_Output: {
+            items: {
+                /** @description stock - reserved */
+                available: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                effectivePrice: number | null;
+                id: string;
+                isActive: boolean;
+                options: {
+                    [key: string]: string;
+                };
+                /**
+                 * @description Override; null = product basePrice
+                 * @example 129900
+                 */
+                price: number | null;
+                productId: string;
+                /** @description Held by unpaid orders */
+                reserved: number;
+                sku: string;
+                /** @description On hand */
+                stock: number;
+                title: string;
+            }[];
+        };
+        ApplyBusinessProfileDto: {
+            /** @example 27AAPFU0939F1ZV */
+            gstin: string;
+            legalName: string;
+        };
+        ApplyCouponDto: {
+            code: string;
+        };
+        BusinessProfileDto_Output: {
+            /** Format: date-time */
+            createdAt: string;
+            gstin: string;
+            id: string;
+            legalName: string;
+            /** @description Set when REJECTED (shown to the customer) */
+            rejectionReason: string | null;
+            /**
+             * Format: date-time
+             * @description When approved/rejected (BusinessProfile.approvedAt)
+             */
+            reviewedAt: string | null;
+            /** @enum {string} */
+            status: "PENDING" | "APPROVED" | "REJECTED";
+        };
+        CancelOrderDto: {
+            reason?: string;
+        };
+        CartDto_Output: {
+            coupon: {
+                code: string;
+                /** @enum {string} */
+                type: "PERCENT" | "FLAT" | "FREE_SHIPPING";
+            } | null;
+            /** @description Any line has an issue */
+            hasIssues: boolean;
+            id: string;
+            /** @description Sum of quantities */
+            itemCount: number;
+            items: {
+                image: {
+                    alt: string | null;
+                    url: string;
+                } | null;
+                inStock: boolean;
+                /**
+                 * @description OUT_OF_STOCK: nothing available · INSUFFICIENT_STOCK: fewer available than requested · UNAVAILABLE: variant/product inactive or archived · NOT_PURCHASABLE: sale channel does not allow this viewer to buy
+                 * @enum {string|null}
+                 */
+                issue: "OUT_OF_STOCK" | "INSUFFICIENT_STOCK" | "UNAVAILABLE" | "NOT_PURCHASABLE" | null;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                lineTotal: number;
+                options: {
+                    [key: string]: string;
+                };
+                productId: string;
+                productName: string;
+                productSlug: string;
+                quantity: number;
+                /** @enum {string} */
+                saleChannel: "RETAIL" | "B2B_ONLY" | "ENQUIRY_ONLY";
+                sku: string;
+                /**
+                 * @description Live GST-inclusive unit price (B2B tiers applied)
+                 * @example 129900
+                 */
+                unitPrice: number;
+                variantId: string;
+                variantTitle: string;
+            }[];
+            /** @description Preview. Shipping is the flat-rate estimate; the tax split assumes intra-state (CGST+SGST) until an address is given at checkout. */
+            totals: {
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                cgst: number;
+                /** @enum {string} */
+                currency: "INR";
+                /**
+                 * @description Coupon / quote discount, paise
+                 * @example 129900
+                 */
+                discount: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                igst: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                sgst: number;
+                /**
+                 * @description Shipping fee (GST-inclusive), paise
+                 * @example 129900
+                 */
+                shipping: number;
+                /**
+                 * @description Sum of line totals (GST-inclusive), paise
+                 * @example 129900
+                 */
+                subtotal: number;
+                /**
+                 * @description GST included in total = cgst + sgst + igst, paise
+                 * @example 129900
+                 */
+                taxTotal: number;
+                /**
+                 * @description Amount payable, paise
+                 * @example 129900
+                 */
+                total: number;
+            };
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        CategoryListDto_Output: {
+            items: {
+                description: string | null;
+                id: string;
+                image: string | null;
+                name: string;
+                /** @description ACTIVE products only */
+                productCount: number;
+                slug: string;
+                sortOrder: number;
+            }[];
+        };
+        CheckoutQuoteDto_Output: {
+            couponCode: string | null;
+            /** @description true → IGST (shipping state ≠ seller state); false → CGST + SGST */
+            interState: boolean;
+            items: {
+                /** @description GST rate in percent */
+                gstRate: number;
+                image: string | null;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                lineTotal: number;
+                productName: string;
+                quantity: number;
+                sku: string;
+                /**
+                 * @description GST included in lineTotal
+                 * @example 129900
+                 */
+                taxAmount: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                unitPrice: number;
+                variantId: string;
+                variantTitle: string;
+            }[];
+            /** @description Methods this customer may use (BANK_TRANSFER: approved B2B only) */
+            paymentMethods: ("RAZORPAY" | "BANK_TRANSFER")[];
+            totals: {
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                cgst: number;
+                /** @enum {string} */
+                currency: "INR";
+                /**
+                 * @description Coupon / quote discount, paise
+                 * @example 129900
+                 */
+                discount: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                igst: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                sgst: number;
+                /**
+                 * @description Shipping fee (GST-inclusive), paise
+                 * @example 129900
+                 */
+                shipping: number;
+                /**
+                 * @description Sum of line totals (GST-inclusive), paise
+                 * @example 129900
+                 */
+                subtotal: number;
+                /**
+                 * @description GST included in total = cgst + sgst + igst, paise
+                 * @example 129900
+                 */
+                taxTotal: number;
+                /**
+                 * @description Amount payable, paise
+                 * @example 129900
+                 */
+                total: number;
+            };
+        };
+        CheckoutQuoteRequestDto: {
+            /** @description Defaults to the shipping address */
+            billingAddress?: {
+                city: string;
+                /**
+                 * @default IN
+                 * @enum {string}
+                 */
+                country: "IN";
+                line1: string;
+                line2?: string;
+                name: string;
+                /** @example +919876543210 */
+                phone: string;
+                /** @example 400001 */
+                pincode: string;
+                /** @description State name, e.g. Maharashtra */
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            };
+            /** @description Legal name for the invoice; required with gstin */
+            businessName?: string;
+            /**
+             * @description For a B2B (input-tax-credit) invoice
+             * @example 27AAPFU0939F1ZV
+             */
+            gstin?: string;
+            shippingAddress: {
+                city: string;
+                /**
+                 * @default IN
+                 * @enum {string}
+                 */
+                country: "IN";
+                line1: string;
+                line2?: string;
+                name: string;
+                /** @example +919876543210 */
+                phone: string;
+                /** @example 400001 */
+                pincode: string;
+                /** @description State name, e.g. Maharashtra */
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            };
+        };
+        CouponDto_Output: {
+            code: string;
+            /** Format: date-time */
+            createdAt: string;
+            /** Format: date-time */
+            endsAt: string | null;
+            id: string;
+            isActive: boolean;
+            /**
+             * @description Cap for PERCENT coupons, paise
+             * @example 129900
+             */
+            maxDiscount: number | null;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            minSubtotal: number | null;
+            perUserLimit: number | null;
+            /** Format: date-time */
+            startsAt: string | null;
+            /** @enum {string} */
+            type: "PERCENT" | "FLAT" | "FREE_SHIPPING";
+            usageLimit: number | null;
+            usedCount: number;
+            /** @description PERCENT: whole percent 1-100 · FLAT: paise · FREE_SHIPPING: 0 */
+            value: number;
+        };
+        CouponListDto_Output: {
+            items: {
+                code: string;
+                /** Format: date-time */
+                createdAt: string;
+                /** Format: date-time */
+                endsAt: string | null;
+                id: string;
+                isActive: boolean;
+                /**
+                 * @description Cap for PERCENT coupons, paise
+                 * @example 129900
+                 */
+                maxDiscount: number | null;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                minSubtotal: number | null;
+                perUserLimit: number | null;
+                /** Format: date-time */
+                startsAt: string | null;
+                /** @enum {string} */
+                type: "PERCENT" | "FLAT" | "FREE_SHIPPING";
+                usageLimit: number | null;
+                usedCount: number;
+                /** @description PERCENT: whole percent 1-100 · FLAT: paise · FREE_SHIPPING: 0 */
+                value: number;
+            }[];
+            limit: number;
+            page: number;
+            total: number;
+        };
+        CreateAddressDto: {
+            city: string;
+            /**
+             * @default IN
+             * @enum {string}
+             */
+            country: "IN";
+            /** @default false */
+            isDefault: boolean;
+            line1: string;
+            line2?: string;
+            name: string;
+            /** @example +919876543210 */
+            phone: string;
+            /** @example 400001 */
+            pincode: string;
+            /** @description State name, e.g. Maharashtra */
+            state: string;
+            /**
+             * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+             * @enum {string}
+             */
+            stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+        };
+        CreateCategoryDto: {
+            description?: string | null;
+            image?: string | null;
+            /** @default true */
+            isActive: boolean;
+            name: string;
+            /** @example combat-shirt-olive */
+            slug: string;
+            /** @default 0 */
+            sortOrder: number;
+        };
+        CreateCouponDto: {
+            code: string;
+            /** Format: date-time */
+            endsAt?: string | null;
+            /** @default true */
+            isActive: boolean;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            maxDiscount?: number | null;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            minSubtotal?: number | null;
+            perUserLimit?: number | null;
+            /** Format: date-time */
+            startsAt?: string | null;
+            /** @enum {string} */
+            type: "PERCENT" | "FLAT" | "FREE_SHIPPING";
+            usageLimit?: number | null;
+            value: number;
+        };
+        CreateProductDto: {
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            basePrice?: number | null;
+            categoryId: string;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            compareAtPrice?: number | null;
+            description?: string | null;
+            /** @description GST rate in percent */
+            gstRate?: number | null;
+            heightCm?: number | null;
+            hsnCode?: string | null;
+            /** @default [] */
+            images: {
+                alt?: string | null;
+                /** @default 0 */
+                sortOrder: number;
+                url: string;
+                variantOptionValue?: string | null;
+            }[];
+            lengthCm?: number | null;
+            name: string;
+            /** @default [] */
+            options: {
+                name: string;
+                swatches?: {
+                    [key: string]: string;
+                } | null;
+                values: string[];
+            }[];
+            /** @default [] */
+            priceTiers: {
+                minQty: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                unitPrice: number;
+            }[];
+            /**
+             * @default ENQUIRY_ONLY
+             * @enum {string}
+             */
+            saleChannel: "RETAIL" | "B2B_ONLY" | "ENQUIRY_ONLY";
+            seoDescription?: string | null;
+            seoTitle?: string | null;
+            /** @example combat-shirt-olive */
+            slug: string;
+            /** @default [] */
+            specSheets: {
+                /** @default 0 */
+                sortOrder: number;
+                title: string;
+                url: string;
+            }[];
+            /** @default [] */
+            specs: {
+                label: string;
+                value: string;
+            }[];
+            /**
+             * @default DRAFT
+             * @enum {string}
+             */
+            status: "DRAFT" | "ACTIVE" | "ARCHIVED";
+            subCategory?: string | null;
+            weightGrams?: number | null;
+            widthCm?: number | null;
+        };
         CreateQueryDto: {
             /** Format: email */
             email: string;
@@ -55,6 +2420,104 @@ export interface components {
             createdAt: string;
             id: string;
         };
+        CreateQuoteDto: {
+            contactName: string;
+            /** Format: email */
+            email: string;
+            /** @example 27AAPFU0939F1ZV */
+            gstin?: string;
+            items: {
+                notes?: string;
+                productId: string;
+                quantity: number;
+                /** @description Omit to quote the product generally */
+                variantId?: string;
+            }[];
+            notes?: string;
+            organization: string;
+            /** @example +919876543210 */
+            phone: string;
+            /** @description Honeypot: must be empty. Bots that fill it get a fake 201. */
+            website?: string;
+        };
+        CreateQuoteResponseDto_Output: {
+            /** Format: date-time */
+            createdAt: string;
+            number: string;
+            /** @enum {string} */
+            status: "REQUESTED" | "QUOTED" | "ACCEPTED" | "EXPIRED" | "REJECTED" | "CONVERTED";
+        };
+        CreateShiprocketShipmentDto: {
+            /** @description Default: Shiprocket recommendation */
+            courierId?: number;
+            heightCm?: number;
+            lengthCm?: number;
+            /** @description Shiprocket pickup nickname */
+            pickupLocation?: string;
+            /** @default true */
+            schedulePickup: boolean;
+            /** @description Defaults to the sum of product weights */
+            weightGrams?: number;
+            widthCm?: number;
+        };
+        CreateStaffUserDto: {
+            /** Format: email */
+            email: string;
+            name: string;
+            /** @enum {string} */
+            role: "STAFF" | "ADMIN";
+        };
+        CreateUploadDto: {
+            /** @enum {string} */
+            contentType: "image/jpeg" | "image/png" | "image/webp" | "image/avif" | "application/pdf";
+            filename: string;
+            /** @enum {string} */
+            purpose: "PRODUCT_IMAGE" | "SPEC_SHEET" | "CATEGORY_IMAGE";
+            /** @description Bytes (max 20 MB) */
+            size: number;
+        };
+        DashboardDto_Output: {
+            /** @description Bank-transfer orders waiting to be marked paid */
+            awaitingPaymentOrders: number;
+            /** Format: date-time */
+            generatedAt: string;
+            /** @description Active variants with available <= threshold (max 20) */
+            lowStock: {
+                available: number;
+                productId: string;
+                productName: string;
+                sku: string;
+                title: string;
+                variantId: string;
+            }[];
+            /** @description Query status NEW */
+            newEnquiries: number;
+            orders: {
+                /** @description Every status, including zero counts */
+                byStatus: {
+                    count: number;
+                    /** @enum {string} */
+                    status: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+                }[];
+                last7Days: number;
+                today: number;
+            };
+            pendingBusinessProfiles: number;
+            /** @description Status REQUESTED */
+            pendingQuotes: number;
+            revenue: {
+                /**
+                 * @description Paid order totals, rolling 7 days, paise
+                 * @example 129900
+                 */
+                last7Days: number;
+                /**
+                 * @description Paid order totals since 00:00 IST, paise
+                 * @example 129900
+                 */
+                today: number;
+            };
+        };
         ErrorResponseDto: {
             error: {
                 /** @example VALIDATION_ERROR */
@@ -63,9 +2526,635 @@ export interface components {
                 message: string;
             };
         };
+        GenerateVariantsDto: {
+            /**
+             * @description Deactivate existing variants whose option combination no longer exists
+             * @default true
+             */
+            deactivateMissing: boolean;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            defaultPrice?: number | null;
+            /** @default 0 */
+            defaultStock: number;
+            /** @description Defaults to a prefix derived from the product slug */
+            skuPrefix?: string;
+        };
         HealthResponseDto_Output: {
             /** @enum {string} */
             status: "ok";
+        };
+        ImportResultDto_Output: {
+            created: number;
+            dryRun: boolean;
+            errors: {
+                field: string | null;
+                message: string;
+                row: number;
+            }[];
+            rows: number;
+            skipped: number;
+            updated: number;
+        };
+        InventoryListDto_Output: {
+            items: {
+                available: number;
+                isActive: boolean;
+                lowStock: boolean;
+                productId: string;
+                productName: string;
+                reserved: number;
+                sku: string;
+                stock: number;
+                title: string;
+                variantId: string;
+            }[];
+            limit: number;
+            page: number;
+            total: number;
+        };
+        InvoiceLinkDto_Output: {
+            /** Format: date-time */
+            expiresAt: string;
+            /** Format: date-time */
+            issuedAt: string;
+            /** @example KTX/2026-27/00001 */
+            number: string;
+            /** @description Short-lived signed URL to the PDF */
+            url: string;
+        };
+        MarkOrderPaidDto: {
+            /**
+             * @description Defaults to the order total
+             * @example 129900
+             */
+            amount?: number;
+            note?: string;
+            /** Format: date-time */
+            paidAt?: string;
+            /** @description UTR / cheque / PO number */
+            reference: string;
+        };
+        MeDto_Output: {
+            businessProfile: {
+                /** Format: date-time */
+                createdAt: string;
+                gstin: string;
+                id: string;
+                legalName: string;
+                /** @description Set when REJECTED (shown to the customer) */
+                rejectionReason: string | null;
+                /**
+                 * Format: date-time
+                 * @description When approved/rejected (BusinessProfile.approvedAt)
+                 */
+                reviewedAt: string | null;
+                /** @enum {string} */
+                status: "PENDING" | "APPROVED" | "REJECTED";
+            } | null;
+            /** Format: date-time */
+            createdAt: string;
+            email: string;
+            emailVerified: boolean;
+            id: string;
+            name: string;
+            phone: string | null;
+            /** @enum {string} */
+            role: "CUSTOMER" | "B2B_CUSTOMER" | "STAFF" | "ADMIN";
+        };
+        OrderDetailDto_Output: {
+            billingAddress: {
+                city: string;
+                /** @enum {string} */
+                country: "IN";
+                line1: string;
+                line2: string | null;
+                name: string;
+                phone: string;
+                pincode: string;
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            };
+            businessName: string | null;
+            canCancel: boolean;
+            canRequestReturn: boolean;
+            couponCode: string | null;
+            /** Format: date-time */
+            createdAt: string;
+            email: string;
+            gstin: string | null;
+            /** @description Download via GET /orders/{number}/invoice */
+            invoice: {
+                /** Format: date-time */
+                issuedAt: string;
+                number: string;
+            } | null;
+            items: {
+                /** @description GST rate in percent */
+                gstRate: number;
+                hsnCode: string | null;
+                id: string;
+                image: string | null;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                lineTotal: number;
+                productName: string;
+                productSlug: string | null;
+                quantity: number;
+                sku: string;
+                /**
+                 * @description GST included in lineTotal
+                 * @example 129900
+                 */
+                taxAmount: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                unitPrice: number;
+                /** @description null if the variant was since deleted */
+                variantId: string | null;
+                variantTitle: string;
+            }[];
+            number: string;
+            /** @enum {string} */
+            paymentMethod: "RAZORPAY" | "COD" | "BANK_TRANSFER";
+            /**
+             * @description Latest payment status; null before a payment record exists
+             * @enum {string|null}
+             */
+            paymentStatus: "CREATED" | "CAPTURED" | "FAILED" | "REFUNDED" | null;
+            phone: string;
+            quoteNumber: string | null;
+            /**
+             * Format: date-time
+             * @description PENDING_PAYMENT: unpaid orders are cancelled after this
+             */
+            reservedUntil: string | null;
+            shipments: {
+                awb: string | null;
+                /** @example Delhivery */
+                carrier: string | null;
+                /** Format: date-time */
+                deliveredAt: string | null;
+                events: {
+                    /** Format: date-time */
+                    at: string;
+                    description: string | null;
+                    location: string | null;
+                    /** @description Carrier status text */
+                    status: string;
+                }[];
+                id: string;
+                /** Format: date-time */
+                shippedAt: string | null;
+                /** @enum {string} */
+                status: "PENDING" | "READY_TO_SHIP" | "SHIPPED" | "IN_TRANSIT" | "OUT_FOR_DELIVERY" | "DELIVERED" | "RTO" | "CANCELLED";
+                trackingUrl: string | null;
+            }[];
+            shippingAddress: {
+                city: string;
+                /** @enum {string} */
+                country: "IN";
+                line1: string;
+                line2: string | null;
+                name: string;
+                phone: string;
+                pincode: string;
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            };
+            /** @enum {string} */
+            status: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+            /** @description Customer-visible events, oldest first */
+            timeline: {
+                /** Format: date-time */
+                createdAt: string;
+                message: string;
+                /** @example PAID */
+                type: string;
+            }[];
+            totals: {
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                cgst: number;
+                /** @enum {string} */
+                currency: "INR";
+                /**
+                 * @description Coupon / quote discount, paise
+                 * @example 129900
+                 */
+                discount: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                igst: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                sgst: number;
+                /**
+                 * @description Shipping fee (GST-inclusive), paise
+                 * @example 129900
+                 */
+                shipping: number;
+                /**
+                 * @description Sum of line totals (GST-inclusive), paise
+                 * @example 129900
+                 */
+                subtotal: number;
+                /**
+                 * @description GST included in total = cgst + sgst + igst, paise
+                 * @example 129900
+                 */
+                taxTotal: number;
+                /**
+                 * @description Amount payable, paise
+                 * @example 129900
+                 */
+                total: number;
+            };
+            /** Format: date-time */
+            updatedAt: string;
+        };
+        OrderListDto_Output: {
+            items: {
+                /** Format: date-time */
+                createdAt: string;
+                /** @description First item image */
+                image: string | null;
+                itemCount: number;
+                number: string;
+                /** @enum {string} */
+                paymentMethod: "RAZORPAY" | "COD" | "BANK_TRANSFER";
+                /** @enum {string} */
+                status: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                total: number;
+            }[];
+            limit: number;
+            page: number;
+            total: number;
+        };
+        OrderTrackingDto_Output: {
+            orderNumber: string;
+            /** Format: date-time */
+            placedAt: string;
+            shipments: {
+                awb: string | null;
+                /** @example Delhivery */
+                carrier: string | null;
+                /** Format: date-time */
+                deliveredAt: string | null;
+                events: {
+                    /** Format: date-time */
+                    at: string;
+                    description: string | null;
+                    location: string | null;
+                    /** @description Carrier status text */
+                    status: string;
+                }[];
+                id: string;
+                /** Format: date-time */
+                shippedAt: string | null;
+                /** @enum {string} */
+                status: "PENDING" | "READY_TO_SHIP" | "SHIPPED" | "IN_TRANSIT" | "OUT_FOR_DELIVERY" | "DELIVERED" | "RTO" | "CANCELLED";
+                trackingUrl: string | null;
+            }[];
+            /** @enum {string} */
+            status: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+            timeline: {
+                /** Format: date-time */
+                createdAt: string;
+                message: string;
+                type: string;
+            }[];
+        };
+        PaymentVerificationDto_Output: {
+            orderNumber: string;
+            paid: boolean;
+            /** @enum {string} */
+            status: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+        };
+        PlaceOrderDto: {
+            billingAddress?: {
+                city: string;
+                /**
+                 * @default IN
+                 * @enum {string}
+                 */
+                country: "IN";
+                line1: string;
+                line2?: string;
+                name: string;
+                /** @example +919876543210 */
+                phone: string;
+                /** @example 400001 */
+                pincode: string;
+                /** @description State name, e.g. Maharashtra */
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            };
+            /** @description Legal name for the invoice; required with gstin */
+            businessName?: string;
+            /**
+             * Format: email
+             * @description Order contact; ignored for signed-in users
+             */
+            email: string;
+            /**
+             * @description Total the customer saw (from /checkout/quote). If the recomputed total differs the server returns 409 PRICE_CHANGED.
+             * @example 129900
+             */
+            expectedTotal?: number;
+            /**
+             * @description For a B2B (input-tax-credit) invoice
+             * @example 27AAPFU0939F1ZV
+             */
+            gstin?: string;
+            notes?: string;
+            /**
+             * @default RAZORPAY
+             * @enum {string}
+             */
+            paymentMethod: "RAZORPAY" | "BANK_TRANSFER";
+            /** @example +919876543210 */
+            phone: string;
+            /**
+             * @description Signed-in users: save the shipping address to the address book
+             * @default false
+             */
+            saveAddress: boolean;
+            shippingAddress: {
+                city: string;
+                /**
+                 * @default IN
+                 * @enum {string}
+                 */
+                country: "IN";
+                line1: string;
+                line2?: string;
+                name: string;
+                /** @example +919876543210 */
+                phone: string;
+                /** @example 400001 */
+                pincode: string;
+                /** @description State name, e.g. Maharashtra */
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            };
+        };
+        PlacedOrderDto_Output: {
+            /** @description Set when paymentMethod = BANK_TRANSFER */
+            bankTransfer: {
+                accountName: string;
+                accountNumber: string;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                amount: number;
+                bankName: string;
+                ifsc: string;
+                /** @description Quote this in the transfer (the order number) */
+                reference: string;
+            } | null;
+            orderNumber: string;
+            /** @enum {string} */
+            paymentMethod: "RAZORPAY" | "COD" | "BANK_TRANSFER";
+            /** @description Set when paymentMethod = RAZORPAY */
+            razorpay: {
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                amount: number;
+                /** @enum {string} */
+                currency: "INR";
+                description: string;
+                /** @description Public Razorpay key id for Checkout.js */
+                keyId: string;
+                /** @example Kritex */
+                name: string;
+                /** @description Razorpay order id (order_...) */
+                orderId: string;
+                prefill: {
+                    contact: string;
+                    email: string;
+                    name: string;
+                };
+            } | null;
+            /** Format: date-time */
+            reservedUntil: string | null;
+            /**
+             * @description PENDING_PAYMENT (Razorpay) or AWAITING_PAYMENT (bank transfer)
+             * @enum {string}
+             */
+            status: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+            totals: {
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                cgst: number;
+                /** @enum {string} */
+                currency: "INR";
+                /**
+                 * @description Coupon / quote discount, paise
+                 * @example 129900
+                 */
+                discount: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                igst: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                sgst: number;
+                /**
+                 * @description Shipping fee (GST-inclusive), paise
+                 * @example 129900
+                 */
+                shipping: number;
+                /**
+                 * @description Sum of line totals (GST-inclusive), paise
+                 * @example 129900
+                 */
+                subtotal: number;
+                /**
+                 * @description GST included in total = cgst + sgst + igst, paise
+                 * @example 129900
+                 */
+                taxTotal: number;
+                /**
+                 * @description Amount payable, paise
+                 * @example 129900
+                 */
+                total: number;
+            };
+        };
+        ProductDetailDto_Output: {
+            category: {
+                id: string;
+                name: string;
+                slug: string;
+            };
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            compareAtPrice: number | null;
+            description: string | null;
+            id: string;
+            images: {
+                alt: string | null;
+                id: string;
+                sortOrder: number;
+                url: string;
+                /** @description Option value this image belongs to (e.g. colour "Olive Green") */
+                variantOptionValue: string | null;
+            }[];
+            inStock: boolean;
+            name: string;
+            options: {
+                /** @example Size */
+                name: string;
+                /** @description value → CSS colour or image URL */
+                swatches: {
+                    [key: string]: string;
+                } | null;
+                values: string[];
+            }[];
+            price: {
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                max: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                min: number;
+            } | null;
+            /** @description B2B tier prices; present only for approved B2B customers */
+            priceTiers?: {
+                minQty: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                unitPrice: number;
+            }[];
+            /** @description Whether the current viewer can add this product to the cart (RETAIL, or B2B_ONLY for approved B2B users) */
+            purchasable: boolean;
+            /** @enum {string} */
+            saleChannel: "RETAIL" | "B2B_ONLY" | "ENQUIRY_ONLY";
+            seo: {
+                description: string | null;
+                title: string | null;
+            };
+            slug: string;
+            specSheets: {
+                id: string;
+                title: string;
+                url: string;
+            }[];
+            specs: {
+                label: string;
+                value: string;
+            }[];
+            subCategory: string | null;
+            /** @description Active variants only */
+            variants: {
+                id: string;
+                /** @description Never the raw stock count */
+                inStock: boolean;
+                options: {
+                    [key: string]: string;
+                };
+                /**
+                 * @description Effective unit price; null if unpriced
+                 * @example 129900
+                 */
+                price: number | null;
+                sku: string;
+                /** @example M / Olive Green */
+                title: string;
+            }[];
+        };
+        ProductListDto_Output: {
+            items: {
+                category: {
+                    id: string;
+                    name: string;
+                    slug: string;
+                };
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                compareAtPrice: number | null;
+                id: string;
+                /** @description Primary image */
+                image: {
+                    alt: string | null;
+                    url: string;
+                } | null;
+                /** @description At least one active variant has available stock */
+                inStock: boolean;
+                name: string;
+                /** @description GST-inclusive price range; null for ENQUIRY_ONLY or unpriced products */
+                price: {
+                    /**
+                     * @description Integer paise (₹1 = 100)
+                     * @example 129900
+                     */
+                    max: number;
+                    /**
+                     * @description Integer paise (₹1 = 100)
+                     * @example 129900
+                     */
+                    min: number;
+                } | null;
+                /** @enum {string} */
+                saleChannel: "RETAIL" | "B2B_ONLY" | "ENQUIRY_ONLY";
+                slug: string;
+                subCategory: string | null;
+            }[];
+            limit: number;
+            page: number;
+            total: number;
         };
         QueryDto_Output: {
             /** Format: date-time */
@@ -78,6 +3167,365 @@ export interface components {
             /** @enum {string} */
             status: "NEW" | "IN_PROGRESS" | "RESOLVED";
         };
+        QuoteDetailDto_Output: {
+            contactName: string;
+            /** Format: date-time */
+            createdAt: string;
+            email: string;
+            gstin: string | null;
+            items: {
+                id: string;
+                image: string | null;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                lineTotal: number | null;
+                productId: string;
+                productName: string;
+                productSlug: string | null;
+                quantity: number;
+                /**
+                 * @description GST-inclusive; set once QUOTED
+                 * @example 129900
+                 */
+                quotedUnitPrice: number | null;
+                requestedNotes: string | null;
+                sku: string | null;
+                variantId: string | null;
+                variantTitle: string | null;
+            }[];
+            notes: string | null;
+            number: string;
+            /** @description Set once CONVERTED */
+            orderNumber: string | null;
+            organization: string;
+            phone: string;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            quotedTotal: number | null;
+            /** Format: date-time */
+            respondedAt: string | null;
+            /** @description Kritex's message sent with the quote (Quote.adminNotes) */
+            responseMessage: string | null;
+            /** @enum {string} */
+            status: "REQUESTED" | "QUOTED" | "ACCEPTED" | "EXPIRED" | "REJECTED" | "CONVERTED";
+            /** Format: date-time */
+            validUntil: string | null;
+        };
+        QuoteListDto_Output: {
+            items: {
+                /** Format: date-time */
+                createdAt: string;
+                itemCount: number;
+                number: string;
+                organization: string;
+                /**
+                 * @description Sum of quoted lines; null until QUOTED
+                 * @example 129900
+                 */
+                quotedTotal: number | null;
+                /** @enum {string} */
+                status: "REQUESTED" | "QUOTED" | "ACCEPTED" | "EXPIRED" | "REJECTED" | "CONVERTED";
+                /** Format: date-time */
+                validUntil: string | null;
+            }[];
+            limit: number;
+            page: number;
+            total: number;
+        };
+        RefundOrderDto: {
+            /**
+             * @description Paise; at most the captured amount minus prior refunds
+             * @example 129900
+             */
+            amount: number;
+            reason: string;
+            /** @default [] */
+            restockItems: {
+                orderItemId: string;
+                quantity: number;
+                /**
+                 * @default RETURN
+                 * @enum {string}
+                 */
+                reason: "RESTOCK" | "ADJUST" | "RETURN";
+            }[];
+        };
+        RejectBusinessProfileDto: {
+            /** @description Shown to the customer */
+            reason: string;
+        };
+        RejectQuoteDto: {
+            reason: string;
+        };
+        RequestReturnDto: {
+            items: {
+                /** @description EXCHANGE: the variant (e.g. other size) wanted instead */
+                exchangeVariantId?: string;
+                orderItemId: string;
+                quantity: number;
+            }[];
+            notes?: string;
+            /** @enum {string} */
+            reason: "SIZE_ISSUE" | "DEFECTIVE" | "WRONG_ITEM" | "OTHER";
+            /** @enum {string} */
+            type: "RETURN" | "EXCHANGE";
+        };
+        RespondQuoteDto: {
+            /** @description Every quote item must be priced */
+            items: {
+                itemId: string;
+                /**
+                 * @description GST-inclusive unit price, paise
+                 * @example 129900
+                 */
+                quotedUnitPrice: number;
+                /** @description Pin a variant when the RFQ line had none */
+                variantId?: string;
+            }[];
+            message?: string;
+            /** Format: date-time */
+            validUntil: string;
+        };
+        SavedAddressDto_Output: {
+            city: string;
+            /** @enum {string} */
+            country: "IN";
+            id: string;
+            isDefault: boolean;
+            line1: string;
+            line2: string | null;
+            name: string;
+            phone: string;
+            pincode: string;
+            state: string;
+            /**
+             * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+             * @enum {string}
+             */
+            stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+        };
+        SavedAddressListDto_Output: {
+            items: {
+                city: string;
+                /** @enum {string} */
+                country: "IN";
+                id: string;
+                isDefault: boolean;
+                line1: string;
+                line2: string | null;
+                name: string;
+                phone: string;
+                pincode: string;
+                state: string;
+                /**
+                 * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+                 * @enum {string}
+                 */
+                stateCode: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+            }[];
+        };
+        SearchSuggestResponseDto_Output: {
+            items: {
+                /** @description For products: their category slug */
+                categorySlug: string | null;
+                image: string | null;
+                name: string;
+                slug: string;
+                /** @enum {string} */
+                type: "product" | "category";
+            }[];
+        };
+        ShipOrderDto: {
+            awb?: string;
+            carrier: string;
+            /** @default true */
+            notifyCustomer: boolean;
+            /** Format: uri */
+            trackingUrl?: string;
+        };
+        UpdateAddressDto: {
+            city?: string;
+            /**
+             * @default IN
+             * @enum {string}
+             */
+            country: "IN";
+            isDefault?: boolean;
+            line1?: string;
+            line2?: string;
+            name?: string;
+            /** @example +919876543210 */
+            phone?: string;
+            /** @example 400001 */
+            pincode?: string;
+            /** @description State name, e.g. Maharashtra */
+            state?: string;
+            /**
+             * @description Two-digit GST state code, e.g. "27" (Maharashtra)
+             * @enum {string}
+             */
+            stateCode?: "10" | "11" | "12" | "13" | "14" | "15" | "16" | "17" | "18" | "19" | "20" | "21" | "22" | "23" | "24" | "26" | "27" | "29" | "30" | "31" | "32" | "33" | "34" | "35" | "36" | "37" | "38" | "01" | "02" | "03" | "04" | "05" | "06" | "07" | "08" | "09";
+        };
+        UpdateCartItemDto: {
+            /** @description 0 removes the line */
+            quantity: number;
+        };
+        UpdateCategoryDto: {
+            description?: string | null;
+            image?: string | null;
+            isActive?: boolean;
+            name?: string;
+            /** @example combat-shirt-olive */
+            slug?: string;
+            sortOrder?: number;
+        };
+        UpdateCouponDto: {
+            code?: string;
+            /** Format: date-time */
+            endsAt?: string | null;
+            isActive?: boolean;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            maxDiscount?: number | null;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            minSubtotal?: number | null;
+            perUserLimit?: number | null;
+            /** Format: date-time */
+            startsAt?: string | null;
+            /** @enum {string} */
+            type?: "PERCENT" | "FLAT" | "FREE_SHIPPING";
+            usageLimit?: number | null;
+            value?: number;
+        };
+        UpdateMeDto: {
+            name?: string;
+            /** @example +919876543210 */
+            phone?: string | null;
+        };
+        UpdateOrderStatusDto: {
+            note?: string;
+            /** @default true */
+            notifyCustomer: boolean;
+            /** @enum {string} */
+            status: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+        };
+        UpdateProductDto: {
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            basePrice?: number | null;
+            categoryId?: string;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            compareAtPrice?: number | null;
+            description?: string | null;
+            /** @description GST rate in percent */
+            gstRate?: number | null;
+            heightCm?: number | null;
+            hsnCode?: string | null;
+            images?: {
+                alt?: string | null;
+                /** @default 0 */
+                sortOrder: number;
+                url: string;
+                variantOptionValue?: string | null;
+            }[];
+            lengthCm?: number | null;
+            name?: string;
+            options?: {
+                name: string;
+                swatches?: {
+                    [key: string]: string;
+                } | null;
+                values: string[];
+            }[];
+            priceTiers?: {
+                minQty: number;
+                /**
+                 * @description Integer paise (₹1 = 100)
+                 * @example 129900
+                 */
+                unitPrice: number;
+            }[];
+            /** @enum {string} */
+            saleChannel?: "RETAIL" | "B2B_ONLY" | "ENQUIRY_ONLY";
+            seoDescription?: string | null;
+            seoTitle?: string | null;
+            /** @example combat-shirt-olive */
+            slug?: string;
+            specSheets?: {
+                /** @default 0 */
+                sortOrder: number;
+                title: string;
+                url: string;
+            }[];
+            specs?: {
+                label: string;
+                value: string;
+            }[];
+            /** @enum {string} */
+            status?: "DRAFT" | "ACTIVE" | "ARCHIVED";
+            subCategory?: string | null;
+            weightGrams?: number | null;
+            widthCm?: number | null;
+        };
+        UpdateQueryStatusDto: {
+            /** @enum {string} */
+            status: "NEW" | "IN_PROGRESS" | "RESOLVED";
+        };
+        UpdateUserDto: {
+            disabled?: boolean;
+            name?: string;
+            /** @enum {string} */
+            role?: "CUSTOMER" | "B2B_CUSTOMER" | "STAFF" | "ADMIN";
+        };
+        UpdateVariantDto: {
+            isActive?: boolean;
+            /**
+             * @description Integer paise (₹1 = 100)
+             * @example 129900
+             */
+            price?: number | null;
+            sku?: string;
+            title?: string;
+        };
+        UploadTicketDto_Output: {
+            /** Format: date-time */
+            expiresAt: string;
+            /** @description Headers to send with the PUT */
+            headers: {
+                [key: string]: string;
+            };
+            /** @description Object key in the bucket */
+            key: string;
+            /** @enum {string} */
+            method: "PUT";
+            /** @description URL to store on the product once uploaded */
+            publicUrl: string;
+            /** @description Presigned URL: PUT the file bytes here */
+            uploadUrl: string;
+        };
+        VerifyPaymentDto: {
+            razorpay_order_id: string;
+            razorpay_payment_id: string;
+            razorpay_signature: string;
+        };
+        WebhookAckDto_Output: {
+            /** @enum {boolean} */
+            received: true;
+        };
     };
     responses: never;
     parameters: never;
@@ -87,6 +3535,3172 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    adminListBusinessProfiles: {
+        parameters: {
+            query?: {
+                /** @description Default: all */
+                status?: "PENDING" | "APPROVED" | "REJECTED";
+                /** @description Legal name, GSTIN, email */
+                q?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminBusinessProfileListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminApproveBusinessProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Approved */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminBusinessProfileDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INVALID_STATUS: not PENDING */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminRejectBusinessProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RejectBusinessProfileDto"];
+            };
+        };
+        responses: {
+            /** @description Rejected */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminBusinessProfileDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INVALID_STATUS: not PENDING */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminListCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Categories */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCategoryListDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminCreateCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCategoryDto"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCategoryDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CONFLICT: slug taken */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminDeleteCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CATEGORY_NOT_EMPTY */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminUpdateCategory: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCategoryDto"];
+            };
+        };
+        responses: {
+            /** @description Updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCategoryDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CONFLICT: slug taken */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminListCoupons: {
+        parameters: {
+            query?: {
+                q?: string;
+                isActive?: "true" | "false";
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated coupons */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CouponListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminCreateCoupon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCouponDto"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CouponDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CONFLICT: code taken */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminGetCoupon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Coupon */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CouponDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminDeleteCoupon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted or deactivated */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminUpdateCoupon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCouponDto"];
+            };
+        };
+        responses: {
+            /** @description Updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CouponDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CONFLICT: code taken */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminListCustomers: {
+        parameters: {
+            query?: {
+                /** @description Name, email or phone */
+                q?: string;
+                role?: "CUSTOMER" | "B2B_CUSTOMER";
+                businessStatus?: "PENDING" | "APPROVED" | "REJECTED";
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated customers */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCustomerListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminGetCustomer: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Customer */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCustomerDetailDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminGetDashboard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Dashboard tiles */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DashboardDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminListInventory: {
+        parameters: {
+            query?: {
+                /** @description SKU or product name */
+                q?: string;
+                /** @description true = only variants with available <= threshold */
+                lowStock?: "true" | "false";
+                threshold?: number;
+                productId?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated stock rows */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InventoryListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminListOrders: {
+        parameters: {
+            query?: {
+                status?: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+                paymentMethod?: "RAZORPAY" | "COD" | "BANK_TRANSFER";
+                /** @description Order number, email, phone or customer name */
+                q?: string;
+                /** @description createdAt >= from */
+                from?: string;
+                /** @description createdAt < to */
+                to?: string;
+                sort?: "newest" | "oldest" | "total_desc";
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated orders */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOrderListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminExportOrders: {
+        parameters: {
+            query?: {
+                status?: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+                paymentMethod?: "RAZORPAY" | "COD" | "BANK_TRANSFER";
+                /** @description Order number, email, phone or customer name */
+                q?: string;
+                /** @description createdAt >= from */
+                from?: string;
+                /** @description createdAt < to */
+                to?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description CSV file */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": string;
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "text/csv": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminGetOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOrderDetailDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminCancelOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdminCancelOrderDto"];
+            };
+        };
+        responses: {
+            /** @description Cancelled order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOrderDetailDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INVALID_TRANSITION */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminMarkOrderPaid: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MarkOrderPaidDto"];
+            };
+        };
+        responses: {
+            /** @description Paid order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOrderDetailDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INVALID_TRANSITION: not AWAITING_PAYMENT */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminAddOrderNote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddOrderNoteDto"];
+            };
+        };
+        responses: {
+            /** @description Updated order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOrderDetailDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminRefundOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RefundOrderDto"];
+            };
+        };
+        responses: {
+            /** @description Updated order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOrderDetailDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description REFUND_EXCEEDS_CAPTURED | NOT_REFUNDABLE */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminShipOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ShipOrderDto"];
+            };
+        };
+        responses: {
+            /** @description Updated order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOrderDetailDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INVALID_TRANSITION: not PAID/PROCESSING */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminCreateShiprocketShipment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateShiprocketShipmentDto"];
+            };
+        };
+        responses: {
+            /** @description Shipment with AWB + label */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminShipmentDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INVALID_TRANSITION: order not PAID/PROCESSING | SHIPMENT_EXISTS */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description SHIPROCKET_ERROR (details from Shiprocket) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminUpdateOrderStatus: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateOrderStatusDto"];
+            };
+        };
+        responses: {
+            /** @description Updated order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminOrderDetailDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INVALID_TRANSITION */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminListProducts: {
+        parameters: {
+            query?: {
+                q?: string;
+                status?: "DRAFT" | "ACTIVE" | "ARCHIVED";
+                saleChannel?: "RETAIL" | "B2B_ONLY" | "ENQUIRY_ONLY";
+                category?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated products */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminProductListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminCreateProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateProductDto"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminProductDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND: category */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CONFLICT: slug taken */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminImportProducts: {
+        parameters: {
+            query?: {
+                /** @description Validate and report without writing (default false) */
+                dryRun?: "true" | "false";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": {
+                    /**
+                     * Format: binary
+                     * @description CSV, max 5 MB
+                     */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description Import report */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ImportResultDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminGetProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Product */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminProductDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminDeleteProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted or archived */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminUpdateProduct: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateProductDto"];
+            };
+        };
+        responses: {
+            /** @description Updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminProductDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CONFLICT: slug taken */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminListVariants: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Variants */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminVariantListDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminGenerateVariants: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["GenerateVariantsDto"];
+            };
+        };
+        responses: {
+            /** @description All variants after generation */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminVariantListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CONFLICT: SKU taken */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminListQueries: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description All queries */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueryDto_Output"][];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminUpdateQuery: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateQueryStatusDto"];
+            };
+        };
+        responses: {
+            /** @description Updated query */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QueryDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminListQuotes: {
+        parameters: {
+            query?: {
+                status?: "REQUESTED" | "QUOTED" | "ACCEPTED" | "EXPIRED" | "REJECTED" | "CONVERTED";
+                /** @description Number, email, organization */
+                q?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated quotes */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminQuoteListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminGetQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Quote */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminQuoteDetailDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminRejectQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RejectQuoteDto"];
+            };
+        };
+        responses: {
+            /** @description Rejected */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminQuoteDetailDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INVALID_STATUS */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminRespondQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RespondQuoteDto"];
+            };
+        };
+        responses: {
+            /** @description Quoted */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminQuoteDetailDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INVALID_STATUS: not REQUESTED/QUOTED */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description QUOTE_ITEMS_UNPRICED */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminCreateUpload: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateUploadDto"];
+            };
+        };
+        responses: {
+            /** @description Upload ticket */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UploadTicketDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminListUsers: {
+        parameters: {
+            query?: {
+                /** @description Default: STAFF and ADMIN */
+                role?: "CUSTOMER" | "B2B_CUSTOMER" | "STAFF" | "ADMIN";
+                /** @description Name or email */
+                q?: string;
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated users */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminCreateStaffUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateStaffUserDto"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CONFLICT: email already registered (use PATCH to change role) */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminUpdateUser: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateUserDto"];
+            };
+        };
+        responses: {
+            /** @description Updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CANNOT_MODIFY_SELF | LAST_ADMIN */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminUpdateVariant: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateVariantDto"];
+            };
+        };
+        responses: {
+            /** @description Updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminVariantDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CONFLICT: SKU taken */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminAdjustStock: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AdjustStockDto"];
+            };
+        };
+        responses: {
+            /** @description Updated variant */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminVariantDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INSUFFICIENT_STOCK: stock would drop below reserved */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getCart: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Cart */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CartDto_Output"];
+                };
+            };
+        };
+    };
+    applyCartCoupon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyCouponDto"];
+            };
+        };
+        responses: {
+            /** @description Updated cart */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CartDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description COUPON_INVALID | COUPON_EXPIRED | COUPON_USAGE_LIMIT | COUPON_MIN_SUBTOTAL (details.minSubtotal) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description TOO_MANY_REQUESTS */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    removeCartCoupon: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Updated cart */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CartDto_Output"];
+                };
+            };
+        };
+    };
+    addCartItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AddCartItemDto"];
+            };
+        };
+        responses: {
+            /** @description Updated cart */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CartDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND: variant */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INSUFFICIENT_STOCK */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_PURCHASABLE: sale channel */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    removeCartItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                variantId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Updated cart */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CartDto_Output"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    updateCartItem: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                variantId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateCartItemDto"];
+            };
+        };
+        responses: {
+            /** @description Updated cart */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CartDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND: line */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INSUFFICIENT_STOCK */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    listCategories: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Categories by sortOrder */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CategoryListDto_Output"];
+                };
+            };
+        };
+    };
+    placeOrder: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Unique per checkout attempt (e.g. UUID v4, 8-128 chars [A-Za-z0-9_-]). Retries with the same key return the original result. */
+                "Idempotency-Key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PlaceOrderDto"];
+            };
+        };
+        responses: {
+            /** @description Order created, awaiting payment */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlacedOrderDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR | IDEMPOTENCY_KEY_REQUIRED */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description PAYMENT_METHOD_NOT_ALLOWED: BANK_TRANSFER needs an approved B2B account */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description OUT_OF_STOCK (details: variantIds) | PRICE_CHANGED | IDEMPOTENCY_KEY_REUSED */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CART_EMPTY | CART_HAS_ISSUES | COUPON_* | GSTIN_STATE_MISMATCH */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description TOO_MANY_REQUESTS */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getCheckoutQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CheckoutQuoteRequestDto"];
+            };
+        };
+        responses: {
+            /** @description Totals */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CheckoutQuoteDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description CART_EMPTY | CART_HAS_ISSUES (details: lines) | GSTIN_STATE_MISMATCH */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    verifyPayment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["VerifyPaymentDto"];
+            };
+        };
+        responses: {
+            /** @description Verification result */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PaymentVerificationDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR | SIGNATURE_INVALID */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND: unknown order */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description TOO_MANY_REQUESTS */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
     getHealth: {
         parameters: {
             query?: never;
@@ -107,6 +6721,848 @@ export interface operations {
             };
             /** @description Database unavailable */
             503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Current user */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    updateMe: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateMeDto"];
+            };
+        };
+        responses: {
+            /** @description Updated user */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MeDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    listMyAddresses: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Addresses */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedAddressListDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    createMyAddress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateAddressDto"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedAddressDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description ADDRESS_LIMIT_REACHED */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    deleteMyAddress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Deleted */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    updateMyAddress: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateAddressDto"];
+            };
+        };
+        responses: {
+            /** @description Updated */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SavedAddressDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND (also for addresses of other users) */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    applyBusinessProfile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ApplyBusinessProfileDto"];
+            };
+        };
+        responses: {
+            /** @description Application (PENDING) */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["BusinessProfileDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description BUSINESS_PROFILE_EXISTS: already PENDING or APPROVED */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    listMyOrders: {
+        parameters: {
+            query?: {
+                status?: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated orders */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getMyOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetailDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    cancelMyOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CancelOrderDto"];
+            };
+        };
+        responses: {
+            /** @description Cancelled order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetailDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description ORDER_NOT_CANCELLABLE: already SHIPPED or later */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    requestOrderReturn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RequestReturnDto"];
+            };
+        };
+        responses: {
+            /** @description Updated order */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderDetailDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description RETURN_NOT_ALLOWED: not DELIVERED or outside the return window */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    listMyQuotes: {
+        parameters: {
+            query?: {
+                status?: "REQUESTED" | "QUOTED" | "ACCEPTED" | "EXPIRED" | "REJECTED" | "CONVERTED";
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated quotes */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getMyQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Quote */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteDetailDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    acceptMyQuote: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Same semantics as POST /checkout */
+                "Idempotency-Key": string;
+            };
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AcceptQuoteDto"];
+            };
+        };
+        responses: {
+            /** @description Order created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlacedOrderDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description PAYMENT_METHOD_NOT_ALLOWED */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description QUOTE_NOT_ACCEPTABLE: not QUOTED / expired | OUT_OF_STOCK | IDEMPOTENCY_KEY_REUSED */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description TOO_MANY_REQUESTS */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getOrderInvoice: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Invoice link */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["InvoiceLinkDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND: order not found / not yours / no invoice issued yet */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getOrderTracking: {
+        parameters: {
+            query: {
+                /** @description Email used on the order (prevents enumeration) */
+                email: string;
+            };
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Tracking */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["OrderTrackingDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND: no order with this number and email */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description TOO_MANY_REQUESTS */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    listProducts: {
+        parameters: {
+            query?: {
+                /** @description Category slug */
+                category?: string;
+                /** @description Free-text search */
+                q?: string;
+                /** @description Option value "Size" */
+                size?: string;
+                /** @description Option value "Colour" */
+                colour?: string;
+                /** @description Paise */
+                minPrice?: number;
+                /** @description Paise */
+                maxPrice?: number;
+                saleChannel?: "RETAIL" | "B2B_ONLY" | "ENQUIRY_ONLY";
+                sort?: "newest" | "price_asc" | "price_desc";
+                page?: number;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Paginated product cards */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductListDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getProductBySlug: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Product detail */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ProductDetailDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -178,6 +7634,169 @@ export interface operations {
             };
             /** @description TOO_MANY_REQUESTS */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    createQuote: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateQuoteDto"];
+            };
+        };
+        responses: {
+            /** @description RFQ received */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CreateQuoteResponseDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND: product/variant */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description TOO_MANY_REQUESTS */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    searchSuggest: {
+        parameters: {
+            query: {
+                q: string;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Suggestions */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SearchSuggestResponseDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    handleRazorpayWebhook: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Used for idempotency */
+                "x-razorpay-event-id"?: string;
+                /** @description HMAC-SHA256 of the raw body */
+                "x-razorpay-signature": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Razorpay webhook payload (provider-defined) */
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Acknowledged (also for duplicates) */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookAckDto_Output"];
+                };
+            };
+            /** @description SIGNATURE_INVALID */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    handleShiprocketWebhook: {
+        parameters: {
+            query?: never;
+            header: {
+                /** @description Shiprocket webhook token */
+                "x-api-key": string;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Shiprocket tracking payload (provider-defined) */
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Acknowledged */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WebhookAckDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: bad token */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };

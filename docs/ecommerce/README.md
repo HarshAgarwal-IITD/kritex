@@ -9,15 +9,17 @@ into a full ecommerce platform. Update these files as decisions are made and wor
 | [DECISIONS.md](DECISIONS.md) | Decision log (ADR-style) + open questions awaiting the business |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | System design, data model, API contract, folder layout |
 | [EXECUTION.md](EXECUTION.md) | **Stage-by-stage execution plan**: which agents run in which repo, gates, human checkpoints |
+| [CONTRACT-NOTES.md](CONTRACT-NOTES.md) | Judgment calls made while writing the v1 API contract (Stage 1) |
 | [TASKS.md](TASKS.md) | Task inventory per stage, IDs, dependencies, status |
 
 **Repos:** `kritex-website` (this repo: storefront, admin, planning hub) · `../kritex-server` (NestJS API). See ADR-013.
 
 ## Current status (2026-10-06)
 
-- **Stage:** ✅ Stage 0 done (2026-10-06). **Stage 1 (Contract + Data) in progress**: agents `server-db`, `server-contract`, `web-content` running.
+- **Stage:** ✅ Stage 0 and ✅ **Stage 1 complete** (2026-10-06). **Paused before Stage 2 (Catalog + Identity)** at the owner's request.
 - **Decisions:** all ADRs Accepted. Open questions run on defaults (owner, 2026-10-06). Q1/Q2 real data is still needed before launch.
-- **Next step:** integrate Stage 1 → gate → Stage 2. Owner: create the GitHub remote for `kritex-server`, start Razorpay KYC.
+- **Next step (when resuming):** launch Stage 2's 5 agents per [EXECUTION.md](EXECUTION.md#stage-2-catalog--identity): `server-catalog`, `server-auth`, `server-pricing`, `web-catalog`, `web-admin-catalog`. Both repos are clean on branch `ecommerce`, with no open worktrees.
+- **Human checkpoint (Stage 1):** review the API docs (`/api/docs` with the server running) and send the `/legal/*` drafts to legal; fill placeholders in `src/pages/legal/placeholders.ts`. Owner to-dos: push `kritex-server` to GitHub, start Razorpay KYC, gather prices/HSN/stock (CSV template: `kritex-server/prisma/seed/product-data-template.csv`).
 - **Run locally:** `cd ../kritex-server && docker compose up -d && npm run start:dev` (API :4000, docs at /api/docs), then `npm run dev` here (:8080, proxies /api).
 
 ## Where we're starting from

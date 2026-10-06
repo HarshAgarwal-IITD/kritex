@@ -89,3 +89,4 @@ Each workstream owns a set of files/dirs in one repo (**server** = `kritex-serve
 - 2026-10-06: Initial plan drafted.
 - 2026-10-06: Backend framework changed from Express to **NestJS** (ADR-012). Workstream paths updated to Nest module folders.
 - 2026-10-06: Backend moved to a **separate repo** `kritex-server` (ADR-013); contract via committed OpenAPI. Waves replaced by 7 execution stages (EXECUTION.md).
+- 2026-10-06: Stage 0 and Stage 1 completed (defaults accepted for all open questions). Paused before Stage 2.

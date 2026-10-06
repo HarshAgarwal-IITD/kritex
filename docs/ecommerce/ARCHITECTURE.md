@@ -154,6 +154,8 @@ model Query     { (unchanged: contact/tender enquiries) }
 
 ## 4. API contract (v1)
 
+> **Since Stage 1, `kritex-server/openapi.json` is authoritative** (81 operations, Swagger at `/api/docs`). The table below is the original design. Where they differ (pagination envelope, 422 vs 409 codes, extra endpoints such as public tracking, admin categories, variant updates), see [CONTRACT-NOTES.md](CONTRACT-NOTES.md). Change the API by editing the server DTOs, then regenerate.
+
 Base: `/api/v1` (Nest global prefix). JSON in and out. Swagger at `/api/docs` in dev. Errors use `{ error: { code, message, details? } }`. Auth via session cookie.
 `🔓` public · `👤` logged-in customer · `🏢` approved B2B · `🛠` STAFF/ADMIN.
 

@@ -35,25 +35,29 @@ Gate passed: both repos' lint/typecheck/tests/build green (server 49 unit + 18 e
 
 ---
 
-## Stage 1: Contract + Data
+## Stage 1: Contract + Data ✅ (2026-10-06)
 
-### Agent `server-db` [S] → F-S1
-- [~] D-1 Prisma schema per ARCHITECTURE.md §3 (catalog, users + Better Auth tables, cart, orders, promotions, B2B, existing Query)
-- [~] D-2 Migration + `pg_trgm` + indexes (slug, sku, status, createdAt, trigram on name)
-- [~] D-3 One-time export of website `src/data/*.ts` → `prisma/seed/data/catalog.json`; `prisma db seed` creates categories/products/options/variants (size × colour)/images/specSheets; placeholder prices behind `SEED_PLACEHOLDER_PRICES`
-- [~] D-4 Product-data CSV template (`prisma/seed/product-data-template.csv`: sku, price, hsn, gstRate, stock, weightGrams, dims, saleChannel) + `npm run import:products <csv>`
-- [~] D-5 Seed admin user from env
+Merged: server `ecommerce` @ `bfd1d38` · web `ecommerce` (types regenerated from 81-operation `openapi.json`).
+Gate passed: migrations apply cleanly (`…_catalog_commerce_auth`, `…_contract_followups`); seed idempotent (4 categories, 26 products, 165 variants); `openapi.json` covers every §4 endpoint (81 ops, stubs → 501); website regenerates types with no errors; policy pages live at `/legal/*`.
+Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint errors, typecheck OK, 23 tests, build OK.
 
-### Agent `server-contract` [S] → F-S1
-- [~] K-1 Module skeletons for every domain (ARCHITECTURE.md §2) registered in `app.module.ts`
-- [~] K-2 zod DTOs for every request/response in ARCHITECTURE.md §4, incl. shared enums (OrderStatus, SaleChannel, Role…) and the error shape
-- [~] K-3 Stub controllers for every route (correct guards/decorators, `@ApiResponse` types), returning 501
-- [~] K-4 `openapi.json` regenerated; contract review notes for anything ambiguous in §4
+### Agent `server-db` [S] → F-S1 ✅ merged `1201d3f` (26 products, 165 variants seeded; migration `20261006095902_catalog_commerce_auth`)
+- [x] D-1 Prisma schema per ARCHITECTURE.md §3 (catalog, users + Better Auth tables, cart, orders, promotions, B2B, existing Query)
+- [x] D-2 Migration + `pg_trgm` + indexes (slug, sku, status, createdAt, trigram on name)
+- [x] D-3 One-time export of website `src/data/*.ts` → `prisma/seed/data/catalog.json`; `prisma db seed` creates categories/products/options/variants (size × colour)/images/specSheets; placeholder prices behind `SEED_PLACEHOLDER_PRICES`
+- [x] D-4 Product-data CSV template (`prisma/seed/product-data-template.csv`: sku, price, hsn, gstRate, stock, weightGrams, dims, saleChannel) + `npm run import:products <csv>`
+- [x] D-5 Seed admin user from env
 
-### Agent `web-content` [W]
-- [~] C-1 Pages: Terms, Privacy (DPDP-aware), Refund & Returns, Shipping, Cancellation, Contact/Grievance officer. Banner: **draft, needs legal review**.
-- [~] C-2 Footer links to the policy pages
-- [~] C-3 `react-helmet-async` + `<Seo>` component; titles/descriptions on existing pages
+### Agent `server-contract` [S] → F-S1 ✅ merged `e97fcda` (judgment calls in [CONTRACT-NOTES.md](CONTRACT-NOTES.md))
+- [x] K-1 Module skeletons for every domain (ARCHITECTURE.md §2) registered in `app.module.ts`
+- [x] K-2 zod DTOs for every request/response in ARCHITECTURE.md §4, incl. shared enums (OrderStatus, SaleChannel, Role…) and the error shape
+- [x] K-3 Stub controllers for every route (correct guards/decorators, `@ApiResponse` types), returning 501
+- [x] K-4 `openapi.json` regenerated; contract review notes for anything ambiguous in §4
+
+### Agent `web-content` [W] ✅ merged `819c649` (/legal/* drafts; placeholders in `src/pages/legal/placeholders.ts`)
+- [x] C-1 Pages: Terms, Privacy (DPDP-aware), Refund & Returns, Shipping, Cancellation, Contact/Grievance officer. Banner: **draft, needs legal review**.
+- [x] C-2 Footer links to the policy pages
+- [x] C-3 `react-helmet-async` + `<Seo>` component; titles/descriptions on existing pages
 - [ ] C-4 Consent banner: deferred (no analytics yet; revisit with SEO-4)
 
 ---
@@ -75,6 +79,7 @@ Gate passed: both repos' lint/typecheck/tests/build green (server 49 unit + 18 e
 - [ ] AUTH-3 `/me`, addresses CRUD, business-profile apply; admin approve/reject
 - [ ] AUTH-4 Dev email transport (log/Mailpit) until OPS-1
 - [ ] AUTH-5 Throttling + tests (incl. IDOR tests on addresses)
+- [ ] AUTH-6 Contract follow-ups: confirm Better Auth cookie name (`better-auth.session_token`) + email-OTP paths and update the OpenAPI description; replace temporary `user?.id ?? ''` in customer handlers with `user.id`; if using the admin plugin, run `npx auth generate` and diff (adds `banned`… used for `User.disabled` in the users DTO); implement `/admin/queries` once the guard is enforced
 
 ### Agent `server-pricing` [S] → D-1
 - [ ] PR-1 `TaxService`: GST slab rule (config-driven), CGST+SGST vs IGST by state code, GSTIN format + state-code validation
@@ -116,6 +121,7 @@ Gate passed: both repos' lint/typecheck/tests/build green (server 49 unit + 18 e
 - [ ] COM-13 Customer order endpoints (list, detail, cancel, return request)
 - [ ] COM-14 Admin order endpoints (filters, status, mark-paid, Razorpay refund, notes, CSV export); dashboard endpoint
 - [ ] COM-15 Concurrency test: last-unit race
+- [ ] COM-16 Payment retry for an unpaid order (`POST /me/orders/:number/pay`, additive contract change)
 
 ### Agent `web-commerce` [W] → K-* (MSW until server lands)
 - [ ] WEB-CART-1 Cart drawer + cart page, quantity steppers, optimistic updates, coupon input, navbar count
@@ -193,6 +199,10 @@ Gate passed: both repos' lint/typecheck/tests/build green (server 49 unit + 18 e
 - [ ] TD-2 [S] Upgrade to Nest 12 + unpin zod once nestjs-zod supports them (ADR-014); `src/openapi.spec.ts` guards regressions
 - [ ] TD-3 [both] `npm audit` advisories (server: transitive via @nestjs/swagger 11 / jest tooling; web: pre-existing) → review in QA-6
 - [ ] TD-4 [S] Old prototype volume `server_kritex_postgres_data` can be deleted once not needed
+- [ ] TD-6 [S] Category images seeded as `/assets/product-*.jpg`, but those are Vite-hashed `src/assets` imports, not public files → move to `public/` or R2 (with DEP-3)
+- [ ] TD-7 [business] Field duty jacket size "XX" (SKU `KTX-FDTJ-XX`) is probably a typo in website data; confirm
+- [ ] TD-8 [S] Prisma 7: move `package.json#prisma.seed` to `prisma.config.ts` (mind .env loading)
+- [ ] TD-9 [W] Main bundle 597 kB → route-level code splitting (with SEO-3)
 - [ ] TD-5 [W] Rename package.json `name` from `vite_react_shadcn_ts` to `kritex-website`
 
 ## Stage 6: Go-live (see EXECUTION.md)
