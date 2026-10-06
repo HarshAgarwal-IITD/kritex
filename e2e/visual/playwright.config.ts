@@ -18,7 +18,7 @@ export default defineConfig({
   reporter: [["list"], ["html", { outputFolder: "./.report", open: "never" }]],
   outputDir: "./.results",
   expect: {
-    toHaveScreenshot: { maxDiffPixelRatio: 0.01, animations: "disabled", caret: "hide" },
+    toHaveScreenshot: { maxDiffPixels: 50, animations: "disabled", caret: "hide" },
   },
   use: {
     baseURL: `http://localhost:${PORT}`,

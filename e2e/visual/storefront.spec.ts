@@ -45,7 +45,8 @@ async function settle(page: Page) {
       ),
     );
   });
-  await page.waitForTimeout(1200);
+  // Cards stagger in (index * 80ms), so the last of ~26 needs ~2.5s to finish.
+  await page.waitForTimeout(3000);
 }
 
 for (const { name, path } of PAGES) {
