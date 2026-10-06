@@ -10,6 +10,13 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    // The API client uses a relative base URL in dev, so /api is proxied to kritex-server.
+    proxy: {
+      "/api": {
+        target: "http://localhost:4000",
+        changeOrigin: true,
+      },
+    },
   },
   plugins: [react()],
   resolve: {
