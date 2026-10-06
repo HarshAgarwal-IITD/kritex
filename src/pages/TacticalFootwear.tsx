@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Seo from "@/components/Seo";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ProductCard from "@/components/ProductCard";
 import { motion } from "framer-motion";
@@ -21,6 +22,11 @@ const TacticalFootwear = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo
+        title="Tactical Footwear"
+        description="Tactical and combat footwear from Kritex, engineered for durability, comfort and performance in all environments."
+        path="/products/tactical-footwear"
+      />
       <Navbar />
 
       <main className="flex-grow pt-32 pb-20">

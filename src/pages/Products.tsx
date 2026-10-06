@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Seo from "@/components/Seo";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ProductCard from "@/components/ProductCard";
 import { productCategories } from "@/data/productCategories";
@@ -60,6 +61,11 @@ const Products = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo
+        title="All Products"
+        description="Browse Kritex's complete catalog of tactical footwear, combat apparel and load-bearing equipment for defence and industrial use."
+        path="/products"
+      />
       <Navbar />
 
       <main className="flex-grow pt-32 pb-20">
