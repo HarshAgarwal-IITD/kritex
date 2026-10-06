@@ -1,9 +1,10 @@
 import { Link } from "react-router-dom";
-import { productCategories } from "@/data/productCategories";
+import { useCategories } from "@/features/catalog/hooks";
 import { asset } from "@/lib/asset";
 import { policies } from "@/pages/legal/policies";
 
 const Footer = () => {
+  const { data } = useCategories();
   return (
     <footer className="border-t border-border py-12">
       <div className="container flex flex-col items-center gap-10">
@@ -14,15 +15,15 @@ const Footer = () => {
           >
             All Products
           </Link>
-          {productCategories
-            .filter((cat) => cat.available)
+          {data?.items
+            .filter((cat) => cat.productCount > 0)
             .map((cat) => (
               <Link
                 key={cat.slug}
                 to={`/products/${cat.slug}`}
                 className="font-display text-xs uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors duration-200"
               >
-                {cat.title}
+                {cat.name}
               </Link>
             ))}
           <a

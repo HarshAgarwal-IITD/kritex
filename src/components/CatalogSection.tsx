@@ -1,8 +1,19 @@
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
-import { productCategories } from "@/data/productCategories";
+import { useCategories } from "@/features/catalog/hooks";
+import { assetUrl } from "@/features/catalog/view";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const CatalogSection = () => {
+  const { data, isPending } = useCategories();
+  const categories = (data?.items ?? []).map((c) => ({
+    slug: c.slug,
+    title: c.name,
+    image: c.image ? assetUrl(c.image) : undefined,
+    productCount: c.productCount,
+    available: c.productCount > 0,
+  }));
+
   return (
     <section id="catalog" className="py-20 md:py-32">
       <div className="container">
@@ -28,7 +39,17 @@ const CatalogSection = () => {
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
-          {productCategories.map((cat, i) => {
+          {isPending &&
+            Array.from({ length: 4 }, (_, i) => (
+              <div key={i} data-skeleton className="bg-background">
+                <Skeleton className="aspect-square w-full rounded-none bg-muted/60" />
+                <div className="p-6 border-t border-border space-y-2">
+                  <Skeleton className="h-3.5 w-32 rounded-none bg-muted/60" />
+                  <Skeleton className="h-2.5 w-14 rounded-none bg-muted/60" />
+                </div>
+              </div>
+            ))}
+          {categories.map((cat, i) => {
             const card = (
               <motion.div
                 initial={{ opacity: 0, y: 30 }}
