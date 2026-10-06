@@ -1,5 +1,6 @@
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Seo from "@/components/Seo";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ProductCard from "@/components/ProductCard";
 import { motion } from "framer-motion";
@@ -8,6 +9,11 @@ import { loadBearingProducts } from "@/data/loadBearing";
 const LoadBearing = () => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo
+        title="Load Bearing"
+        description="Rucksacks, packs and load-bearing equipment from Kritex, engineered for organised, modular gear storage in the field."
+        path="/products/load-bearing"
+      />
       <Navbar />
 
       <main className="flex-grow pt-32 pb-20">

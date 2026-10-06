@@ -5,6 +5,7 @@ import { ChevronLeft, ChevronRight, Mail, FileText, Maximize2 } from "lucide-rea
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
+import Seo, { SITE_URL } from "@/components/Seo";
 import { cn } from "@/lib/utils";
 import { tacticalFootwearProducts } from "@/data/tacticalFootwear";
 import { combatApparelProducts } from "@/data/combatApparel";
@@ -27,6 +28,7 @@ const ProductDetail = () => {
   if (!product) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
+        <Seo title="Product Not Found" description="The product you are looking for could not be found." path={`/product/${id ?? ""}`} noindex />
         <Navbar />
         <main className="flex-grow pt-32 pb-20">
           <div className="container">
@@ -71,6 +73,22 @@ const ProductDetail = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo
+        title={product.name}
+        description={product.description.length > 160 ? `${product.description.slice(0, 157).trimEnd()}...` : product.description}
+        path={`/product/${product.id}`}
+        image={product.images[0]}
+        type="product"
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "Product",
+          name: product.name,
+          description: product.description,
+          image: product.images.map((src) => `${SITE_URL}${src}`),
+          category: `${product.categoryTitle} > ${product.category}`,
+          brand: { "@type": "Brand", name: "Kritex" },
+        }}
+      />
       <Navbar />
 
       <main className="flex-grow pt-32 pb-20">

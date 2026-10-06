@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { productCategories } from "@/data/productCategories";
 import { asset } from "@/lib/asset";
+import { policies } from "@/pages/legal/policies";
 
 const Footer = () => {
   return (
@@ -31,6 +32,27 @@ const Footer = () => {
             Contact Us
           </a>
         </div>
+
+        <nav aria-label="Policies" className="flex flex-col items-center gap-3">
+          <Link
+            to="/legal"
+            className="font-display text-[11px] uppercase tracking-wider text-muted-foreground/60 hover:text-primary transition-colors duration-200"
+          >
+            Policies
+          </Link>
+          <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
+            {policies.map((p) => (
+              <li key={p.path}>
+                <Link
+                  to={p.path}
+                  className="font-display text-[11px] uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors duration-200"
+                >
+                  {p.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
 
         <div className="flex flex-col items-center justify-center gap-6">
           <img src={asset("/brand/yellow_full.png")} alt="Kritex Logo" className="h-[80px] md:h-[100px] object-contain drop-shadow-sm" loading="lazy" />

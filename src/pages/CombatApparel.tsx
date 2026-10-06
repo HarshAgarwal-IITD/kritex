@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import Seo from "@/components/Seo";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import ProductCard from "@/components/ProductCard";
 import { motion } from "framer-motion";
@@ -21,6 +22,11 @@ const CombatApparel = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
+      <Seo
+        title="Combat Apparel"
+        description="Combat apparel from Kritex: t-shirts, cargo trousers and tactical outerwear engineered for durability, comfort and performance in the field."
+        path="/products/combat-apparel"
+      />
       <Navbar />
 
       <main className="flex-grow pt-32 pb-20">
