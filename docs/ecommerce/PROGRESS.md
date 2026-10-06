@@ -19,8 +19,8 @@ Add a new section at the end of each stage.
 
 | Repo | Path | Branch | Remote |
 |---|---|---|---|
-| Website (storefront + admin + planning hub) | `projects/kritex/kritex-website` | `ecommerce` (from `main` @ `c438f81`) | `github.com/HarshAgarwal-IITD/kritex`. **Not pushed.** |
-| Backend API | `projects/kritex/kritex-server` | `ecommerce` (from `main` @ `117f8cc`) | **None yet.** The owner needs to create it. |
+| Website (storefront + admin + planning hub) | `projects/kritex/kritex-website` | `ecommerce` (from `main` @ `c438f81`) | `github.com/HarshAgarwal-IITD/kritex`. `ecommerce` pushed 2026-10-06 |
+| Backend API | `projects/kritex/kritex-server` | `ecommerce` (from `main` @ `117f8cc`) | `github.com/HarshAgarwal-IITD/kritex-server`. `main` + `ecommerce` pushed 2026-10-06 |
 
 `main` is untouched in both repos. All work is on `ecommerce`, and each stage's agent branches were merged into it and then deleted. No worktrees are left open.
 
@@ -164,7 +164,7 @@ Final checks:
 
 | # | Item | Needed by |
 |---|---|---|
-| 1 | Create the GitHub repo for `kritex-server` and push `main` + `ecommerce`; push `ecommerce` of the website | Before CI can run |
+| 1 | ~~Create the GitHub repo for `kritex-server` and push~~ ✅ done 2026-10-06. Check that the CI runs are green on GitHub | — |
 | 2 | Start **Razorpay KYC** (needs live policy pages + domain) and the Shiprocket signup | Stage 3–5 (long lead time) |
 | 3 | Prices, HSN, GST rates, stock, weights: fill `kritex-server/prisma/seed/product-data-template.csv` | Stage 5 |
 | 4 | Which products are RETAIL vs B2B-only vs enquiry-only (Q1) | Stage 5 |

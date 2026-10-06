@@ -182,7 +182,7 @@ The existing Express prototype (one `queries` route), now in the `kritex-server`
 | Repo | Local path | Contents |
 |---|---|---|
 | `kritex` (existing, `github.com/HarshAgarwal-IITD/kritex`) | `projects/kritex/kritex-website` | Vite storefront + `/admin`, Playwright E2E, **planning docs (`docs/ecommerce/`, the single planning hub for both repos)** |
-| `kritex-server` (new; GitHub remote to be created by the owner) | `projects/kritex/kritex-server` | NestJS API, Prisma schema/migrations/seed, docker-compose (Postgres), `openapi.json` |
+| `kritex-server` (`github.com/HarshAgarwal-IITD/kritex-server`) | `projects/kritex/kritex-server` | NestJS API, Prisma schema/migrations/seed, docker-compose (Postgres), `openapi.json` |
 
 Done 2026-10-06: the untracked `server/` folder was moved to `../kritex-server` and committed as its initial commit (`117f8cc`). `.env` is not committed.
 
