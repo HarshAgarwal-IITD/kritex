@@ -203,6 +203,8 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [ ] TD-7 [business] Field duty jacket size "XX" (SKU `KTX-FDTJ-XX`) is probably a typo in website data; confirm
 - [ ] TD-8 [S] Prisma 7: move `package.json#prisma.seed` to `prisma.config.ts` (mind .env loading)
 - [ ] TD-9 [W] Main bundle 597 kB → route-level code splitting (with SEO-3)
+- [ ] TD-10 [S] Check `TRUST_PROXY` on Render behind the Vercel `/api` proxy: log `req.ip` and confirm it is the client IP, not a Vercel/Render IP (otherwise all clients share one rate limit)
+- [ ] TD-11 [S] Before live payments: Render `plan: starter`, `branch: main`; Neon backup/PITR checked (ADR-008)
 - [ ] TD-5 [W] Rename package.json `name` from `vite_react_shadcn_ts` to `kritex-website`
 
 ## Stage 6: Go-live (see EXECUTION.md)

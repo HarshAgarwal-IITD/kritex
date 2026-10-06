@@ -171,6 +171,13 @@ Final checks:
 | 5 | Legal review of `/legal/*`; fill `src/pages/legal/placeholders.ts` (entity name, address, GSTIN, grievance officer, shipping fee/threshold, dispatch times…) | Stage 5 |
 | 6 | CA review of the GST rules (ADR-006) and placeholder HSN/GST values | Stage 2–4 |
 | 7 | Confirm the field duty jacket size "XX" (probably a typo) | Any time |
+| 8 | **Hosting (ADR-008, free tier):** (a) Neon: create project `kritex` in AWS Singapore and copy the connection string. (b) Render: New → Blueprint → `kritex-server`, then enter `DATABASE_URL` and `CORS_ORIGIN`. (c) If the service URL is not `kritex-api.onrender.com`, update `vercel.json`. (d) Seed: `DATABASE_URL=<neon> npm run import:products` in kritex-server. (e) UptimeRobot on `https://kritex.in/api/v1/health` every 10 min. Full steps: kritex-server README → Deploy | Now (staging) |
+
+## Hosting (2026-10-07)
+Render (free, Singapore, Docker) + Neon (free, Singapore) + Vercel for the site. Details in ADR-008.
+- kritex-server `29b0eb2`: `Dockerfile` (runs `prisma migrate deploy` on boot), `render.yaml`, `TRUST_PROXY` env,
+  prisma CLI moved to dependencies, README deploy guide. Image built and health-checked locally.
+- kritex-website: `vercel.json` proxies `/api/*` → `https://kritex-api.onrender.com`.
 
 ## Open follow-ups / tech debt
 Tracked in [TASKS.md](TASKS.md) → "Tech-debt / follow-ups" (TD-1…TD-9), plus AUTH-6 and COM-16 added to Stages 2–3.

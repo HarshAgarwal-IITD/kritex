@@ -101,20 +101,28 @@ Migrating to Next.js would mean rewriting routing and data loading across the wh
 ---
 
 ## ADR-008: Hosting
-**Status:** Accepted · 2026-10-06 (owner accepted defaults)
+**Status:** Accepted · 2026-10-06 (owner accepted defaults) · **Amended 2026-10-07:** free tier until launch (Render + Neon)
 
 | Piece | Choice | Why |
 |---|---|---|
-| Frontend | Cloudflare Pages or Vercel | Static and prerendered, global CDN, preview deploys per PR |
-| API | Railway or Render (Docker), Mumbai/Singapore region | Simple, cheap, autoscale later |
-| Postgres | Managed (Railway PG / Neon / Supabase), ap-south-1 | Daily backups + PITR |
+| Frontend | Vercel (Cloudflare Pages also fine) | Static and prerendered, global CDN, preview deploys per PR. `vercel.json` proxies `/api/*` to the API, so the API is same-origin (first-party session cookie, no CORS) and `VITE_API_URL` stays unset |
+| API | **Render** web service (Docker, `kritex-server/render.yaml`), **Singapore** | Free plan now; `starter` (~$7/mo, never sleeps) before real payments |
+| Postgres | **Neon**, AWS Singapore (ap-southeast-1) | Free tier (~0.5 GB, scales to zero, wakes in under 1 s). Same region as the API. Paid plan for longer PITR at launch |
 | Product images | Cloudflare R2 (S3-compatible) + CDN | Admin uploads; current `public/products` migrated by the seed |
 | Email | Resend (or AWS SES) | Order emails, OTP, password reset |
-| Monitoring | Sentry (web + api), uptime check on `/api/health` | |
+| Monitoring | Sentry (web + api), uptime check on `/api/v1/health` | The uptime check every 10 min also keeps the free Render instance awake |
 
-Data stays in India regions where possible (DPDP Act alignment).
+Considered: AWS/Azure (too much setup and upkeep at this size; revisit if we need private networking or scale),
+DigitalOcean Bangalore (good paid option if data must sit in India), Railway (no permanent free tier),
+Render Postgres (free DB is deleted after 30 days), Supabase (pauses after 1 week idle), Oracle Always Free VM (self-managed).
 
----
+**Data location.** Singapore for now. The DPDP Act does not require Indian data to stay in India in general;
+moving the API and DB to an India region later is a host change, not a code change.
+
+**Free-plan caveats (accepted until launch).** The API sleeps after ~15 min idle (first request ~30-60 s;
+the Vercel `/api` proxy may time out on that first request). `@nestjs/schedule` jobs only run while it is awake.
+Razorpay webhooks retry, and `/checkout/verify` also marks orders paid. **Gate for live payments:** Render `starter`
+plan, `branch: main`, Neon backups checked.
 
 ## ADR-009: Frontend state & data
 **Status:** Accepted · 2026-10-06 (owner accepted defaults)
