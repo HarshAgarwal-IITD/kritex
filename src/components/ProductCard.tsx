@@ -3,22 +3,51 @@ import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
-import type { ColorVariant } from "@/data/tacticalFootwear";
 
 export interface ProductSpec {
   label: string;
   value: string;
 }
 
+export interface ColorVariant {
+  label: string;
+  /** Photo of the product in this colour (swapped into the gallery when selected). */
+  image?: string;
+  /** Swatch image. */
+  swatch?: string;
+  /** Swatch as a CSS colour, when there is no swatch image. */
+  swatchColor?: string;
+}
+
+/** Renders a colour swatch's fill: swatch image, CSS colour, or the colour's product photo. */
+export const SwatchFill = ({ variant }: { variant: ColorVariant }) =>
+  variant.swatch || !variant.swatchColor ? (
+    <img
+      src={variant.swatch ?? variant.image}
+      alt={variant.label}
+      className={cn("h-full w-full", variant.swatch ? "object-cover" : "object-contain p-0.5")}
+      loading="lazy"
+    />
+  ) : (
+    <span role="img" aria-label={variant.label} className="block h-full w-full" style={{ background: variant.swatchColor }} />
+  );
+
 export interface ProductCardProps {
   id?: string;
   name: string;
   category: string;
-  description: string;
+  /** Unused by the card layout; kept for callers that have it. */
+  description?: string;
   images: string[];
   specs?: ProductSpec[];
   colorVariants?: ColorVariant[];
   index?: number;
+  /** Formatted price (or range); omitted for enquiry-only products. */
+  price?: string | null;
+  /** Formatted compare-at (pre-discount) price, shown struck through. */
+  compareAtPrice?: string | null;
+  /** Footer call to action, e.g. "View Details & Enquire". */
+  ctaLabel?: string;
 }
 
 const ProductCard = ({
@@ -30,6 +59,9 @@ const ProductCard = ({
   specs = [],
   colorVariants = [],
   index = 0,
+  price,
+  compareAtPrice,
+  ctaLabel = "View Details & Enquire",
 }: ProductCardProps) => {
   const [activeImage, setActiveImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
@@ -131,12 +163,7 @@ const ProductCard = ({
                 selectedColor === i ? "border-primary" : "border-border hover:border-primary/50"
               )}
             >
-              <img
-                src={variant.swatch ?? variant.image}
-                alt={variant.label}
-                className={cn("h-full w-full", variant.swatch ? "object-cover" : "object-contain p-0.5")}
-                loading="lazy"
-              />
+              <SwatchFill variant={variant} />
             </button>
           ))}
         </div>
@@ -147,10 +174,18 @@ const ProductCard = ({
         <h3 className="font-display text-lg text-foreground transition-colors duration-200 group-hover:text-primary">
           {name}
         </h3>
+        {price && (
+          <p className="mt-2 font-display text-sm text-foreground tabular">
+            {price}
+            {compareAtPrice && (
+              <span className="ml-2 text-xs text-muted-foreground line-through">{compareAtPrice}</span>
+            )}
+          </p>
+        )}
 
         {id && (
           <div className="mt-4 pt-4 border-t border-border flex items-center justify-between font-display text-[10px] uppercase tracking-wider text-primary">
-            View Details & Enquire
+            {ctaLabel}
             <ChevronRight size={12} className="transition-transform duration-200 group-hover:translate-x-1" />
           </div>
         )}

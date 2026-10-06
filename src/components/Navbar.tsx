@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Menu, X } from "lucide-react";
+import { ChevronDown, Menu, ShoppingBag, User, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { productCategories } from "@/data/productCategories";
+import { useCategories } from "@/features/catalog/hooks";
 import { asset } from "@/lib/asset";
 
 const navLinks = [
@@ -10,12 +10,43 @@ const navLinks = [
   { label: "Timeline", href: "#timeline" },
 ];
 
+/** Account + cart icons. The cart count badge is wired in Stage 3 (pass `cartCount`). */
+export const AccountCartLinks = ({ cartCount = 0 }: { cartCount?: number }) => (
+  <div className="flex items-center gap-5">
+    <Link
+      to="/account"
+      aria-label="Account"
+      className="text-muted-foreground hover:text-primary transition-colors duration-300"
+    >
+      <User size={16} />
+    </Link>
+    <Link
+      to="/cart"
+      aria-label={cartCount > 0 ? `Cart (${cartCount} items)` : "Cart"}
+      className="relative text-muted-foreground hover:text-primary transition-colors duration-300"
+    >
+      <ShoppingBag size={16} />
+      {cartCount > 0 && (
+        <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-display text-[9px] text-primary-foreground tabular">
+          {cartCount}
+        </span>
+      )}
+    </Link>
+  </div>
+);
+
 const Navbar = () => {
   const [open, setOpen] = useState(false);
   const [productsOpen, setProductsOpen] = useState(false);
   const [mobileProductsOpen, setMobileProductsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
+  const { data: categoryData } = useCategories();
+  const productCategories = (categoryData?.items ?? []).map((c) => ({
+    slug: c.slug,
+    title: c.name,
+    available: c.productCount > 0,
+  }));
 
   const handleSectionLink = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     if (location.pathname !== "/") {
@@ -100,6 +131,7 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
+          <AccountCartLinks />
           <a
             href="#contact"
             onClick={(e) => handleSectionLink(e, "#contact")}
@@ -109,14 +141,17 @@ const Navbar = () => {
           </a>
         </div>
 
-        {/* Mobile toggle */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="md:hidden text-foreground"
-          aria-label="Toggle menu"
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        {/* Mobile: account/cart + menu toggle */}
+        <div className="md:hidden flex items-center gap-5">
+          <AccountCartLinks />
+          <button
+            onClick={() => setOpen(!open)}
+            className="text-foreground"
+            aria-label="Toggle menu"
+          >
+            {open ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}

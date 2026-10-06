@@ -1,34 +1,55 @@
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
-import { ChevronLeft, ChevronRight, Mail, FileText, Maximize2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, FileText, Maximize2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import Seo, { SITE_URL } from "@/components/Seo";
+import Seo from "@/components/Seo";
 import { cn } from "@/lib/utils";
-import { tacticalFootwearProducts } from "@/data/tacticalFootwear";
-import { combatApparelProducts } from "@/data/combatApparel";
-import { loadBearingProducts } from "@/data/loadBearing";
-
-const catalog = [
-  ...tacticalFootwearProducts.map((p) => ({ ...p, categorySlug: "tactical-footwear", categoryTitle: "Tactical Footwear" })),
-  ...combatApparelProducts.map((p) => ({ ...p, categorySlug: "combat-apparel", categoryTitle: "Combat Apparel" })),
-  ...loadBearingProducts.map((p) => ({ ...p, categorySlug: "load-bearing", categoryTitle: "Load Bearing" })),
-];
+import { SwatchFill } from "@/components/ProductCard";
+import { useProduct } from "@/features/catalog/hooks";
+import type { ProductDetail as ProductDetailDto } from "@/features/catalog/types";
+import {
+  assetUrl,
+  colourOption,
+  colourVariants,
+  ctaKind,
+  findVariant,
+  galleryImages,
+  isValueAvailable,
+  textOptions,
+  type Selection,
+} from "@/features/catalog/view";
+import { PriceBlock, PurchaseCta, StockState } from "@/features/catalog/components/PurchasePanel";
+import { productJsonLd } from "@/features/catalog/seo";
+import { ProductDetailSkeleton } from "@/features/catalog/components/Skeletons";
+import QueryError from "@/features/catalog/components/QueryError";
 
 const ProductDetail = () => {
-  const { id } = useParams<{ id: string }>();
-  const product = useMemo(() => catalog.find((p) => p.id === id), [id]);
+  const { id = "" } = useParams<{ id: string }>();
+  const { data: product, isPending, isError, error, refetch } = useProduct(id);
+  const notFound = isError && (error as { status?: number }).status === 404;
 
-  const [activeImage, setActiveImage] = useState(0);
-  const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedColor, setSelectedColor] = useState<number | null>(null);
+  if (isPending || (isError && !notFound)) {
+    return (
+      <div className="min-h-screen bg-background flex flex-col">
+        <Navbar />
+        <main className="flex-grow pt-32 pb-20">
+          <div className="container">
+            <Breadcrumbs items={[{ label: "Home", to: "/" }, { label: "All Products", to: "/products" }, { label: "\u2026" }]} />
+            {isPending ? <ProductDetailSkeleton /> : <QueryError message="Couldn't load this product." onRetry={() => refetch()} />}
+          </div>
+        </main>
+        <Footer />
+      </div>
+    );
+  }
 
   if (!product) {
     return (
       <div className="min-h-screen bg-background flex flex-col">
-        <Seo title="Product Not Found" description="The product you are looking for could not be found." path={`/product/${id ?? ""}`} noindex />
+        <Seo title="Product Not Found" description="The product you are looking for could not be found." path={`/product/${id}`} noindex />
         <Navbar />
         <main className="flex-grow pt-32 pb-20">
           <div className="container">
@@ -43,51 +64,65 @@ const ProductDetail = () => {
     );
   }
 
-  const colorVariants = product.colorVariants ?? [];
-  const hasImageSwapVariants = colorVariants.some((v) => v.image);
+  return <ProductView key={product.slug} product={product} />;
+};
 
-  const displayImages = product.images;
+const ProductView = ({ product }: { product: ProductDetailDto }) => {
+  const [activeImage, setActiveImage] = useState(0);
+  const [selection, setSelection] = useState<Selection>({});
+
+  const colorVariants = colourVariants(product);
+  const colourName = colourOption(product)?.name;
+  const selectedColor = colourName && selection[colourName] ? colorVariants.findIndex((v) => v.label === selection[colourName]) : -1;
+  const sizeOptions = textOptions(product);
+  const variant = findVariant(product, selection);
+  const kind = ctaKind(product);
+  const sellable = product.saleChannel !== "ENQUIRY_ONLY";
+  const pick = (name: string, value: string) => setSelection((s) => ({ ...s, [name]: value }));
+  const description = product.description ?? "";
+
+  const displayImages = galleryImages(product);
   const currentImage =
-    selectedColor !== null && colorVariants[selectedColor]?.image
+    selectedColor >= 0 && colorVariants[selectedColor]?.image
       ? colorVariants[selectedColor].image!
       : displayImages[activeImage];
 
   const showPrev = () => setActiveImage((c) => (c - 1 + displayImages.length) % displayImages.length);
   const showNext = () => setActiveImage((c) => (c + 1) % displayImages.length);
 
-  const selectedColorLabel = selectedColor !== null ? colorVariants[selectedColor]?.label : null;
+  const selectedColorLabel = selectedColor >= 0 ? colorVariants[selectedColor]?.label : null;
 
-  const handleEnquiry = () => {
-    const subject = `Procurement Enquiry: ${product.name}`;
+  // Enquiries and (until the quote flow lands) quote requests go through the existing procurement mail flow.
+  const sendMail = (subjectPrefix: string, ask: string) => {
+    const subject = `${subjectPrefix}: ${product.name}`;
     const lines = [
       `Product: ${product.name}`,
-      `Category: ${product.categoryTitle} — ${product.category}`,
-      selectedSize ? `Size: ${selectedSize}` : null,
-      selectedColorLabel ? `Colour: ${selectedColorLabel}` : null,
+      `Category: ${[product.category.name, product.subCategory].filter(Boolean).join(" — ")}`,
+      ...product.options.map((o) => (selection[o.name] ? `${o.name}: ${selection[o.name]}` : null)),
+      variant && product.options.length > 0 ? `SKU: ${variant.sku}` : null,
       "",
-      "Please share pricing, MOQ and lead time for the above item.",
-    ].filter(Boolean);
+      ask,
+    ].filter((l) => l !== null);
     const body = lines.join("\n");
     window.location.href = `mailto:procurement@kritex.in?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   };
+  const handleEnquiry = () =>
+    sendMail("Procurement Enquiry", "Please share pricing, MOQ and lead time for the above item.");
+  const handleQuote = () =>
+    sendMail("Quote Request", "Please send a quotation for the above item. Quantity required: ");
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Seo
-        title={product.name}
-        description={product.description.length > 160 ? `${product.description.slice(0, 157).trimEnd()}...` : product.description}
-        path={`/product/${product.id}`}
-        image={product.images[0]}
+        title={product.seo.title ?? product.name}
+        description={
+          product.seo.description ??
+          (description.length > 160 ? `${description.slice(0, 157).trimEnd()}...` : description)
+        }
+        path={`/product/${product.slug}`}
+        image={displayImages[0]}
         type="product"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Product",
-          name: product.name,
-          description: product.description,
-          image: product.images.map((src) => `${SITE_URL}${src}`),
-          category: `${product.categoryTitle} > ${product.category}`,
-          brand: { "@type": "Brand", name: "Kritex" },
-        }}
+        jsonLd={productJsonLd(product, displayImages)}
       />
       <Navbar />
 
@@ -97,7 +132,7 @@ const ProductDetail = () => {
             items={[
               { label: "Home", to: "/" },
               { label: "All Products", to: "/products" },
-              { label: product.categoryTitle, to: `/products/${product.categorySlug}` },
+              { label: product.category.name, to: `/products/${product.category.slug}` },
               { label: product.name },
             ]}
           />
@@ -116,7 +151,7 @@ const ProductDetail = () => {
                   alt={`${product.name}${selectedColorLabel ? ` — ${selectedColorLabel}` : ""}`}
                   className="w-full h-full object-contain"
                 />
-                {displayImages.length > 1 && selectedColor === null && (
+                {displayImages.length > 1 && selectedColor < 0 && (
                   <>
                     <button
                       type="button"
@@ -146,13 +181,13 @@ const ProductDetail = () => {
                       type="button"
                       onClick={() => {
                         setActiveImage(i);
-                        setSelectedColor(null);
+                        if (colourName) setSelection((s) => ({ ...s, [colourName]: undefined }));
                       }}
                       aria-label={`Show view ${i + 1}`}
-                      aria-current={i === activeImage && selectedColor === null}
+                      aria-current={i === activeImage && selectedColor < 0}
                       className={cn(
                         "h-16 w-16 shrink-0 overflow-hidden border bg-neutral-100 p-1.5 transition-opacity duration-200",
-                        i === activeImage && selectedColor === null
+                        i === activeImage && selectedColor < 0
                           ? "border-primary opacity-100"
                           : "border-border opacity-50 hover:opacity-90"
                       )}
@@ -166,10 +201,14 @@ const ProductDetail = () => {
 
             {/* Info */}
             <div>
-              <p className="font-display text-xs text-primary mb-3">{product.categoryTitle} / {product.category}</p>
+              <p className="font-display text-xs text-primary mb-3">
+                {product.category.name}
+                {product.subCategory && <> / {product.subCategory}</>}
+              </p>
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{product.name}</h1>
+              <PriceBlock product={product} variant={variant} />
               <p className="font-body text-muted-foreground text-sm leading-relaxed max-w-lg mb-8">
-                {product.description}
+                {description}
               </p>
 
               {/* Color variants */}
@@ -179,28 +218,27 @@ const ProductDetail = () => {
                     Colour{selectedColorLabel ? `: ${selectedColorLabel}` : ""}
                   </p>
                   <div className="flex gap-3 flex-wrap">
-                    {colorVariants.map((variant, i) => (
+                    {colorVariants.map((colour, i) => (
                       <button
-                        key={variant.label}
+                        key={colour.label}
                         type="button"
-                        onClick={() => setSelectedColor(i)}
-                        aria-label={variant.label}
+                        onClick={() => colourName && pick(colourName, colour.label)}
+                        aria-label={colour.label}
                         aria-current={selectedColor === i}
                         className={cn(
                           "h-11 w-11 rounded-full overflow-hidden border-2 transition-colors duration-200 bg-muted",
-                          selectedColor === i ? "border-primary" : "border-border hover:border-primary/50"
+                          selectedColor === i ? "border-primary" : "border-border hover:border-primary/50",
+                          sellable &&
+                            colourName &&
+                            !isValueAvailable(product.variants, selection, colourName, colour.label) &&
+                            "opacity-40",
                         )}
                       >
-                        <img
-                          src={variant.swatch ?? variant.image}
-                          alt={variant.label}
-                          className={cn("h-full w-full", variant.swatch ? "object-cover" : "object-contain p-0.5")}
-                          loading="lazy"
-                        />
+                        <SwatchFill variant={colour} />
                       </button>
                     ))}
                   </div>
-                  {!hasImageSwapVariants && (
+                  {!colorVariants.some((v) => v.image) && (
                     <p className="font-body text-[11px] text-muted-foreground mt-2">
                       Colour shown is indicative — product photo may vary by colourway.
                     </p>
@@ -208,32 +246,42 @@ const ProductDetail = () => {
                 </div>
               )}
 
-              {/* Sizes */}
-              {product.sizes && product.sizes.length > 0 && (
-                <div className="mb-8">
-                  <p className="font-display text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
-                    Size{selectedSize ? `: ${selectedSize}` : ""}
-                  </p>
-                  <div className="flex gap-2 flex-wrap">
-                    {product.sizes.map((size) => (
-                      <button
-                        key={size}
-                        type="button"
-                        onClick={() => setSelectedSize(size)}
-                        aria-current={selectedSize === size}
-                        className={cn(
-                          "font-display text-xs uppercase tracking-wider px-4 py-2 border transition-colors duration-200 min-w-[3rem]",
-                          selectedSize === size
-                            ? "bg-primary text-primary-foreground border-primary"
-                            : "border-border text-muted-foreground hover:border-primary/50"
-                        )}
-                      >
-                        {size}
-                      </button>
-                    ))}
+              {/* Size and other text options */}
+              {sizeOptions.map((option) => {
+                const selected = selection[option.name];
+                return (
+                  <div key={option.name} className="mb-8">
+                    <p className="font-display text-[10px] uppercase tracking-wider text-muted-foreground mb-3">
+                      {option.name}
+                      {selected ? `: ${selected}` : ""}
+                    </p>
+                    <div className="flex gap-2 flex-wrap">
+                      {option.values.map((value) => {
+                        const unavailable =
+                          sellable && !isValueAvailable(product.variants, selection, option.name, value);
+                        return (
+                          <button
+                            key={value}
+                            type="button"
+                            onClick={() => pick(option.name, value)}
+                            aria-current={selected === value}
+                            aria-label={unavailable ? `${value} (out of stock)` : undefined}
+                            className={cn(
+                              "font-display text-xs uppercase tracking-wider px-4 py-2 border transition-colors duration-200 min-w-[3rem]",
+                              selected === value
+                                ? "bg-primary text-primary-foreground border-primary"
+                                : "border-border text-muted-foreground hover:border-primary/50",
+                              unavailable && "line-through opacity-50",
+                            )}
+                          >
+                            {value}
+                          </button>
+                        );
+                      })}
+                    </div>
                   </div>
-                </div>
-              )}
+                );
+              })}
 
               {/* Specs */}
               {product.specs.length > 0 && (
@@ -249,14 +297,8 @@ const ProductDetail = () => {
                 </dl>
               )}
 
-              <button
-                type="button"
-                onClick={handleEnquiry}
-                className="inline-flex items-center gap-2 font-display text-xs bg-primary text-primary-foreground px-6 py-3 hover:bg-primary/90 transition-colors duration-300 active:translate-y-px"
-              >
-                <Mail size={14} />
-                Send Enquiry
-              </button>
+              <StockState product={product} variant={variant} needsSelection={product.options.length > 0} />
+              <PurchaseCta kind={kind} variant={variant} onEnquire={handleEnquiry} onRequestQuote={handleQuote} />
             </div>
           </motion.div>
 
@@ -284,8 +326,8 @@ const ProductDetail = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 {product.specSheets.map((sheet) => (
                   <a
-                    key={sheet.image}
-                    href={sheet.image}
+                    key={sheet.id}
+                    href={assetUrl(sheet.url)}
                     target="_blank"
                     rel="noreferrer"
                     className="group relative block border border-border bg-neutral-100 overflow-hidden hover:border-primary/50 transition-colors duration-300 shadow-sm hover:shadow-lg"
@@ -297,7 +339,7 @@ const ProductDetail = () => {
                       </span>
                     </div>
                     <img
-                      src={sheet.image}
+                      src={assetUrl(sheet.url)}
                       alt={sheet.title}
                       className="w-full h-auto transition-transform duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-[1.02]"
                       loading="lazy"

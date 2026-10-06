@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import type { paths } from "@/lib/api/schema";
+import { catalogHandlers } from "./catalog";
 
 // Types come from paths (not component names), so they survive server-side DTO renames.
 type Query = paths["/api/v1/queries"]["get"]["responses"][200]["content"]["application/json"][number];
@@ -56,4 +57,8 @@ export const handlers = [
     }
     return HttpResponse.json(queries satisfies Query[]);
   }),
+
+  // ---- Storefront catalog (web-catalog): data + handlers live in ./catalog.ts ----
+  ...catalogHandlers,
+  // ---- end storefront catalog ----
 ];

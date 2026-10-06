@@ -7,9 +7,8 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import Products from "./pages/Products.tsx";
-import TacticalFootwear from "./pages/TacticalFootwear.tsx";
-import CombatApparel from "./pages/CombatApparel.tsx";
-import LoadBearing from "./pages/LoadBearing.tsx";
+import Category from "./pages/Category.tsx";
+import ComingSoon from "./pages/ComingSoon.tsx";
 import ProductDetail from "./pages/ProductDetail.tsx";
 import LegalIndex from "./pages/legal/LegalIndex.tsx";
 import Terms from "./pages/legal/Terms.tsx";
@@ -31,10 +30,12 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/products" element={<Products />} />
-            <Route path="/products/tactical-footwear" element={<TacticalFootwear />} />
-            <Route path="/products/combat-apparel" element={<CombatApparel />} />
-            <Route path="/products/load-bearing" element={<LoadBearing />} />
+            {/* One page for every category; the old /products/tactical-footwear etc. URLs resolve here unchanged. */}
+            <Route path="/products/:categorySlug" element={<Category />} />
             <Route path="/product/:id" element={<ProductDetail />} />
+            {/* Placeholders until the account and cart pages land (Stage 3, web-commerce). */}
+            <Route path="/account" element={<ComingSoon title="Your Account" />} />
+            <Route path="/cart" element={<ComingSoon title="Your Cart" />} />
             <Route path="/legal" element={<LegalIndex />} />
             <Route path="/legal/terms" element={<Terms />} />
             <Route path="/legal/privacy" element={<Privacy />} />
