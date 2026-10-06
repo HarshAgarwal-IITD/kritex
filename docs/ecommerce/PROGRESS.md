@@ -3,14 +3,14 @@
 This is the running record of what has been built, where it lives, how to run it, and what's still open.
 Add a new section at the end of each stage.
 
-**Status as of 2026-10-06:** Stages 0 and 1 are complete. **Paused before Stage 2** at the owner's request.
+**Status as of 2026-10-06:** Stages 0 and 1 are complete. **Stage 2 in progress.**
 
 | Stage | Status | Integration commit |
 |---|---|---|
 | Planning | ✅ | `c05c73e` (docs) |
 | 0 Foundation | ✅ gate passed | server `6a900da` · web `782488e` |
 | 1 Contract + Data | ✅ gate passed | server `bfd1d38` · web `428f63c` |
-| 2 Catalog + Identity | ⏸ not started | — |
+| 2 Catalog + Identity | 🔄 in progress | — |
 | 3–6 | not started | — |
 
 ---

@@ -17,9 +17,9 @@ into a full ecommerce platform. Update these files as decisions are made and wor
 
 ## Current status (2026-10-06)
 
-- **Stage:** ✅ Stage 0 and ✅ **Stage 1 complete** (2026-10-06). **Paused before Stage 2 (Catalog + Identity)** at the owner's request.
+- **Stage:** ✅ Stage 0 and ✅ Stage 1 complete. 🔄 **Stage 2 (Catalog + Identity) in progress** (started 2026-10-06).
 - **Decisions:** all ADRs Accepted. Open questions run on defaults (owner, 2026-10-06). Q1/Q2 real data is still needed before launch.
-- **Next step (when resuming):** launch Stage 2's 5 agents per [EXECUTION.md](EXECUTION.md#stage-2-catalog--identity): `server-catalog`, `server-auth`, `server-pricing`, `web-catalog`, `web-admin-catalog`. Both repos are clean on branch `ecommerce`, with no open worktrees.
+- **Now:** Stage 2's 5 agents are running: `server-catalog`, `server-auth`, `server-pricing` (worktrees in `../kritex-server-wt/s2-*`, branches `s2/server-*`), `web-catalog`, `web-admin-catalog`.
 - **Human checkpoint (Stage 1):** review the API docs (`/api/docs` with the server running) and send the `/legal/*` drafts to legal; fill placeholders in `src/pages/legal/placeholders.ts`. Owner to-dos: start Razorpay KYC, gather prices/HSN/stock (CSV template: `kritex-server/prisma/seed/product-data-template.csv`).
 - **Run locally:** `cd ../kritex-server && docker compose up -d && npm run start:dev` (API :4000, docs at /api/docs), then `npm run dev` here (:8080, proxies /api).
 

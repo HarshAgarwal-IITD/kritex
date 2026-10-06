@@ -62,45 +62,45 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 
 ---
 
-## Stage 2: Catalog + Identity
+## Stage 2: Catalog + Identity (in progress, started 2026-10-06)
 
 ### Agent `server-catalog` [S] → D-*, K-*
-- [ ] CAT-1 `GET /categories`
-- [ ] CAT-2 `GET /products` (filters, sort, pagination, price range, inStock, saleChannel)
-- [ ] CAT-3 `GET /products/:slug` (no raw stock counts; priceTiers only for B2B)
-- [ ] CAT-4 `GET /search/suggest` (pg_trgm)
-- [ ] CAT-5 Admin: products CRUD, generate variants from options, variant price/stock (writes InventoryMovement), categories CRUD
-- [ ] CAT-6 Admin: R2 presigned upload endpoint (local disk driver in dev)
-- [ ] CAT-7 Unit + e2e tests
+- [~] CAT-1 `GET /categories`
+- [~] CAT-2 `GET /products` (filters, sort, pagination, price range, inStock, saleChannel)
+- [~] CAT-3 `GET /products/:slug` (no raw stock counts; priceTiers only for B2B)
+- [~] CAT-4 `GET /search/suggest` (pg_trgm)
+- [~] CAT-5 Admin: products CRUD, generate variants from options, variant price/stock (writes InventoryMovement), categories CRUD
+- [~] CAT-6 Admin: R2 presigned upload endpoint (local disk driver in dev)
+- [~] CAT-7 Unit + e2e tests
 
 ### Agent `server-auth` [S] → D-*, K-*
-- [ ] AUTH-1 Better Auth in `AuthModule` (email+password, verification, reset, email OTP), Prisma adapter, cookie config, mounted at `/api/v1/auth/*`
-- [ ] AUTH-2 Global `AuthGuard` + `@Public()`, `@Roles()`, `@CurrentUser()`; replace `ADMIN_API_KEY` on queries
-- [ ] AUTH-3 `/me`, addresses CRUD, business-profile apply; admin approve/reject
-- [ ] AUTH-4 Dev email transport (log/Mailpit) until OPS-1
-- [ ] AUTH-5 Throttling + tests (incl. IDOR tests on addresses)
-- [ ] AUTH-6 Contract follow-ups: confirm Better Auth cookie name (`better-auth.session_token`) + email-OTP paths and update the OpenAPI description; replace temporary `user?.id ?? ''` in customer handlers with `user.id`; if using the admin plugin, run `npx auth generate` and diff (adds `banned`… used for `User.disabled` in the users DTO); implement `/admin/queries` once the guard is enforced
+- [~] AUTH-1 Better Auth in `AuthModule` (email+password, verification, reset, email OTP), Prisma adapter, cookie config, mounted at `/api/v1/auth/*`
+- [~] AUTH-2 Global `AuthGuard` + `@Public()`, `@Roles()`, `@CurrentUser()`; replace `ADMIN_API_KEY` on queries
+- [~] AUTH-3 `/me`, addresses CRUD, business-profile apply; admin approve/reject
+- [~] AUTH-4 Dev email transport (log/Mailpit) until OPS-1
+- [~] AUTH-5 Throttling + tests (incl. IDOR tests on addresses)
+- [~] AUTH-6 Contract follow-ups: confirm Better Auth cookie name (`better-auth.session_token`) + email-OTP paths and update the OpenAPI description; replace temporary `user?.id ?? ''` in customer handlers with `user.id`; if using the admin plugin, run `npx auth generate` and diff (adds `banned`… used for `User.disabled` in the users DTO); implement `/admin/queries` once the guard is enforced
 
 ### Agent `server-pricing` [S] → D-1
-- [ ] PR-1 `TaxService`: GST slab rule (config-driven), CGST+SGST vs IGST by state code, GSTIN format + state-code validation
-- [ ] PR-2 `ShippingFeeService`: flat + free-above threshold (config)
-- [ ] PR-3 `CouponService.validate()`: percent/flat/free-shipping, min subtotal, cap, dates, limits
-- [ ] PR-4 `TotalsService.compute(lines, address, coupon, customer)`: the single function used by cart, checkout quote and order creation; applies B2B price tiers
-- [ ] PR-5 Exhaustive unit tests (boundaries, rounding to paise, inter/intra-state)
+- [~] PR-1 `TaxService`: GST slab rule (config-driven), CGST+SGST vs IGST by state code, GSTIN format + state-code validation
+- [~] PR-2 `ShippingFeeService`: flat + free-above threshold (config)
+- [~] PR-3 `CouponService.validate()`: percent/flat/free-shipping, min subtotal, cap, dates, limits
+- [~] PR-4 `TotalsService.compute(lines, address, coupon, customer)`: the single function used by cart, checkout quote and order creation; applies B2B price tiers
+- [~] PR-5 Exhaustive unit tests (boundaries, rounding to paise, inter/intra-state)
 
 ### Agent `web-catalog` [W] → K-* (MSW until CAT lands)
-- [ ] WEB-CAT-1 TanStack Query hooks (`useProducts`, `useProduct`, `useCategories`) on the generated client
-- [ ] WEB-CAT-2 Products, category and PDP pages read from the API; skeletons; **no visual regression** (Playwright screenshots before/after)
-- [ ] WEB-CAT-3 Collapse the 3 category pages into `/products/:categorySlug`
-- [ ] WEB-CAT-4 PDP: price, variant selection → SKU, stock state, saleChannel-aware CTA (Add to cart / Request quote / Enquire)
-- [ ] WEB-CAT-5 Filters, sort, search box with suggestions
-- [ ] WEB-CAT-6 Navbar: account + cart icons (cart count wired in Stage 3)
+- [~] WEB-CAT-1 TanStack Query hooks (`useProducts`, `useProduct`, `useCategories`) on the generated client
+- [~] WEB-CAT-2 Products, category and PDP pages read from the API; skeletons; **no visual regression** (Playwright screenshots before/after)
+- [~] WEB-CAT-3 Collapse the 3 category pages into `/products/:categorySlug`
+- [~] WEB-CAT-4 PDP: price, variant selection → SKU, stock state, saleChannel-aware CTA (Add to cart / Request quote / Enquire)
+- [~] WEB-CAT-5 Filters, sort, search box with suggestions
+- [~] WEB-CAT-6 Navbar: account + cart icons (cart count wired in Stage 3)
 
 ### Agent `web-admin-catalog` [W] → K-*
-- [ ] ADM-1 `/admin` lazy route, shadcn sidebar layout, login, role guard
-- [ ] ADM-2 Products list (search, status filter)
-- [ ] ADM-3 Product editor: details, SEO, saleChannel, images upload, options → variants table (price/stock), spec sheets, price tiers
-- [ ] ADM-4 Categories CRUD
+- [~] ADM-1 `/admin` lazy route, shadcn sidebar layout, login, role guard
+- [~] ADM-2 Products list (search, status filter)
+- [~] ADM-3 Product editor: details, SEO, saleChannel, images upload, options → variants table (price/stock), spec sheets, price tiers
+- [~] ADM-4 Categories CRUD
 
 ---
 
