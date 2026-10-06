@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import heroImg from "@/assets/hero-textile.jpg";
+import { asset } from "@/lib/asset";
 
 const HeroSection = () => {
   return (
@@ -18,7 +19,7 @@ const HeroSection = () => {
       {/* Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
         <img
-          src="/brand/logo_flower.png"
+          src={asset("/brand/logo_flower.png")}
           alt=""
           className="w-[60vw] max-w-[600px] opacity-[0.05] invert brightness-0"
         />

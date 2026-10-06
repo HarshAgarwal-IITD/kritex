@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { productCategories } from "@/data/productCategories";
+import { asset } from "@/lib/asset";
 
 const Footer = () => {
   return (
@@ -32,7 +33,7 @@ const Footer = () => {
         </div>
 
         <div className="flex flex-col items-center justify-center gap-6">
-          <img src="/brand/yellow_full.png" alt="Kritex Logo" className="h-[80px] md:h-[100px] object-contain drop-shadow-sm" loading="lazy" />
+          <img src={asset("/brand/yellow_full.png")} alt="Kritex Logo" className="h-[80px] md:h-[100px] object-contain drop-shadow-sm" loading="lazy" />
           <div className="flex flex-col items-center gap-2 text-center">
             <span className="font-display text-sm tracking-wide text-muted-foreground">
               Defense & Industrial Supply

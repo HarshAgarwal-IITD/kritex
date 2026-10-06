@@ -1,5 +1,6 @@
 import type { ProductSpec } from "@/components/ProductCard";
 import type { ColorVariant, SpecSheet } from "@/data/tacticalFootwear";
+import { asset } from "@/lib/asset";
 
 export interface LoadBearingProduct {
   id: string;
@@ -20,7 +21,7 @@ export const loadBearingProducts: LoadBearingProduct[] = [
     category: "Backpacks",
     description:
       "A rugged 20L tactical backpack built for mission and adventure, featuring a MOLLE system for modular attachments and multiple compartments for organized gear storage.",
-    images: ["/products/rapid-20-tactical-backpack/rapid-20-tactical-backpack-1.png"],
+    images: [asset("/products/rapid-20-tactical-backpack/rapid-20-tactical-backpack-1.png")],
     specs: [
       { label: "Material", value: "Premium 600D Polyester" },
       { label: "Hardware", value: "Heavy Duty YKK Zippers" },
@@ -29,6 +30,6 @@ export const loadBearingProducts: LoadBearingProduct[] = [
       { label: "Weather Resistance", value: "Water resistant & durable" },
       { label: "Straps", value: "Adjustable compression straps" },
     ],
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/rapid-20-backpack-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/rapid-20-backpack-sheet.png") }],
   },
 ];

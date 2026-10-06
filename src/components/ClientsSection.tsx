@@ -7,57 +7,58 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { asset } from "@/lib/asset";
 
 const primaryClients = [
   {
     name: "Indian Army",
     abbr: "IA",
-    logo: "/logos/clients/ia_logo.svg"
+    logo: asset("/logos/clients/ia_logo.svg")
   },
   {
     name: "Indian Air Force",
     abbr: "IAF",
-    logo: "/logos/clients/iaf_logo.png"
+    logo: asset("/logos/clients/iaf_logo.png")
   },
   {
     name: "Sashastra Seema Bal",
     abbr: "SSB",
-    logo: "/logos/clients/ssb_logo.svg"
+    logo: asset("/logos/clients/ssb_logo.svg")
   },
   {
     name: "Border Security Force",
     abbr: "BSF",
-    logo: "/logos/clients/bsf_logo.png"
+    logo: asset("/logos/clients/bsf_logo.png")
   },
   {
     name: "Royal Bodyguards (Bhutan)",
     abbr: "RBG",
-    logo: "/logos/clients/royal_bodyguards.png"
+    logo: asset("/logos/clients/royal_bodyguards.png")
   },
   {
     name: "Royal Bhutan Police",
     abbr: "RBP",
-    logo: "/logos/clients/rbp.png"
+    logo: asset("/logos/clients/rbp.png")
   },
   {
     name: "Gyalsung",
     abbr: "Gyalsung",
-    logo: "/logos/clients/gyalsung_logo.png"
+    logo: asset("/logos/clients/gyalsung_logo.png")
   },
   {
     name: "Royal Bhutan Army",
     abbr: "RBA",
-    logo: "/logos/clients/rba_logo.png"
+    logo: asset("/logos/clients/rba_logo.png")
   },
 ];
 
 const secondaryClients = [
-  { name: "West Bengal Police", abbr: "WBP", logo: "/logos/clients/wbp.png" },
+  { name: "West Bengal Police", abbr: "WBP", logo: asset("/logos/clients/wbp.png") },
   { name: "Bihar Police", abbr: "BP", logo: "https://upload.wikimedia.org/wikipedia/commons/7/7f/Bihar_Police_Logo.svg" },
-  { name: "Central Reserve Police Force", abbr: "CRPF", logo: "/logos/clients/CRPF_Logo.svg" },
-  { name: "Indo-Tibetan Border Police", abbr: "ITBP", logo: "/logos/clients/ITBP_Logo.svg.png" },
-  { name: "DeSuung (Guardians of Peace)", abbr: "DeSuung", logo: "/logos/clients/desunng_logo.jpeg" },
-  { name: "Assam Rifles", abbr: "AR", logo: "/logos/clients/Assam_Rifles_LOGO.svg.png" },
+  { name: "Central Reserve Police Force", abbr: "CRPF", logo: asset("/logos/clients/CRPF_Logo.svg") },
+  { name: "Indo-Tibetan Border Police", abbr: "ITBP", logo: asset("/logos/clients/ITBP_Logo.svg.png") },
+  { name: "DeSuung (Guardians of Peace)", abbr: "DeSuung", logo: asset("/logos/clients/desunng_logo.jpeg") },
+  { name: "Assam Rifles", abbr: "AR", logo: asset("/logos/clients/Assam_Rifles_LOGO.svg.png") },
   { name: "Penden Cement", abbr: "Penden" },
   { name: "Lhaki Cement", abbr: "Lhaki" },
   { name: "BCCL", abbr: "BCCL" },

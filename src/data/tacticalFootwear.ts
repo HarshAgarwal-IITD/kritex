@@ -1,4 +1,5 @@
 import type { ProductSpec } from "@/components/ProductCard";
+import { asset } from "@/lib/asset";
 
 export interface ColorVariant {
   label: string;
@@ -33,10 +34,10 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     description:
       "Lightweight training shoe built for daily physical training, drill, and parade routines, with a breathable construction for extended wear.",
     images: [
-      "/products/kritex-pt-shoes-white/kritex-ptShoes-white-1.png",
-      "/products/kritex-pt-shoes-white/kritex-ptShoes-white-2.png",
-      "/products/kritex-pt-shoes-white/kritex-ptShoes-white-3.png",
-      "/products/kritex-pt-shoes-white/kritex-ptShoes-white-4.png",
+      asset("/products/kritex-pt-shoes-white/kritex-ptShoes-white-1.png"),
+      asset("/products/kritex-pt-shoes-white/kritex-ptShoes-white-2.png"),
+      asset("/products/kritex-pt-shoes-white/kritex-ptShoes-white-3.png"),
+      asset("/products/kritex-pt-shoes-white/kritex-ptShoes-white-4.png"),
     ],
     specs: [
       { label: "Upper", value: "Breathable mesh with synthetic overlays" },
@@ -53,10 +54,10 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     description:
       "Lightweight training shoe built for daily physical training, drill, and parade routines, with a breathable construction for extended wear.",
     images: [
-      "/products/kritex-pt-shoes-black/kritex-ptShoes-black-1.png",
-      "/products/kritex-pt-shoes-black/kritex-ptShoes-black-2.png",
-      "/products/kritex-pt-shoes-black/kritex-ptShoes-black3.png",
-      "/products/kritex-pt-shoes-black/kritex-ptShoes-black4.png",
+      asset("/products/kritex-pt-shoes-black/kritex-ptShoes-black-1.png"),
+      asset("/products/kritex-pt-shoes-black/kritex-ptShoes-black-2.png"),
+      asset("/products/kritex-pt-shoes-black/kritex-ptShoes-black3.png"),
+      asset("/products/kritex-pt-shoes-black/kritex-ptShoes-black4.png"),
     ],
     specs: [
       { label: "Upper", value: "Breathable mesh with synthetic overlays" },
@@ -73,10 +74,10 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     description:
       "Olive Defence Jungle Boot from Liberty's Warrior — Multi Terrain Professional line, built with a hard toe and rugged multi-terrain lug outsole for wet and rugged terrain.",
     images: [
-      "/products/liberty-jungle-boot/liberty-jungle-boot-1.jpg",
-      "/products/liberty-jungle-boot/liberty-jungle-boot-2.jpg",
-      "/products/liberty-jungle-boot/liberty-jungle-boot-3.jpg",
-      "/products/liberty-jungle-boot/liberty-jungle-boot-4.jpg",
+      asset("/products/liberty-jungle-boot/liberty-jungle-boot-1.jpg"),
+      asset("/products/liberty-jungle-boot/liberty-jungle-boot-2.jpg"),
+      asset("/products/liberty-jungle-boot/liberty-jungle-boot-3.jpg"),
+      asset("/products/liberty-jungle-boot/liberty-jungle-boot-4.jpg"),
     ],
     specs: [
       { label: "Upper", value: "Canvas" },
@@ -94,9 +95,9 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     description:
       "Standard-issue DMS ankle boot from Sega's Armed Forces line, with a side-zip for quick don and a genuine leather upper for general duty wear.",
     images: [
-      "/products/sega-dms-boot/sega-dms-boot-1.png",
-      "/products/sega-dms-boot/sega-dms-boot-2.png",
-      "/products/sega-dms-boot/sega-dms-boot-3.png",
+      asset("/products/sega-dms-boot/sega-dms-boot-1.png"),
+      asset("/products/sega-dms-boot/sega-dms-boot-2.png"),
+      asset("/products/sega-dms-boot/sega-dms-boot-3.png"),
     ],
     specs: [
       { label: "Upper", value: "Genuine leather" },
@@ -112,10 +113,10 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Combat Footwear",
     description: "Direct Moulded Sole ankle boot from Cosmo — \"The Soldier Choice\" — built for standard-issue duty wear.",
     images: [
-      "/products/cosmo-dms-boot/cosmo-dms-boot-1.jpeg",
-      "/products/cosmo-dms-boot/cosmo-dms-boot-2.jpeg",
-      "/products/cosmo-dms-boot/cosmo-dms-boot-3.jpeg",
-      "/products/cosmo-dms-boot/cosmo-dms-boot-4.jpeg",
+      asset("/products/cosmo-dms-boot/cosmo-dms-boot-1.jpeg"),
+      asset("/products/cosmo-dms-boot/cosmo-dms-boot-2.jpeg"),
+      asset("/products/cosmo-dms-boot/cosmo-dms-boot-3.jpeg"),
+      asset("/products/cosmo-dms-boot/cosmo-dms-boot-4.jpeg"),
     ],
     specs: [
       { label: "Upper", value: "Leather" },
@@ -131,7 +132,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Jungle Boots",
     description:
       "High-ankle jungle boot in durable olive green textile with a heavy-duty grip sole and padded ankle support for tactical, outdoor and industrial applications.",
-    images: ["/products/olive-green-jungle-boot/olive-green-jungle-boot-1.png"],
+    images: [asset("/products/olive-green-jungle-boot/olive-green-jungle-boot-1.png")],
     specs: [
       { label: "Upper", value: "Durable Olive Green Textile" },
       { label: "Design", value: "High-Ankle Construction" },
@@ -141,7 +142,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Colourway", value: "Olive Green/Black" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/jungle-boots-defence-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/jungle-boots-defence-sheet.png") }],
   },
   {
     id: "liberty-warrior-dms-boot",
@@ -149,7 +150,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Jungle Boots",
     description:
       "Side-zip jungle boot crafted from genuine black leather with hard toe protection, built for defence, security and tactical use.",
-    images: ["/products/liberty-warrior-dms-boot/liberty-warrior-dms-boot-1.png"],
+    images: [asset("/products/liberty-warrior-dms-boot/liberty-warrior-dms-boot-1.png")],
     specs: [
       { label: "Material", value: "Genuine Leather" },
       { label: "Closure", value: "Lace-Up with Side Zip" },
@@ -158,7 +159,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Colourway", value: "Classic Black" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/jungle-boots-warrior-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/jungle-boots-warrior-sheet.png") }],
   },
   {
     id: "freedom-jungle-boot",
@@ -166,7 +167,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Jungle Boots",
     description:
       "Olive green canvas jungle boot with an EVA sole and mid-heel construction, built for defence and field use.",
-    images: ["/products/freedom-jungle-boot/freedom-jungle-boot-1.png"],
+    images: [asset("/products/freedom-jungle-boot/freedom-jungle-boot-1.png")],
     specs: [
       { label: "Upper", value: "Durable Canvas" },
       { label: "Lining", value: "Fabric" },
@@ -176,7 +177,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Colourway", value: "Olive Green" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/jungle-boots-warrior-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/jungle-boots-warrior-sheet.png") }],
   },
   {
     id: "side-zip-jungle-boot",
@@ -184,7 +185,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Jungle Boots",
     description:
       "Ankle-height canvas jungle boot with a polyurethane sole and reinforced round toe, built for defence, security and outdoor use.",
-    images: ["/products/side-zip-jungle-boot/side-zip-jungle-boot-1.png"],
+    images: [asset("/products/side-zip-jungle-boot/side-zip-jungle-boot-1.png")],
     specs: [
       { label: "Upper", value: "Durable Canvas" },
       { label: "Shaft", value: "Ankle Height" },
@@ -193,7 +194,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Sole", value: "Polyurethane (PU)" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/jungle-boots-warrior-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/jungle-boots-warrior-sheet.png") }],
   },
   {
     id: "tactical-combat-boot",
@@ -201,7 +202,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Tactical Boots",
     description:
       "Built for demanding operations and rugged terrain, this tactical boot delivers superior durability, grip and comfort with a waterproof suede leather upper.",
-    images: ["/products/tactical-combat-boot/tactical-combat-boot-1.png"],
+    images: [asset("/products/tactical-combat-boot/tactical-combat-boot-1.png")],
     specs: [
       { label: "Upper", value: "Waterproof Suede Leather & Textile" },
       { label: "Lining", value: "Breathable Recycled Mesh" },
@@ -211,7 +212,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Colourway", value: "Desert Tan" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/tactical-boots-combat-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/tactical-boots-combat-sheet.png") }],
   },
   {
     id: "black-high-ankle-tactical-boot",
@@ -219,7 +220,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Tactical Boots",
     description:
       "High-ankle tactical boot with a leather and breathable mesh upper, reinforced toe and heavy-duty anti-slip sole for tactical, defence and security applications.",
-    images: ["/products/black-high-ankle-tactical-boot/black-high-ankle-tactical-boot-1.png"],
+    images: [asset("/products/black-high-ankle-tactical-boot/black-high-ankle-tactical-boot-1.png")],
     specs: [
       { label: "Upper", value: "Leather & Breathable Mesh" },
       { label: "Design", value: "High-Ankle" },
@@ -229,7 +230,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Colourway", value: "Black" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/tactical-boots-combat-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/tactical-boots-combat-sheet.png") }],
   },
   {
     id: "olive-green-tactical-boot",
@@ -237,7 +238,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Tactical Boots",
     description:
       "GORE-TEX waterproof tactical boot with a suede leather and textile upper, high-grip rubber sole and padded ankle support, built for outdoor and defence use.",
-    images: ["/products/olive-green-tactical-boot/olive-green-tactical-boot-1.png"],
+    images: [asset("/products/olive-green-tactical-boot/olive-green-tactical-boot-1.png")],
     specs: [
       { label: "Upper", value: "Suede Leather & Textile" },
       { label: "Waterproofing", value: "GORE-TEX" },
@@ -246,7 +247,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Colourway", value: "Brown / Green" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/tactical-boots-combat-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/tactical-boots-combat-sheet.png") }],
   },
   {
     id: "tactical-zip-boot",
@@ -254,7 +255,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Tactical Boots",
     description:
       "High-ankle tactical boot with a synthetic leather and mesh upper, side-zip lace-up closure and heavy-duty grip sole for tactical, defence and security use.",
-    images: ["/products/tactical-zip-boot/tactical-zip-boot-1.png"],
+    images: [asset("/products/tactical-zip-boot/tactical-zip-boot-1.png")],
     specs: [
       { label: "Upper", value: "Synthetic Leather & Mesh" },
       { label: "Closure", value: "Lace-Up with Side Zip" },
@@ -263,7 +264,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Colourway", value: "Black / Green / Desert Tan" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/tactical-boots-zip-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/tactical-boots-zip-sheet.png") }],
   },
   {
     id: "light-brown-tactical-boot",
@@ -271,7 +272,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Tactical Boots",
     description:
       "High-ankle tactical boot in durable suede and textile with a breathable mesh lining and heavy-duty high-grip sole, built for tactical and outdoor use.",
-    images: ["/products/light-brown-tactical-boot/light-brown-tactical-boot-1.png"],
+    images: [asset("/products/light-brown-tactical-boot/light-brown-tactical-boot-1.png")],
     specs: [
       { label: "Upper", value: "Durable Suede & Textile" },
       { label: "Closure", value: "Lace-Up with Side Zip" },
@@ -280,7 +281,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Colourway", value: "Coyote / Desert Tan" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/tactical-boots-zip-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/tactical-boots-zip-sheet.png") }],
   },
   {
     id: "side-zipper-tactical-boot",
@@ -288,7 +289,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Tactical Boots",
     description:
       "High-ankle tactical boot in durable textile and synthetic material with a side-zip lace-up closure and high-grip rubber sole for tactical and security use.",
-    images: ["/products/side-zipper-tactical-boot/side-zipper-tactical-boot-1.png"],
+    images: [asset("/products/side-zipper-tactical-boot/side-zipper-tactical-boot-1.png")],
     specs: [
       { label: "Upper", value: "Durable Textile & Synthetic" },
       { label: "Closure", value: "Lace-Up with Side Zip" },
@@ -297,7 +298,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Colourway", value: "Black" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/tactical-boots-zip-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/tactical-boots-zip-sheet.png") }],
   },
   {
     id: "oscar-gum-boot",
@@ -305,7 +306,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Gum Boots",
     description:
       "Engineered for wet conditions with superior protection, strong grip and lasting durability, this 100% waterproof gum boot is built for safety and outdoor use.",
-    images: ["/products/oscar-gum-boot/oscar-gum-boot-1.png"],
+    images: [asset("/products/oscar-gum-boot/oscar-gum-boot-1.png")],
     specs: [
       { label: "Waterproofing", value: "100% Waterproof" },
       { label: "Construction", value: "Heavy-Duty & Durable" },
@@ -313,7 +314,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Fit", value: "Comfort Fit" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/gum-boots-oscar-delta-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/gum-boots-oscar-delta-sheet.png") }],
   },
   {
     id: "delta-gum-boot",
@@ -321,7 +322,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Gum Boots",
     description:
       "Engineered for wet conditions with superior protection, strong grip and lasting durability, this 100% waterproof gum boot is built for safety and outdoor use.",
-    images: ["/products/delta-gum-boot/delta-gum-boot-1.png"],
+    images: [asset("/products/delta-gum-boot/delta-gum-boot-1.png")],
     specs: [
       { label: "Waterproofing", value: "100% Waterproof" },
       { label: "Construction", value: "Heavy-Duty & Durable" },
@@ -329,7 +330,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Fit", value: "Comfort Fit" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/gum-boots-oscar-delta-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/gum-boots-oscar-delta-sheet.png") }],
   },
   {
     id: "thor-atlas-gum-boot",
@@ -337,7 +338,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Gum Boots",
     description:
       "Extra-thick PVC gum boot with a steel toe cap rated to 200J impact protection, built for industrial, safety and outdoor use in wet conditions.",
-    images: ["/products/thor-atlas-gum-boot/thor-atlas-gum-boot-1.png"],
+    images: [asset("/products/thor-atlas-gum-boot/thor-atlas-gum-boot-1.png")],
     specs: [
       { label: "Height", value: "15.5\"" },
       { label: "Upper", value: "Extra-Thick PVC" },
@@ -346,7 +347,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Fit", value: "Anatomical & Comfortable" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/gum-boots-thor-isi-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/gum-boots-thor-isi-sheet.png") }],
   },
   {
     id: "isi-steel-toe-gum-boot",
@@ -354,7 +355,7 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
     category: "Gum Boots",
     description:
       "Heavy-duty, 100% waterproof PVC gum boot with a steel toe cap and anti-skid, oil-resistant sole, built for industrial and safety use.",
-    images: ["/products/isi-steel-toe-gum-boot/isi-steel-toe-gum-boot-1.png"],
+    images: [asset("/products/isi-steel-toe-gum-boot/isi-steel-toe-gum-boot-1.png")],
     specs: [
       { label: "Height", value: "15 Inches" },
       { label: "Upper", value: "Durable PVC" },
@@ -363,6 +364,6 @@ export const tacticalFootwearProducts: FootwearProduct[] = [
       { label: "Sole", value: "Anti-Skid & Oil Resistant" },
     ],
     sizes: FOOTWEAR_SIZES,
-    specSheets: [{ title: "Official Product Data Sheet", image: "/products/_spec-sheets/gum-boots-thor-isi-sheet.png" }],
+    specSheets: [{ title: "Official Product Data Sheet", image: asset("/products/_spec-sheets/gum-boots-thor-isi-sheet.png") }],
   },
 ];

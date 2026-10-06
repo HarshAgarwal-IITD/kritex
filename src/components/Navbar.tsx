@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { productCategories } from "@/data/productCategories";
+import { asset } from "@/lib/asset";
 
 const navLinks = [
   { label: "Clients", href: "#clients" },
@@ -28,7 +29,7 @@ const Navbar = () => {
       <div className="container flex h-16 items-center justify-between">
         <Link to="/" className="font-display text-lg tracking-tight text-foreground -ml-2">
 
-            <img src="/brand/yellow_full.png" alt="Logo" className="h-[44px] object-contain drop-shadow-sm"/>
+            <img src={asset("/brand/yellow_full.png")} alt="Logo" className="h-[44px] object-contain drop-shadow-sm"/>
 
         </Link>
 
