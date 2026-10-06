@@ -1,0 +1,144 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Kritex API (bootstrap)",
+    "version": "0.0.0",
+    "description": "Minimal hand-written contract used until kritex-server publishes openapi.json. Replace by running `npm run api:gen` against the real spec."
+  },
+  "paths": {
+    "/api/v1/health": {
+      "get": {
+        "operationId": "getHealth",
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Health" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/queries": {
+      "post": {
+        "operationId": "createQuery",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CreateQueryRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Query created",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/CreateQueryResponse" }
+              }
+            }
+          },
+          "400": { "$ref": "#/components/responses/Error" },
+          "429": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      },
+      "get": {
+        "operationId": "listQueries",
+        "security": [{ "bearer": [] }],
+        "responses": {
+          "200": {
+            "description": "All queries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Query" }
+                }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Error" },
+          "500": { "$ref": "#/components/responses/Error" }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearer": { "type": "http", "scheme": "bearer" }
+    },
+    "responses": {
+      "Error": {
+        "description": "Error",
+        "content": {
+          "application/json": {
+            "schema": { "$ref": "#/components/schemas/ErrorResponse" }
+          }
+        }
+      }
+    },
+    "schemas": {
+      "Health": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": { "type": "string", "enum": ["ok"] }
+        }
+      },
+      "CreateQueryRequest": {
+        "type": "object",
+        "required": ["name", "email", "requirements"],
+        "properties": {
+          "name": { "type": "string" },
+          "organization": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "requirements": { "type": "string" }
+        }
+      },
+      "CreateQueryResponse": {
+        "type": "object",
+        "required": ["id", "createdAt"],
+        "properties": {
+          "id": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "QueryStatus": {
+        "type": "string",
+        "enum": ["NEW", "IN_PROGRESS", "RESOLVED"]
+      },
+      "Query": {
+        "type": "object",
+        "required": ["id", "name", "organization", "email", "requirements", "status", "createdAt"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "organization": { "type": "string", "nullable": true },
+          "email": { "type": "string", "format": "email" },
+          "requirements": { "type": "string" },
+          "status": { "$ref": "#/components/schemas/QueryStatus" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": ["code", "message"],
+            "properties": {
+              "code": { "type": "string" },
+              "message": { "type": "string" },
+              "details": {}
+            }
+          }
+        }
+      }
+    }
+  }
+}

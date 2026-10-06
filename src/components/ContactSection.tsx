@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-
-const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
+import { api, toApiError } from "@/lib/api/client";
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -18,13 +17,12 @@ const ContactSection = () => {
     setIsSubmitting(true);
 
     try {
-      const res = await fetch(`${API_URL}/api/queries`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+      const { organization, ...rest } = formData;
+      const { error, response } = await api.POST("/api/v1/queries", {
+        body: { ...rest, ...(organization.trim() ? { organization } : {}) },
       });
 
-      if (!res.ok) throw new Error("Request failed");
+      if (error || !response.ok) throw toApiError(error, response);
 
       toast.success("Inquiry submitted. Our team will be in touch shortly.");
       setFormData({ name: "", organization: "", email: "", requirements: "" });
