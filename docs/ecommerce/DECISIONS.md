@@ -220,6 +220,18 @@ Done 2026-10-06: the untracked `server/` folder was moved to `../kritex-server` 
   **Rule for the website:** derive types from `paths[...]` (endpoint + status code), not from `components["schemas"][name]`, so renames on the server don't break the frontend. (The bootstrap mocks used guessed component names and broke on the first real regen; fixed at integration.)
 - Upgrade path: TD-2 in TASKS.md.
 
+## ADR-015: Stage 2 implementation decisions (catalog, auth, pricing)
+**Status:** Accepted · 2026-10-07 (recorded at Stage 2 integration)
+
+- **Auth mounting:** Better Auth 1.7 is mounted at `/api/v1/auth/*` through a Nest controller that rebuilds a fetch `Request` from `req.rawBody`, so the global JSON parser, zod pipe, throttling, logging and helmet stay on. `/auth/*` errors keep Better Auth's `{code,message}` shape (the SDK needs it); every other route uses `{error:{…}}`. Better Auth is ESM-only, so Jest compiles it via `jest.esm.js`.
+- **Global guard, deny by default:** every route needs `@Public()` or `@Roles()`/`@Authenticated()`. `req.user` is set on public routes too when a session cookie is present (catalog uses it for B2B tiers). Cookie-authenticated writes from an Origin outside `CORS_ORIGIN`/`WEB_URL` → 403 `INVALID_ORIGIN`. `ADMIN_API_KEY` is removed (incl. `render.yaml`; `BETTER_AUTH_SECRET` is generated there instead).
+- **No Better Auth admin plugin** (it would expose `/auth/admin/*`, incl. impersonation). Migration `…_user_disabled` mirrors its columns (`User.banned/banReason/banExpires`) to back the users DTO's `disabled`.
+- **Password reset path** in Better Auth 1.7 is `POST /auth/request-password-reset` (not `/forget-password`); the OpenAPI description lists the real paths.
+- **Pricing lives in `src/pricing/`** (TaxService, ShippingFeeService, CouponValidationService, TotalsService), pure, no HTTP. Not registered in `app.module.ts`; cart/checkout/orders import `PricingModule`. Prices are GST-inclusive; tax per line `round_half_up(A·r/(100+r))` in BigInt basis points; odd paisa → CGST; slab judged on the post-discount per-unit taxable value; shipping GST at the highest line rate. All config-driven (`BUSINESS_STATE_CODE`, `GST_*`, `SHIPPING_*`), placeholders until CA review (Q9).
+- **Catalog visibility:** public reads show only ACTIVE products in active categories; ENQUIRY_ONLY hides prices; `priceTiers` only for role `B2B_CUSTOMER` with an APPROVED business profile; no raw stock counts. `?category=` accepts slug or id. Generating variants for an option-less product creates one "Default" variant.
+- **Uploads** go through a `StorageDriver` (local disk in dev with signed PUT/GET under `/api/v1/uploads/local/*`, R2 presigned PUT with hand-rolled SigV4, no AWS SDK).
+- **Website:** the three category pages collapsed into `src/pages/Category.tsx` at `/products/:categorySlug` (old URLs were already of that shape, so no redirects needed); PDP stays `/product/:slug`. Admin is a lazy `AdminApp` chunk at `/admin/*`; the auth client lives in `src/lib/auth/client.ts` for reuse by storefront login (Stage 3). Tests and visual screenshots pin `VITE_ASSET_BASE_URL=""` so they never depend on a local `.env`.
+
 ---
 
 ## Open questions

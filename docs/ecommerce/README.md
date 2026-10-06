@@ -15,12 +15,11 @@ into a full ecommerce platform. Update these files as decisions are made and wor
 
 **Repos:** `kritex-website` (this repo: storefront, admin, planning hub; github.com/HarshAgarwal-IITD/kritex) · `../kritex-server` (NestJS API; github.com/HarshAgarwal-IITD/kritex-server). See ADR-013.
 
-## Current status (2026-10-06)
+## Current status (2026-10-07)
 
-- **Stage:** ✅ Stage 0 and ✅ Stage 1 complete. 🔄 **Stage 2 (Catalog + Identity) in progress** (started 2026-10-06).
-- **Decisions:** all ADRs Accepted. Open questions run on defaults (owner, 2026-10-06). Q1/Q2 real data is still needed before launch.
-- **Now:** Stage 2's 5 agents are running: `server-catalog`, `server-auth`, `server-pricing` (worktrees in `../kritex-server-wt/s2-*`, branches `s2/server-*`), `web-catalog`, `web-admin-catalog`.
-- **Human checkpoint (Stage 1):** review the API docs (`/api/docs` with the server running) and send the `/legal/*` drafts to legal; fill placeholders in `src/pages/legal/placeholders.ts`. Owner to-dos: start Razorpay KYC, gather prices/HSN/stock (CSV template: `kritex-server/prisma/seed/product-data-template.csv`).
+- **Stage:** ✅ Stages 0, 1 and 2 complete (Stage 2 gate passed 2026-10-07). **Next: Stage 3 (Commerce core).**
+- **Decisions:** all ADRs Accepted (latest ADR-015). Open questions run on defaults (owner, 2026-10-06). Q1/Q2 real data is still needed before launch.
+- **Human checkpoint (Stage 2):** click through the storefront (`/products`, a PDP) and the admin product editor (`/admin`, seeded admin from `SEED_ADMIN_EMAIL`/`SEED_ADMIN_PASSWORD` in `kritex-server/.env`). Send the GST questions in PROGRESS.md to the CA (ADR-006).
 - **Run locally:** `cd ../kritex-server && docker compose up -d && npm run start:dev` (API :4000, docs at /api/docs), then `npm run dev` here (:8080, proxies /api).
 
 ## Where we're starting from

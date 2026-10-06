@@ -3,15 +3,16 @@
 This is the running record of what has been built, where it lives, how to run it, and what's still open.
 Add a new section at the end of each stage.
 
-**Status as of 2026-10-06:** Stages 0 and 1 are complete. **Stage 2 in progress.**
+**Status as of 2026-10-07:** Stages 0, 1 and 2 are complete. **Next: Stage 3 (Commerce core).**
 
 | Stage | Status | Integration commit |
 |---|---|---|
 | Planning | ✅ | `c05c73e` (docs) |
 | 0 Foundation | ✅ gate passed | server `6a900da` · web `782488e` |
 | 1 Contract + Data | ✅ gate passed | server `bfd1d38` · web `428f63c` |
-| 2 Catalog + Identity | 🔄 in progress | — |
-| 3–6 | not started | — |
+| 2 Catalog + Identity | ✅ gate passed | server `9a4aa64` · web `6520bbf` |
+| 3 Commerce core | next | — |
+| 4–6 | not started | — |
 
 ---
 
@@ -32,7 +33,7 @@ cd projects/kritex/kritex-server
 cp .env.example .env              # first time; set SEED_PLACEHOLDER_PRICES=true for dev prices
 docker compose up -d              # Postgres dev :5433, test :5434
 npx prisma migrate deploy
-npm run db:seed                   # 4 categories, 26 products, 165 variants, admin user
+npm run db:seed                   # 4 categories, 26 products, 165 variants; admin login from SEED_ADMIN_EMAIL + SEED_ADMIN_PASSWORD
 npm run start:dev                 # http://localhost:4000/api/v1, Swagger at /api/docs
 
 # Website
@@ -43,7 +44,8 @@ npm run dev                       # http://localhost:8080, proxies /api → :400
 ```
 
 Checks: **server** `npm run lint && npm run typecheck && npm test && npm run test:e2e && npm run build && npm run openapi:check`
-· **web** `npm run lint && npm run typecheck && npm test && npm run build`.
+· **web** `npm run lint && npm run typecheck && npm test && npm run build && npm run test:visual`.
+Auth emails (verification/reset/OTP links) are printed to the server log in dev unless `SMTP_HOST` is set (e.g. Mailpit).
 After any backend API change: `npm run openapi:export` in the server, then `npm run api:gen` in the website.
 
 ---
@@ -158,6 +160,47 @@ Final checks:
 - **Server:** lint, typecheck and build OK; **83 unit + 193 e2e tests** pass.
 - **Web:** 0 lint errors, typecheck OK, **23 tests**, build OK.
 
+## Stage 2: Catalog + Identity ✅
+
+Started 2026-10-06; the first launch of the 5 agents stopped without committing anything (only the auth deps were installed), so they were relaunched 2026-10-07 in the same worktrees, with per-agent test DBs (`kritex_test_{catalog,auth,pricing}`) so e2e runs didn't collide.
+
+**Catalog API (`server-catalog`):**
+- Public: `GET /categories` (with ACTIVE product counts), `GET /products` (category slug or id, q, size/colour, price range, saleChannel, new optional `inStock`; newest / price sorts; paginated), `GET /products/:slug` (no stock counts, ENQUIRY_ONLY hides prices, `priceTiers` only for approved B2B, `purchasable` flag), `GET /search/suggest` (pg_trgm, typo-tolerant).
+- Admin: products CRUD (delete archives if orders/quotes reference it), idempotent variant generation from options (one "Default" variant when there are none), variant updates, stock adjustments with row lock + InventoryMovement (409 below reserved, concurrency-tested), inventory list, categories CRUD.
+- Uploads: `StorageDriver` with a local-disk driver (dev) and R2 presigned PUT.
+
+**Auth + accounts (`server-auth`):**
+- Better Auth: email+password with required verification, reset, email OTP; 30-day sessions; cookie `better-auth.session_token`.
+- Global `AuthGuard` (deny unless `@Public()`), role checks, Origin check on cookie writes. `ADMIN_API_KEY` removed; `/queries` admin is session/role based.
+- `/me`, addresses CRUD (IDOR-tested), business-profile apply + admin approve/reject (CUSTOMER → B2B_CUSTOMER), admin customers and staff users (invite, role, disable).
+- Dev mail: logged to the server console (SMTP when `SMTP_HOST` set). Throttles on sign-in / email-sending routes.
+- New migration `…_user_disabled` (`User.banned/banReason/banExpires`). Seed: `SEED_ADMIN_PASSWORD` gives the seeded admin a login.
+
+**Pricing engine (`server-pricing`):** `src/pricing/` with TaxService (GST slab, CGST+SGST vs IGST, GSTIN checksum), ShippingFeeService (₹99 flat, free ≥ ₹999), CouponValidationService, TotalsService (B2B tiers, coupon allocation to the paisa, per-line tax). 149 unit tests. Pure, no HTTP; Stage 3 imports it.
+
+**Storefront (`web-catalog`):**
+- `src/features/catalog/` hooks (`useCategories`, `useProducts`, `useProduct`, `useSearchSuggest`); products, category and PDP pages read from the API with skeletons, error and empty states. No page imports `src/data/*.ts` any more (only the MSW mocks do).
+- One `Category` page at `/products/:categorySlug` replaces the three hard-coded pages.
+- PDP: INR price (paise), variant selection → SKU, stock state, saleChannel-aware CTA (Add to cart stub / Request quote / Enquire). Filters, sort and search suggestions on `/products`. Navbar account + cart icons (`/account`, `/cart` are "coming soon" placeholders).
+- Playwright visual suite `npm run test:visual` (22 screenshots, desktop + mobile), baselined from the pre-change code.
+
+**Admin (`web-admin-catalog`):** lazy `/admin` chunk (~54 kB gzip) with sidebar layout, login, staff/admin guard; products list (search, filters, pagination); product editor (details, SEO, sale channel, rupee → paise pricing, image/spec-sheet upload, options → variants, per-variant price/stock with reasons, specs, B2B tiers); categories CRUD.
+
+**Integration (main session):**
+- Merged server catalog → pricing → auth, web catalog → admin. Conflicts: env schema / `.env.example` / README / `contract.e2e-spec.ts` (kept everything; `IMPLEMENTED` set is the union), MSW handlers imports.
+- Kept the deploy work committed separately on server `ecommerce` (`29b0eb2`: Dockerfile, `render.yaml`, `TRUST_PROXY`) and switched `render.yaml` from `ADMIN_API_KEY` to `BETTER_AUTH_SECRET` + `BETTER_AUTH_URL`/`WEB_URL`/`AUTH_COOKIE_DOMAIN`.
+- Catalog admin e2e now signs in as STAFF (stock movements record the actor).
+- Tests and the visual server pin `VITE_ASSET_BASE_URL=""`: the local `.env` points images at the object store, which broke 3 unit tests and every screenshot on the merged tree.
+- Regenerated `src/lib/api/schema.d.ts`; migrated + re-seeded the dev DB.
+
+**Gate (all passed, 2026-10-07):**
+- All 26 existing product URLs resolve from the API; visual suite 22/22 against the pre-change baselines.
+- `src/data/*.ts` is not imported by any page or component.
+- Live through the Vite proxy: sign-up → login refused (`EMAIL_NOT_VERIFIED`) → verification link → login → `/me` ✔. Seeded admin logs in (role ADMIN), creates a RETAIL product, generates variants (`KTX-GTFC-M-BLACK`…), activates it, and it appears on `/products/:slug` with price and `purchasable: true` (test product deleted afterwards).
+- Pricing unit tests cover intra/inter-state GST, slab boundaries, coupons, free-shipping threshold.
+
+Final checks: **server** lint, typecheck, build, `openapi:check` OK; **272 unit + 317 e2e** tests pass. **Web** 0 lint errors, typecheck OK, **78 tests**, build OK, visual 22/22.
+
 ---
 
 ## What's needed from the owner
@@ -169,7 +212,9 @@ Final checks:
 | 3 | Prices, HSN, GST rates, stock, weights: fill `kritex-server/prisma/seed/product-data-template.csv` | Stage 5 |
 | 4 | Which products are RETAIL vs B2B-only vs enquiry-only (Q1) | Stage 5 |
 | 5 | Legal review of `/legal/*`; fill `src/pages/legal/placeholders.ts` (entity name, address, GSTIN, grievance officer, shipping fee/threshold, dispatch times…) | Stage 5 |
-| 6 | CA review of the GST rules (ADR-006) and placeholder HSN/GST values | Stage 2–4 |
+| 6 | CA review of the GST rules (ADR-006, ADR-015) and placeholder HSN/GST values. Specific questions: (a) seller state code (placeholder 27, Maharashtra); (b) apparel/footwear slab ₹2,500 / 5% / 18% and HSN chapters 61–64; (c) slab judged on the post-discount per-unit value (inclusive prices ₹2,625–₹2,950 are borderline); (d) GST on shipping at the highest line rate; (e) per-line rounding, odd paisa to CGST; (f) place of supply = shipping state, also for B2B with GSTIN | Stage 3–4 |
+| 8 | Stage 2 checkpoint: click through the storefront and `/admin` product editor. Copy the dev admin password from `kritex-server/.env` (`SEED_ADMIN_PASSWORD`) | Before Stage 3 |
+| 9 | Decide which categories are "coming soon" (Base Layers) and confirm category page copy (TD-13, TD-14) | Stage 3 |
 | 7 | Confirm the field duty jacket size "XX" (probably a typo) | Any time |
 | 8 | **Hosting (ADR-008, free tier):** (a) Neon: create project `kritex` in AWS Singapore and copy the connection string. (b) Render: New → Blueprint → `kritex-server`, then enter `DATABASE_URL` and `CORS_ORIGIN`. (c) If the service URL is not `kritex-api.onrender.com`, update `vercel.json`. (d) Seed: `DATABASE_URL=<neon> npm run import:products` in kritex-server. (e) UptimeRobot on `https://kritex.in/api/v1/health` every 10 min. Full steps: kritex-server README → Deploy | Now (staging) |
 
@@ -180,8 +225,8 @@ Render (free, Singapore, Docker) + Neon (free, Singapore) + Vercel for the site.
 - kritex-website: `vercel.json` proxies `/api/*` → `https://kritex-api.onrender.com`.
 
 ## Open follow-ups / tech debt
-Tracked in [TASKS.md](TASKS.md) → "Tech-debt / follow-ups" (TD-1…TD-9), plus AUTH-6 and COM-16 added to Stages 2–3.
+Tracked in [TASKS.md](TASKS.md) → "Tech-debt / follow-ups" (TD-1…TD-22), plus AUTH-6 and COM-16 added to Stages 2–3.
 
-## Next: Stage 2 (Catalog + Identity)
-5 parallel agents: `server-catalog`, `server-auth`, `server-pricing`, `web-catalog`, `web-admin-catalog`.
-See [EXECUTION.md](EXECUTION.md#stage-2-catalog--identity) for the gate and prompts.
+## Next: Stage 3 (Commerce core)
+4 parallel agents: `server-cart`, `server-checkout`, `web-commerce`, `web-admin-orders`.
+See [EXECUTION.md](EXECUTION.md#stage-3-commerce-core) for the gate and prompts. Before kick-off: TD-19 (checkout line tax fields) and the owner checkpoint above.

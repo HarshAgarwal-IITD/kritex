@@ -62,52 +62,52 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 
 ---
 
-## Stage 2: Catalog + Identity (in progress, started 2026-10-06)
+## Stage 2: Catalog + Identity ✅ (2026-10-07)
 
 ### Agent `server-catalog` [S] → D-*, K-*
-- [~] CAT-1 `GET /categories`
-- [~] CAT-2 `GET /products` (filters, sort, pagination, price range, inStock, saleChannel)
-- [~] CAT-3 `GET /products/:slug` (no raw stock counts; priceTiers only for B2B)
-- [~] CAT-4 `GET /search/suggest` (pg_trgm)
-- [~] CAT-5 Admin: products CRUD, generate variants from options, variant price/stock (writes InventoryMovement), categories CRUD
-- [~] CAT-6 Admin: R2 presigned upload endpoint (local disk driver in dev)
-- [~] CAT-7 Unit + e2e tests
+- [x] CAT-1 `GET /categories` (server `6ec6050`)
+- [x] CAT-2 `GET /products` (filters, sort, pagination, price range, inStock, saleChannel) (server `6ec6050`)
+- [x] CAT-3 `GET /products/:slug` (no raw stock counts; priceTiers only for B2B) (server `6ec6050`)
+- [x] CAT-4 `GET /search/suggest` (pg_trgm) (server `6ec6050`)
+- [x] CAT-5 Admin: products CRUD, generate variants from options, variant price/stock (writes InventoryMovement), categories CRUD (server `6ec6050`)
+- [x] CAT-6 Admin: R2 presigned upload endpoint (local disk driver in dev) (server `6ec6050`)
+- [x] CAT-7 Unit + e2e tests (server `6ec6050`)
 
 ### Agent `server-auth` [S] → D-*, K-*
-- [~] AUTH-1 Better Auth in `AuthModule` (email+password, verification, reset, email OTP), Prisma adapter, cookie config, mounted at `/api/v1/auth/*`
-- [~] AUTH-2 Global `AuthGuard` + `@Public()`, `@Roles()`, `@CurrentUser()`; replace `ADMIN_API_KEY` on queries
-- [~] AUTH-3 `/me`, addresses CRUD, business-profile apply; admin approve/reject
-- [~] AUTH-4 Dev email transport (log/Mailpit) until OPS-1
-- [~] AUTH-5 Throttling + tests (incl. IDOR tests on addresses)
-- [~] AUTH-6 Contract follow-ups: confirm Better Auth cookie name (`better-auth.session_token`) + email-OTP paths and update the OpenAPI description; replace temporary `user?.id ?? ''` in customer handlers with `user.id`; if using the admin plugin, run `npx auth generate` and diff (adds `banned`… used for `User.disabled` in the users DTO); implement `/admin/queries` once the guard is enforced
+- [x] AUTH-1 Better Auth in `AuthModule` (email+password, verification, reset, email OTP), Prisma adapter, cookie config, mounted at `/api/v1/auth/*` (server `2e6c834`)
+- [x] AUTH-2 Global `AuthGuard` + `@Public()`, `@Roles()`, `@CurrentUser()`; replace `ADMIN_API_KEY` on queries (server `2e6c834`)
+- [x] AUTH-3 `/me`, addresses CRUD, business-profile apply; admin approve/reject (server `2e6c834`)
+- [x] AUTH-4 Dev email transport (log/Mailpit) until OPS-1 (server `2e6c834`)
+- [x] AUTH-5 Throttling + tests (incl. IDOR tests on addresses) (server `2e6c834`)
+- [x] AUTH-6 Contract follow-ups: confirm Better Auth cookie name (`better-auth.session_token`) + email-OTP paths and update the OpenAPI description; replace temporary `user?.id ?? ''` in customer handlers with `user.id`; if using the admin plugin, run `npx auth generate` and diff (adds `banned`… used for `User.disabled` in the users DTO); implement `/admin/queries` once the guard is enforced (server `2e6c834`)
 
 ### Agent `server-pricing` [S] → D-1
-- [~] PR-1 `TaxService`: GST slab rule (config-driven), CGST+SGST vs IGST by state code, GSTIN format + state-code validation
-- [~] PR-2 `ShippingFeeService`: flat + free-above threshold (config)
-- [~] PR-3 `CouponService.validate()`: percent/flat/free-shipping, min subtotal, cap, dates, limits
-- [~] PR-4 `TotalsService.compute(lines, address, coupon, customer)`: the single function used by cart, checkout quote and order creation; applies B2B price tiers
-- [~] PR-5 Exhaustive unit tests (boundaries, rounding to paise, inter/intra-state)
+- [x] PR-1 `TaxService`: GST slab rule (config-driven), CGST+SGST vs IGST by state code, GSTIN format + state-code validation (server `f1c1735`)
+- [x] PR-2 `ShippingFeeService`: flat + free-above threshold (config) (server `f1c1735`)
+- [x] PR-3 `CouponValidationService.validate()` in `src/pricing`: percent/flat/free-shipping, min subtotal, cap, dates, limits (server `f1c1735`)
+- [x] PR-4 `TotalsService.compute(lines, address, coupon, customer)`: the single function used by cart, checkout quote and order creation; applies B2B price tiers (server `f1c1735`)
+- [x] PR-5 Exhaustive unit tests (boundaries, rounding to paise, inter/intra-state) (server `f1c1735`)
 
 ### Agent `web-catalog` [W] → K-* (MSW until CAT lands)
-- [~] WEB-CAT-1 TanStack Query hooks (`useProducts`, `useProduct`, `useCategories`) on the generated client
-- [~] WEB-CAT-2 Products, category and PDP pages read from the API; skeletons; **no visual regression** (Playwright screenshots before/after)
-- [~] WEB-CAT-3 Collapse the 3 category pages into `/products/:categorySlug`
-- [~] WEB-CAT-4 PDP: price, variant selection → SKU, stock state, saleChannel-aware CTA (Add to cart / Request quote / Enquire)
-- [~] WEB-CAT-5 Filters, sort, search box with suggestions
-- [~] WEB-CAT-6 Navbar: account + cart icons (cart count wired in Stage 3)
+- [x] WEB-CAT-1 TanStack Query hooks (`useProducts`, `useProduct`, `useCategories`) on the generated client (web `7f0669e`)
+- [x] WEB-CAT-2 Products, category and PDP pages read from the API; skeletons; **no visual regression** (Playwright screenshots before/after) (web `7f0669e`)
+- [x] WEB-CAT-3 Collapse the 3 category pages into `/products/:categorySlug` (web `7f0669e`)
+- [x] WEB-CAT-4 PDP: price, variant selection → SKU, stock state, saleChannel-aware CTA (Add to cart / Request quote / Enquire) (web `7f0669e`)
+- [x] WEB-CAT-5 Filters, sort, search box with suggestions (web `7f0669e`)
+- [x] WEB-CAT-6 Navbar: account + cart icons (cart count wired in Stage 3) (web `7f0669e`)
 
 ### Agent `web-admin-catalog` [W] → K-*
-- [~] ADM-1 `/admin` lazy route, shadcn sidebar layout, login, role guard
-- [~] ADM-2 Products list (search, status filter)
-- [~] ADM-3 Product editor: details, SEO, saleChannel, images upload, options → variants table (price/stock), spec sheets, price tiers
-- [~] ADM-4 Categories CRUD
+- [x] ADM-1 `/admin` lazy route, shadcn sidebar layout, login, role guard (web `e8352c2`)
+- [x] ADM-2 Products list (search, status filter) (web `e8352c2`)
+- [x] ADM-3 Product editor: details, SEO, saleChannel, images upload, options → variants table (price/stock), spec sheets, price tiers (web `e8352c2`)
+- [x] ADM-4 Categories CRUD (web `e8352c2`)
 
 ---
 
 ## Stage 3: Commerce core
 
 ### Agent `server-cart` [S] → PR-*, AUTH-*, CAT-*
-- [ ] COM-1 Cart service + endpoints: guest token cookie, add/update/remove, live price/stock, totals preview via `TotalsService`
+- [ ] COM-1 (import `PricingModule` from `src/pricing`) Cart service + endpoints: guest token cookie, add/update/remove, live price/stock, totals preview via `TotalsService`
 - [ ] COM-2 Merge guest cart on login
 - [ ] COM-5 Coupon apply/remove endpoints; admin coupons CRUD
 
@@ -205,6 +205,17 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [ ] TD-9 [W] Main bundle 597 kB → route-level code splitting (with SEO-3)
 - [ ] TD-10 [S] Check `TRUST_PROXY` on Render behind the Vercel `/api` proxy: log `req.ip` and confirm it is the client IP, not a Vercel/Render IP (otherwise all clients share one rate limit)
 - [ ] TD-11 [S] Before live payments: Render `plan: starter`, `branch: main`; Neon backup/PITR checked (ADR-008)
+- [ ] TD-12 [both] `GET /products` card DTO has no gallery/swatches, so `CatalogProductCard` calls `useProduct(slug)` per card (~26 extra requests on /products). Add `images[]` + colour swatches to the card DTO (additive), then drop the per-card fetch
+- [ ] TD-13 [S] "Coming soon" categories: `GET /categories` hides inactive ones (Base Layers), so the home tile disappears against the real API. Add a `comingSoon` flag (or return inactive-but-visible) and use it in the UI instead of `productCount === 0`
+- [ ] TD-14 [S] Seed category `description` is the short tile text; the category page header shows it. Switch the seed to the long page copy (the mocks already use it)
+- [ ] TD-15 [both] `GET /products`: add `subCategory` filter (now filtered client-side over limit=100) and size/colour facets for filter pickers; pagination/"load more" past 100
+- [ ] TD-16 [S] `POST /admin/products/import` is still 501: CSV logic lives in `prisma/seed/lib` (outside the build root). Move it under `src/` or keep CLI-only
+- [ ] TD-17 [S] Public "newest" sort ignores `Product.sortOrder`; add a `featured` sort if the curated order matters
+- [ ] TD-18 [S] Local upload driver signs with a per-boot secret (tickets die on restart); R2 presign doesn't enforce size. Fine for dev; revisit with DEP-3
+- [ ] TD-19 [S] `checkoutLineSchema.taxAmount` says "GST included in lineTotal" but tax is computed on the post-coupon `netTotal`. Fix the description or add `discount`/`netTotal` (additive) before COM-7; same for order item snapshots
+- [ ] TD-20 [W] MSW `GET /queries` mock still expects a Bearer key; server now uses a session (`adminListQueries`). Align the mock / move to admin handlers
+- [ ] TD-21 [S] Admin API gaps from the admin UI: create/delete a single variant, stock-movement history, orphan upload cleanup; categories are flat (`subCategory` is free text)
+- [ ] TD-22 [S] Drop scratch DBs on :5434 (`kritex_test_{catalog,auth,pricing}`, `kritex_auth_dev`) when no longer needed
 - [ ] TD-5 [W] Rename package.json `name` from `vite_react_shadcn_ts` to `kritex-website`
 
 ## Stage 6: Go-live (see EXECUTION.md)
