@@ -17,6 +17,7 @@ import Returns from "./pages/legal/Returns.tsx";
 import Shipping from "./pages/legal/Shipping.tsx";
 import Cancellation from "./pages/legal/Cancellation.tsx";
 import LegalContact from "./pages/legal/Contact.tsx";
+import { AdminRoute } from "./admin/route";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +44,7 @@ const App = () => (
             <Route path="/legal/shipping" element={<Shipping />} />
             <Route path="/legal/cancellation" element={<Cancellation />} />
             <Route path="/legal/contact" element={<LegalContact />} />
+            <Route path="/admin/*" element={<AdminRoute />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import type { paths } from "@/lib/api/schema";
+import { adminHandlers } from "./admin-handlers";
 import { catalogHandlers } from "./catalog";
 
 // Types come from paths (not component names), so they survive server-side DTO renames.
@@ -20,6 +21,9 @@ export const resetMockDb = () => {
 export const getMockQueries = () => queries;
 
 export const handlers = [
+  // Admin app: Better Auth, /me and /admin/* catalog routes (see admin-handlers.ts).
+  ...adminHandlers,
+
   http.get(apiPath("/api/v1/health"), () => HttpResponse.json<Health>({ status: "ok" })),
 
   http.post(apiPath("/api/v1/queries"), async ({ request }) => {
