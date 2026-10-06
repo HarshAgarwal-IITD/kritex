@@ -5,28 +5,33 @@ Repo tag: **[S]** = `kritex-server` · **[W]** = `kritex-website`.
 Stages, agents, gates and checkpoints: [EXECUTION.md](EXECUTION.md).
 
 ## Done
+- [x] R-2 Integration branches: `ecommerce` in both repos; stage branches merge into it (2026-10-06)
+- [x] R-3 Open questions: owner accepted all defaults; ADRs Accepted (2026-10-06)
 - [x] R-1 [S] Extract `server/` into its own repo `projects/kritex/kritex-server`, initial commit `117f8cc` (2026-10-06)
 
 ---
 
-## Stage 0: Foundation
+## Stage 0: Foundation ✅ (2026-10-06)
+
+Merged: server `ecommerce` @ `6a900da` (commits 70c466f…74146b4) · web `ecommerce` @ `1d84390` (commits a548d8c…9c14e6e) + integration fixes.
+Gate passed: both repos' lint/typecheck/tests/build green (server 49 unit + 18 e2e, web 10); `openapi:check` clean; live run through the Vite proxy OK.
 
 ### Agent `server-foundation` [S]
-- [ ] F-S1 Scaffold NestJS in place of the Express prototype (keep `prisma/` + migration, docker-compose): `main.ts` (rawBody, helmet, CORS w/ credentials, prefix `/api/v1`, swagger at `/api/docs`), `ConfigModule` + zod env, `PrismaModule`, `nestjs-pino`, `ThrottlerModule`, `ScheduleModule`, `EventEmitterModule`, global `ZodValidationPipe` (nestjs-zod), `AppException` + global filter, `/api/v1/health`
-- [ ] F-S2 Port `queries` to `QueriesModule` (same request/response; keep admin API-key guard until AUTH-2)
-- [ ] F-S3 Jest unit + supertest e2e setup (`test/`), test DB service in docker-compose (:5434), reset helper
-- [ ] F-S4 `npm run openapi:export` → `openapi.json` (committed); CI check that it's up to date
-- [ ] F-S5 ESLint + Prettier; GitHub Actions: install, lint, typecheck, unit, e2e (Postgres service), build, openapi staleness
-- [ ] F-S6 `.env.example` complete; README (setup, scripts)
-- [ ] F-S7 `CLAUDE.md`: conventions (ARCHITECTURE.md §5, ADR-012), module ownership, link to `../kritex-website/docs/ecommerce`
+- [x] F-S1 Scaffold NestJS in place of the Express prototype (keep `prisma/` + migration, docker-compose): `main.ts` (rawBody, helmet, CORS w/ credentials, prefix `/api/v1`, swagger at `/api/docs`), `ConfigModule` + zod env, `PrismaModule`, `nestjs-pino`, `ThrottlerModule`, `ScheduleModule`, `EventEmitterModule`, global `ZodValidationPipe` (nestjs-zod), `AppException` + global filter, `/api/v1/health`
+- [x] F-S2 Port `queries` to `QueriesModule` (same request/response; keep admin API-key guard until AUTH-2)
+- [x] F-S3 Jest unit + supertest e2e setup (`test/`), test DB service in docker-compose (:5434), reset helper
+- [x] F-S4 `npm run openapi:export` → `openapi.json` (committed); CI check that it's up to date
+- [x] F-S5 ESLint + Prettier; GitHub Actions: install, lint, typecheck, unit, e2e (Postgres service), build, openapi staleness
+- [x] F-S6 `.env.example` complete; README (setup, scripts)
+- [x] F-S7 `CLAUDE.md`: conventions (ARCHITECTURE.md §5, ADR-012), module ownership, link to `../kritex-website/docs/ecommerce`
 
 ### Agent `web-foundation` [W]
-- [ ] F-W1 Commit the current WIP (ContactSection API call, other modified files) on its own branch/PR first
-- [ ] F-W2 Cleanup: delete `venv/`, `venv2/`, `bun.lock`; move `public/Product Catalogue zip file/` out of `public/` → `assets-source/` (gitignored); `.gitignore` for `.env*` except `.env.example`
-- [ ] F-W3 Vite dev proxy `/api` → `http://localhost:4000`; `VITE_API_URL` only for prod builds
-- [ ] F-W4 API client: `openapi-typescript` (`npm run api:gen`, from `../kritex-server/openapi.json` or `$API_SPEC_URL`) + `openapi-fetch` client in `src/lib/api/client.ts` (credentials: include); migrate ContactSection to it
-- [ ] F-W5 MSW setup for dev/tests (`src/mocks/`), toggled by `VITE_USE_MOCKS`
-- [ ] F-W6 GitHub Actions: lint, typecheck, vitest, build. Root `CLAUDE.md` with frontend conventions
+- [x] F-W1 Commit the current WIP: `c05c73e` on integration branch `ecommerce`
+- [x] F-W2 Cleanup: delete `venv/`, `venv2/`, `bun.lock`; move `public/Product Catalogue zip file/` out of `public/` → `assets-source/` (gitignored); `.gitignore` for `.env*` except `.env.example`
+- [x] F-W3 Vite dev proxy `/api` → `http://localhost:4000`; `VITE_API_URL` only for prod builds
+- [x] F-W4 API client: `openapi-typescript` (`npm run api:gen`, from `../kritex-server/openapi.json` or `$API_SPEC_URL`) + `openapi-fetch` client in `src/lib/api/client.ts` (credentials: include); migrate ContactSection to it
+- [x] F-W5 MSW setup for dev/tests (`src/mocks/`), toggled by `VITE_USE_MOCKS`
+- [x] F-W6 GitHub Actions: lint, typecheck, vitest, build. Root `CLAUDE.md` with frontend conventions
 
 ---
 
@@ -161,10 +166,10 @@ Stages, agents, gates and checkpoints: [EXECUTION.md](EXECUTION.md).
 ## Stage 5: Launch prep
 
 ### Agent `deploy` [both]
-- [ ] DEP-1 [S] Multi-stage Dockerfile; Railway/Render service; managed Postgres (ap-south-1); `prisma migrate deploy` on release; staging + prod envs
+- [ ] DEP-1 [S] Multi-stage Dockerfile; `app.set('trust proxy', …)` so throttling sees client IPs; Railway/Render service; managed Postgres (ap-south-1); `prisma migrate deploy` on release; staging + prod envs
 - [ ] DEP-2 [W] Cloudflare Pages/Vercel with PR previews; domains `kritex.in`, `api.kritex.in` (+ staging); cookie domain `.kritex.in`
 - [ ] DEP-3 [S] R2 bucket + CDN domain; migrate `public/products` images; update image URLs
-- [ ] DEP-4 [both] Sentry, uptime monitor on `/api/v1/health`, DB backups + restore drill
+- [ ] DEP-4 [both] Sentry (not set up yet in either repo), uptime monitor on `/api/v1/health`, DB backups + restore drill
 - [ ] DEP-5 [S] Razorpay + Shiprocket live keys and webhook URLs (after activation)
 
 ### Agent `web-seo-perf` [W]
@@ -182,6 +187,13 @@ Stages, agents, gates and checkpoints: [EXECUTION.md](EXECUTION.md).
 - [ ] Razorpay live activation, CA sign-off on invoices, staff accounts
 
 ---
+
+## Tech-debt / follow-ups (from Stage 0)
+- [ ] TD-1 [S] Throttler storage is in-memory (per instance) → Redis storage before running >1 API instance
+- [ ] TD-2 [S] Upgrade to Nest 12 + unpin zod once nestjs-zod supports them (ADR-014); `src/openapi.spec.ts` guards regressions
+- [ ] TD-3 [both] `npm audit` advisories (server: transitive via @nestjs/swagger 11 / jest tooling; web: pre-existing) → review in QA-6
+- [ ] TD-4 [S] Old prototype volume `server_kritex_postgres_data` can be deleted once not needed
+- [ ] TD-5 [W] Rename package.json `name` from `vite_react_shadcn_ts` to `kritex-website`
 
 ## Stage 6: Go-live (see EXECUTION.md)
 - [ ] GL-1 Soft launch (staff-only gate), real order + refund + real shipment

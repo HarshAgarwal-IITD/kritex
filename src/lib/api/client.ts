@@ -11,7 +11,7 @@ export const api = createClient<paths>({
   credentials: "include",
 });
 
-export type ApiErrorBody = components["schemas"]["ErrorResponse"];
+export type ApiErrorBody = components["schemas"]["ErrorResponseDto"];
 
 /** Error thrown/returned for failed API calls, carrying the contract's `{ error: { code, message } }`. */
 export class ApiError extends Error {

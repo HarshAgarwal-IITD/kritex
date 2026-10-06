@@ -11,6 +11,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** Liveness + database check */
         get: operations["getHealth"];
         put?: never;
         post?: never;
@@ -27,8 +28,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
+        /** List submitted inquiries, newest first (admin) */
         get: operations["listQueries"];
         put?: never;
+        /** Submit a contact / tender inquiry (public) */
         post: operations["createQuery"];
         delete?: never;
         options?: never;
@@ -40,54 +43,43 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
-        Health: {
+        CreateQueryDto: {
+            /** Format: email */
+            email: string;
+            name: string;
+            organization?: string;
+            requirements: string;
+        };
+        CreateQueryResponseDto_Output: {
+            /** Format: date-time */
+            createdAt: string;
+            id: string;
+        };
+        ErrorResponseDto: {
+            error: {
+                /** @example VALIDATION_ERROR */
+                code: string;
+                details?: unknown;
+                message: string;
+            };
+        };
+        HealthResponseDto_Output: {
             /** @enum {string} */
             status: "ok";
         };
-        CreateQueryRequest: {
-            name: string;
-            organization?: string;
-            /** Format: email */
-            email: string;
-            requirements: string;
-        };
-        CreateQueryResponse: {
-            id: string;
+        QueryDto_Output: {
             /** Format: date-time */
             createdAt: string;
-        };
-        /** @enum {string} */
-        QueryStatus: "NEW" | "IN_PROGRESS" | "RESOLVED";
-        Query: {
+            email: string;
             id: string;
             name: string;
             organization: string | null;
-            /** Format: email */
-            email: string;
             requirements: string;
-            status: components["schemas"]["QueryStatus"];
-            /** Format: date-time */
-            createdAt: string;
-        };
-        ErrorResponse: {
-            error: {
-                code: string;
-                message: string;
-                details?: unknown;
-            };
+            /** @enum {string} */
+            status: "NEW" | "IN_PROGRESS" | "RESOLVED";
         };
     };
-    responses: {
-        /** @description Error */
-        Error: {
-            headers: {
-                [name: string]: unknown;
-            };
-            content: {
-                "application/json": components["schemas"]["ErrorResponse"];
-            };
-        };
-    };
+    responses: never;
     parameters: never;
     requestBodies: never;
     headers: never;
@@ -104,13 +96,22 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Service is healthy */
+            /** @description API and database are up */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Health"];
+                    "application/json": components["schemas"]["HealthResponseDto_Output"];
+                };
+            };
+            /** @description Database unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
         };
@@ -130,11 +131,18 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["Query"][];
+                    "application/json": components["schemas"]["QueryDto_Output"][];
                 };
             };
-            401: components["responses"]["Error"];
-            500: components["responses"]["Error"];
+            /** @description UNAUTHORIZED */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
         };
     };
     createQuery: {
@@ -146,22 +154,37 @@ export interface operations {
         };
         requestBody: {
             content: {
-                "application/json": components["schemas"]["CreateQueryRequest"];
+                "application/json": components["schemas"]["CreateQueryDto"];
             };
         };
         responses: {
-            /** @description Query created */
+            /** @description Created */
             201: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["CreateQueryResponse"];
+                    "application/json": components["schemas"]["CreateQueryResponseDto_Output"];
                 };
             };
-            400: components["responses"]["Error"];
-            429: components["responses"]["Error"];
-            500: components["responses"]["Error"];
+            /** @description VALIDATION_ERROR */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description TOO_MANY_REQUESTS */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
         };
     };
 }

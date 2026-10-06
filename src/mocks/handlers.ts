@@ -1,11 +1,12 @@
 import { http, HttpResponse } from "msw";
-import type { components } from "@/lib/api/schema";
+import type { paths } from "@/lib/api/schema";
 
-type Query = components["schemas"]["Query"];
-type CreateQueryRequest = components["schemas"]["CreateQueryRequest"];
-type CreateQueryResponse = components["schemas"]["CreateQueryResponse"];
-type Health = components["schemas"]["Health"];
-type ErrorResponse = components["schemas"]["ErrorResponse"];
+// Types come from paths (not component names), so they survive server-side DTO renames.
+type Query = paths["/api/v1/queries"]["get"]["responses"][200]["content"]["application/json"][number];
+type CreateQueryRequest = paths["/api/v1/queries"]["post"]["requestBody"]["content"]["application/json"];
+type CreateQueryResponse = paths["/api/v1/queries"]["post"]["responses"][201]["content"]["application/json"];
+type Health = paths["/api/v1/health"]["get"]["responses"][200]["content"]["application/json"];
+type ErrorResponse = paths["/api/v1/queries"]["post"]["responses"][400]["content"]["application/json"];
 
 // "*" prefix matches any origin, so handlers work with or without VITE_API_URL.
 export const apiPath = (path: string) => `*${path}`;

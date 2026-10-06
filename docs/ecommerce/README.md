@@ -15,9 +15,10 @@ into a full ecommerce platform. Update these files as decisions are made and wor
 
 ## Current status (2026-10-06)
 
-- **Stage:** pre-Stage 0 (planning done, backend repo created locally). No ecommerce code written yet.
-- **Blocking:** open questions Q1–Q6 in [DECISIONS.md](DECISIONS.md#open-questions). Q1 (who can buy what) and Q2 (pricing data) block launch, not the start of the build.
-- **Next step:** confirm the proposed decisions, create the GitHub remote for `kritex-server`, then run Stage 0 (see [EXECUTION.md](EXECUTION.md)).
+- **Stage:** ✅ **Stage 0 done** (2026-10-06, gate passed). **Stage 1 (Contract + Data)** next.
+- **Decisions:** all ADRs Accepted. Open questions run on defaults (owner, 2026-10-06). Q1/Q2 real data is still needed before launch.
+- **Next step:** launch Stage 1 agents (`server-db`, `server-contract`, `web-content`). Owner: create the GitHub remote for `kritex-server`, start Razorpay KYC.
+- **Run locally:** `cd ../kritex-server && docker compose up -d && npm run start:dev` (API :4000, docs at /api/docs), then `npm run dev` here (:8080, proxies /api).
 
 ## Where we're starting from
 

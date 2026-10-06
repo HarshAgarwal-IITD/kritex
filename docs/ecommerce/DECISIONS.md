@@ -201,6 +201,19 @@ Done 2026-10-06: the untracked `server/` folder was moved to `../kritex-server` 
 
 ---
 
+## ADR-014: Stage 0 version pins & contract-consumption rules
+**Status:** Accepted · 2026-10-06 (recorded at Stage 0 integration)
+
+- **NestJS 11.x, not 12.** nestjs-zod 5.5 (latest) supports Nest 10/11 and @nestjs/swagger ≤ 11 only.
+- **zod pinned `~4.4.3`.** 4.5+ emits nullable schemas that nestjs-zod 5.5 converts wrongly (`organization` became an array in OpenAPI). `src/openapi.spec.ts` guards this.
+- **TypeScript 5.9** (typescript-eslint doesn't support TS 7 yet). OpenAPI 3.0.0 (`nullable: true`).
+- **Server Jest uses `@swc/jest`.** Type-checking is done separately by `tsc --noEmit`.
+- **Generated schema names:** request DTOs keep their names (`CreateQueryDto`); response DTOs get nestjs-zod's `_Output` suffix (`QueryDto_Output`); errors use `ErrorResponseDto`.
+  **Rule for the website:** derive types from `paths[...]` (endpoint + status code), not from `components["schemas"][name]`, so renames on the server don't break the frontend. (The bootstrap mocks used guessed component names and broke on the first real regen; fixed at integration.)
+- Upgrade path: TD-2 in TASKS.md.
+
+---
+
 ## Open questions
 
 **2026-10-06: the owner chose to proceed with the defaults below.** They are now working assumptions. Revisit any of them by

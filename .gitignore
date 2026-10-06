@@ -5,3 +5,6 @@ dist
 .env.*
 !.env.example
 assets-source/
+
+# Converted WebP assets staged for R2 upload
+r2-upload/
