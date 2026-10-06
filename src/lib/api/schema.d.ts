@@ -1046,7 +1046,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** List submitted inquiries, newest first (admin) */
+        /** List submitted inquiries, newest first (STAFF/ADMIN session; same as adminListQueries) */
         get: operations["listQueries"];
         put?: never;
         /** Submit a contact / tender inquiry (public) */
@@ -7502,6 +7502,8 @@ export interface operations {
                 /** @description Paise */
                 maxPrice?: number;
                 saleChannel?: "RETAIL" | "B2B_ONLY" | "ENQUIRY_ONLY";
+                /** @description true = only products with an in-stock active variant (false = no filter) */
+                inStock?: "true" | "false";
                 sort?: "newest" | "price_asc" | "price_desc";
                 page?: number;
                 limit?: number;
@@ -7590,8 +7592,17 @@ export interface operations {
                     "application/json": components["schemas"]["QueryDto_Output"][];
                 };
             };
-            /** @description UNAUTHORIZED */
+            /** @description UNAUTHORIZED: no session */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
