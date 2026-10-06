@@ -104,6 +104,7 @@ const ClientsSection = () => {
                     src={client.logo}
                     alt={`${client.name} logo`}
                     className="w-full h-full object-contain filter drop-shadow-md transition-transform duration-500 group-hover:scale-110"
+                    loading="lazy"
                     onError={(e) => {
                       (e.target as HTMLImageElement).style.display = 'none';
                       (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');
@@ -151,6 +152,7 @@ const ClientsSection = () => {
                               src={client.logo}
                               alt={`${client.name} logo`}
                               className="w-full h-full object-contain filter drop-shadow-md transition-transform duration-500 group-hover:scale-110"
+                              loading="lazy"
                               onError={(e) => {
                                 (e.target as HTMLImageElement).style.display = 'none';
                                 (e.target as HTMLImageElement).nextElementSibling?.classList.remove('hidden');

@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { toast } from "sonner";
+
+const API_URL = import.meta.env.VITE_API_URL ?? "http://localhost:4000";
 
 const ContactSection = () => {
   const [formData, setFormData] = useState({
@@ -8,13 +11,28 @@ const ContactSection = () => {
     email: "",
     requirements: ""
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const subject = `Inquiry from ${formData.name} ${formData.organization ? `- ${formData.organization}` : ""}`;
-    const body = `Name: ${formData.name}\nOrganization: ${formData.organization || "N/A"}\nEmail: ${formData.email}\n\nRequirements:\n${formData.requirements}`;
-    
-    window.location.href = `mailto:procurement@kritex.in?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    setIsSubmitting(true);
+
+    try {
+      const res = await fetch(`${API_URL}/api/queries`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      if (!res.ok) throw new Error("Request failed");
+
+      toast.success("Inquiry submitted. Our team will be in touch shortly.");
+      setFormData({ name: "", organization: "", email: "", requirements: "" });
+    } catch {
+      toast.error("Couldn't submit your inquiry. Please try again or email procurement@kritex.in directly.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -110,9 +128,10 @@ const ContactSection = () => {
               </div>
               <button
                 type="submit"
-                className="font-display text-xs bg-primary text-primary-foreground px-8 py-3 hover:bg-primary/90 transition-colors duration-300 active:translate-y-px"
+                disabled={isSubmitting}
+                className="font-display text-xs bg-primary text-primary-foreground px-8 py-3 hover:bg-primary/90 transition-colors duration-300 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none"
               >
-                Submit Inquiry
+                {isSubmitting ? "Submitting..." : "Submit Inquiry"}
               </button>
             </form>
           </motion.div>

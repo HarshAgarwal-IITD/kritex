@@ -177,6 +177,7 @@ const ProductDetail = () => {
                           src={variant.swatch ?? variant.image}
                           alt={variant.label}
                           className={cn("h-full w-full", variant.swatch ? "object-cover" : "object-contain p-0.5")}
+                          loading="lazy"
                         />
                       </button>
                     ))}
