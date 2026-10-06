@@ -13,7 +13,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "images:convert": "node scripts/convert-images.mjs"
+    "images:convert": "node scripts/convert-images.mjs",
+    "test:visual": "playwright test -c e2e/visual/playwright.config.ts"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",
