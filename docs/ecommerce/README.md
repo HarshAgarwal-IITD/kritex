@@ -15,9 +15,9 @@ into a full ecommerce platform. Update these files as decisions are made and wor
 
 ## Current status (2026-10-06)
 
-- **Stage:** ✅ **Stage 0 done** (2026-10-06, gate passed). **Stage 1 (Contract + Data)** next.
+- **Stage:** ✅ Stage 0 done (2026-10-06). **Stage 1 (Contract + Data) in progress**: agents `server-db`, `server-contract`, `web-content` running.
 - **Decisions:** all ADRs Accepted. Open questions run on defaults (owner, 2026-10-06). Q1/Q2 real data is still needed before launch.
-- **Next step:** launch Stage 1 agents (`server-db`, `server-contract`, `web-content`). Owner: create the GitHub remote for `kritex-server`, start Razorpay KYC.
+- **Next step:** integrate Stage 1 → gate → Stage 2. Owner: create the GitHub remote for `kritex-server`, start Razorpay KYC.
 - **Run locally:** `cd ../kritex-server && docker compose up -d && npm run start:dev` (API :4000, docs at /api/docs), then `npm run dev` here (:8080, proxies /api).
 
 ## Where we're starting from

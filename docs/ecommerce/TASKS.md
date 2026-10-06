@@ -38,23 +38,23 @@ Gate passed: both repos' lint/typecheck/tests/build green (server 49 unit + 18 e
 ## Stage 1: Contract + Data
 
 ### Agent `server-db` [S] → F-S1
-- [ ] D-1 Prisma schema per ARCHITECTURE.md §3 (catalog, users + Better Auth tables, cart, orders, promotions, B2B, existing Query)
-- [ ] D-2 Migration + `pg_trgm` + indexes (slug, sku, status, createdAt, trigram on name)
-- [ ] D-3 One-time export of website `src/data/*.ts` → `prisma/seed/data/catalog.json`; `prisma db seed` creates categories/products/options/variants (size × colour)/images/specSheets; placeholder prices behind `SEED_PLACEHOLDER_PRICES`
-- [ ] D-4 Product-data CSV template (`prisma/seed/product-data-template.csv`: sku, price, hsn, gstRate, stock, weightGrams, dims, saleChannel) + `npm run import:products <csv>`
-- [ ] D-5 Seed admin user from env
+- [~] D-1 Prisma schema per ARCHITECTURE.md §3 (catalog, users + Better Auth tables, cart, orders, promotions, B2B, existing Query)
+- [~] D-2 Migration + `pg_trgm` + indexes (slug, sku, status, createdAt, trigram on name)
+- [~] D-3 One-time export of website `src/data/*.ts` → `prisma/seed/data/catalog.json`; `prisma db seed` creates categories/products/options/variants (size × colour)/images/specSheets; placeholder prices behind `SEED_PLACEHOLDER_PRICES`
+- [~] D-4 Product-data CSV template (`prisma/seed/product-data-template.csv`: sku, price, hsn, gstRate, stock, weightGrams, dims, saleChannel) + `npm run import:products <csv>`
+- [~] D-5 Seed admin user from env
 
 ### Agent `server-contract` [S] → F-S1
-- [ ] K-1 Module skeletons for every domain (ARCHITECTURE.md §2) registered in `app.module.ts`
-- [ ] K-2 zod DTOs for every request/response in ARCHITECTURE.md §4, incl. shared enums (OrderStatus, SaleChannel, Role…) and the error shape
-- [ ] K-3 Stub controllers for every route (correct guards/decorators, `@ApiResponse` types), returning 501
-- [ ] K-4 `openapi.json` regenerated; contract review notes for anything ambiguous in §4
+- [~] K-1 Module skeletons for every domain (ARCHITECTURE.md §2) registered in `app.module.ts`
+- [~] K-2 zod DTOs for every request/response in ARCHITECTURE.md §4, incl. shared enums (OrderStatus, SaleChannel, Role…) and the error shape
+- [~] K-3 Stub controllers for every route (correct guards/decorators, `@ApiResponse` types), returning 501
+- [~] K-4 `openapi.json` regenerated; contract review notes for anything ambiguous in §4
 
 ### Agent `web-content` [W]
-- [ ] C-1 Pages: Terms, Privacy (DPDP-aware), Refund & Returns, Shipping, Cancellation, Contact/Grievance officer. Banner: **draft, needs legal review**.
-- [ ] C-2 Footer links to the policy pages
-- [ ] C-3 `react-helmet-async` + `<Seo>` component; titles/descriptions on existing pages
-- [ ] C-4 Consent banner (only if analytics needs it)
+- [~] C-1 Pages: Terms, Privacy (DPDP-aware), Refund & Returns, Shipping, Cancellation, Contact/Grievance officer. Banner: **draft, needs legal review**.
+- [~] C-2 Footer links to the policy pages
+- [~] C-3 `react-helmet-async` + `<Seo>` component; titles/descriptions on existing pages
+- [ ] C-4 Consent banner: deferred (no analytics yet; revisit with SEO-4)
 
 ---
 
