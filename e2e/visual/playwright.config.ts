@@ -35,7 +35,8 @@ export default defineConfig({
     command: `npx vite --port ${PORT} --strictPort`,
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
-    env: { VITE_USE_MOCKS: "true" },
+    // Pin the asset base empty so screenshots never depend on a local .env (object-store images).
+    env: { VITE_USE_MOCKS: "true", VITE_ASSET_BASE_URL: "" },
     cwd: "../..",
     timeout: 60_000,
   },
