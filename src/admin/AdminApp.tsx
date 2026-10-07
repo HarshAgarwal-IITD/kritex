@@ -3,9 +3,18 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import { RequireStaff } from "./auth/RequireStaff";
 import { AdminLayout } from "./components/AdminLayout";
 import LoginPage from "./pages/LoginPage";
+import DashboardPage from "./pages/DashboardPage";
+import OrdersListPage from "./pages/OrdersListPage";
+import OrderDetailPage from "./pages/OrderDetailPage";
+import CustomersListPage from "./pages/CustomersListPage";
+import CustomerDetailPage from "./pages/CustomerDetailPage";
+import BusinessApprovalsPage from "./pages/BusinessApprovalsPage";
+import CouponsPage from "./pages/CouponsPage";
+import EnquiriesPage from "./pages/EnquiriesPage";
 import ProductsListPage from "./pages/ProductsListPage";
 import ProductEditorPage from "./pages/ProductEditorPage";
 import CategoriesPage from "./pages/CategoriesPage";
+import InventoryPage from "./pages/InventoryPage";
 
 /** Mounted at `/admin/*` (lazy, see route.tsx). Routes below are relative to /admin. */
 const AdminApp = () => (
@@ -23,12 +32,20 @@ const AdminApp = () => (
           </RequireStaff>
         }
       >
-        <Route index element={<Navigate to="products" replace />} />
+        <Route index element={<DashboardPage />} />
+        <Route path="orders" element={<OrdersListPage />} />
+        <Route path="orders/:id" element={<OrderDetailPage />} />
+        <Route path="customers" element={<CustomersListPage />} />
+        <Route path="customers/:id" element={<CustomerDetailPage />} />
+        <Route path="b2b-approvals" element={<BusinessApprovalsPage />} />
+        <Route path="coupons" element={<CouponsPage />} />
+        <Route path="enquiries" element={<EnquiriesPage />} />
         <Route path="products" element={<ProductsListPage />} />
         <Route path="products/new" element={<ProductEditorPage />} />
         <Route path="products/:id" element={<ProductEditorPage />} />
         <Route path="categories" element={<CategoriesPage />} />
-        <Route path="*" element={<Navigate to="products" replace />} />
+        <Route path="inventory" element={<InventoryPage />} />
+        <Route path="*" element={<Navigate to="." replace />} />
       </Route>
     </Routes>
   </>

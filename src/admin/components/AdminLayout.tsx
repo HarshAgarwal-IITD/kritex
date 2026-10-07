@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { FolderTree, LogOut, Package, Store } from "lucide-react";
+import { BadgeCheck, Boxes, FolderTree, Inbox, LayoutDashboard, LogOut, Package, ShoppingBag, Store, TicketPercent, Users, type LucideIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -21,17 +21,44 @@ import { asset } from "@/lib/asset";
 import { useMe, useSignOut } from "../api/auth";
 import { adminPaths } from "../paths";
 
-const NAV = [
-  { label: "Products", to: adminPaths.products, icon: Package },
-  { label: "Categories", to: adminPaths.categories, icon: FolderTree },
+interface NavItem {
+  label: string;
+  to: string;
+  icon: LucideIcon;
+  exact?: boolean;
+}
+
+const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
+  { label: "Overview", items: [{ label: "Dashboard", to: adminPaths.dashboard, icon: LayoutDashboard, exact: true }] },
+  {
+    label: "Sales",
+    items: [
+      { label: "Orders", to: adminPaths.orders, icon: ShoppingBag },
+      { label: "Customers", to: adminPaths.customers, icon: Users },
+      { label: "B2B approvals", to: adminPaths.b2bApprovals, icon: BadgeCheck },
+      { label: "Coupons", to: adminPaths.coupons, icon: TicketPercent },
+      { label: "Enquiries", to: adminPaths.enquiries, icon: Inbox },
+    ],
+  },
+  {
+    label: "Catalog",
+    items: [
+      { label: "Products", to: adminPaths.products, icon: Package },
+      { label: "Categories", to: adminPaths.categories, icon: FolderTree },
+      { label: "Inventory", to: adminPaths.inventory, icon: Boxes },
+    ],
+  },
 ];
+
+const isActive = (item: NavItem, pathname: string) =>
+  item.exact ? pathname.replace(/\/$/, "") === item.to : pathname === item.to || pathname.startsWith(`${item.to}/`);
 
 export function AdminLayout() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const me = useMe();
   const signOut = useSignOut();
-  const current = NAV.find((n) => pathname.startsWith(n.to));
+  const current = NAV_GROUPS.flatMap((g) => g.items).find((n) => isActive(n, pathname));
 
   return (
     <SidebarProvider>
@@ -46,23 +73,25 @@ export function AdminLayout() {
         </SidebarHeader>
         <SidebarSeparator />
         <SidebarContent>
-          <SidebarGroup>
-            <SidebarGroupLabel className="font-display">Catalog</SidebarGroupLabel>
-            <SidebarGroupContent>
-              <SidebarMenu>
-                {NAV.map((item) => (
-                  <SidebarMenuItem key={item.to}>
-                    <SidebarMenuButton asChild isActive={pathname.startsWith(item.to)} tooltip={item.label}>
-                      <Link to={item.to}>
-                        <item.icon />
-                        <span>{item.label}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                ))}
-              </SidebarMenu>
-            </SidebarGroupContent>
-          </SidebarGroup>
+          {NAV_GROUPS.map((group) => (
+            <SidebarGroup key={group.label}>
+              <SidebarGroupLabel className="font-display">{group.label}</SidebarGroupLabel>
+              <SidebarGroupContent>
+                <SidebarMenu>
+                  {group.items.map((item) => (
+                    <SidebarMenuItem key={item.to}>
+                      <SidebarMenuButton asChild isActive={isActive(item, pathname)} tooltip={item.label}>
+                        <Link to={item.to}>
+                          <item.icon />
+                          <span>{item.label}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  ))}
+                </SidebarMenu>
+              </SidebarGroupContent>
+            </SidebarGroup>
+          ))}
         </SidebarContent>
         <SidebarFooter>
           <SidebarMenu>
