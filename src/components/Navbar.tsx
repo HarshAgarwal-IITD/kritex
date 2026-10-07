@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, Menu, ShoppingBag, User, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCategories } from "@/features/catalog/hooks";
+import { useCartCount } from "@/features/cart/hooks";
 import { asset } from "@/lib/asset";
 
 const navLinks = [
@@ -10,7 +11,7 @@ const navLinks = [
   { label: "Timeline", href: "#timeline" },
 ];
 
-/** Account + cart icons. The cart count badge is wired in Stage 3 (pass `cartCount`). */
+/** Account + cart icons with the cart's item count badge. */
 export const AccountCartLinks = ({ cartCount = 0 }: { cartCount?: number }) => (
   <div className="flex items-center gap-5">
     <Link
@@ -42,6 +43,7 @@ const Navbar = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { data: categoryData } = useCategories();
+  const cartCount = useCartCount();
   const productCategories = (categoryData?.items ?? []).map((c) => ({
     slug: c.slug,
     title: c.name,
@@ -131,7 +133,7 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
-          <AccountCartLinks />
+          <AccountCartLinks cartCount={cartCount} />
           <a
             href="#contact"
             onClick={(e) => handleSectionLink(e, "#contact")}
@@ -143,7 +145,7 @@ const Navbar = () => {
 
         {/* Mobile: account/cart + menu toggle */}
         <div className="md:hidden flex items-center gap-5">
-          <AccountCartLinks />
+          <AccountCartLinks cartCount={cartCount} />
           <button
             onClick={() => setOpen(!open)}
             className="text-foreground"

@@ -2,6 +2,7 @@ import { http, HttpResponse } from "msw";
 import type { paths } from "@/lib/api/schema";
 import { adminHandlers } from "./admin-handlers";
 import { catalogHandlers } from "./catalog";
+import { commerceHandlers, resetCommerceMockDb } from "./commerce-handlers";
 
 // Types come from paths (not component names), so they survive server-side DTO renames.
 type Query = paths["/api/v1/queries"]["get"]["responses"][200]["content"]["application/json"][number];
@@ -17,10 +18,15 @@ export const apiPath = (path: string) => `*${path}`;
 let queries: Query[] = [];
 export const resetMockDb = () => {
   queries = [];
+  resetCommerceMockDb();
 };
 export const getMockQueries = () => queries;
 
 export const handlers = [
+  // Storefront cart / checkout / account (web-commerce). First, so its sign-in handler can answer for
+  // mock-created (unverified) users before the admin one; it falls through for everyone else.
+  ...commerceHandlers,
+
   // Admin app: Better Auth, /me and /admin/* catalog routes (see admin-handlers.ts).
   ...adminHandlers,
 

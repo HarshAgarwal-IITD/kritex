@@ -30,6 +30,16 @@ export interface SignInEmailInput {
   rememberMe?: boolean;
 }
 
+export interface SignUpEmailInput {
+  name: string;
+  email: string;
+  password: string;
+  /** Where the emailed verification link lands after verifying. */
+  callbackURL?: string;
+}
+
+export type EmailOtpType = "sign-in" | "email-verification" | "forget-password";
+
 export interface SignInEmailResult {
   redirect?: boolean;
   token: string;
@@ -80,5 +90,30 @@ export const authClient = {
   },
   signOut() {
     return request<{ success: boolean }>("/sign-out", { method: "POST", body: "{}" });
+  },
+
+  // ---- Storefront account flows (Stage 3). Additive; the admin only uses the methods above. ----
+
+  /** Creates the account and emails a verification link. No session until the email is verified. */
+  signUpEmail(input: SignUpEmailInput) {
+    return request<{ token: string | null; user: AuthUser }>("/sign-up/email", { method: "POST", body: JSON.stringify(input) });
+  },
+  /** Re-sends the verification link (e.g. after sign-in fails with EMAIL_NOT_VERIFIED). */
+  sendVerificationEmail(input: { email: string; callbackURL?: string }) {
+    return request<{ status: boolean }>("/send-verification-email", { method: "POST", body: JSON.stringify(input) });
+  },
+  /** Emails a reset link; the server redirects it to `redirectTo?token=...`. */
+  requestPasswordReset(input: { email: string; redirectTo: string }) {
+    return request<{ status: boolean }>("/request-password-reset", { method: "POST", body: JSON.stringify(input) });
+  },
+  resetPassword(input: { token: string; newPassword: string }) {
+    return request<{ status: boolean }>("/reset-password", { method: "POST", body: JSON.stringify(input) });
+  },
+  /** Sends a 6-digit one-time code by email. */
+  sendEmailOtp(input: { email: string; type: EmailOtpType }) {
+    return request<{ success: boolean }>("/email-otp/send-verification-otp", { method: "POST", body: JSON.stringify(input) });
+  },
+  signInEmailOtp(input: { email: string; otp: string }) {
+    return request<SignInEmailResult>("/sign-in/email-otp", { method: "POST", body: JSON.stringify(input) });
   },
 };

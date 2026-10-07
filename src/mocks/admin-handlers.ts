@@ -538,3 +538,6 @@ export const adminHandlers = [
     return new HttpResponse(file.body, { headers: { "Content-Type": file.contentType } });
   }),
 ];
+
+/** The signed-in mock user (or null). Used by the storefront commerce mocks (commerce-handlers.ts). */
+export const getMockSessionUser = (): Me | null => currentUser();

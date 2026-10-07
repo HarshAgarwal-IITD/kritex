@@ -1,4 +1,5 @@
-import { ClipboardList, Mail, ShoppingCart } from "lucide-react";
+import { ClipboardList, Mail } from "lucide-react";
+import AddToCart from "@/features/cart/components/AddToCart";
 import { cn } from "@/lib/utils";
 import { formatPaise, formatPriceRange } from "../format";
 import type { ProductDetail, ProductVariant } from "../types";
@@ -70,9 +71,11 @@ interface CtaProps {
   variant?: ProductVariant;
   onEnquire: () => void;
   onRequestQuote: () => void;
+  /** Used for the quantity control's accessible label. */
+  productName?: string;
 }
 
-export const PurchaseCta = ({ kind, variant, onEnquire, onRequestQuote }: CtaProps) => {
+export const PurchaseCta = ({ kind, variant, onEnquire, onRequestQuote, productName }: CtaProps) => {
   if (kind === "enquiry") {
     return (
       <button type="button" onClick={onEnquire} className={primaryButton}>
@@ -96,20 +99,15 @@ export const PurchaseCta = ({ kind, variant, onEnquire, onRequestQuote }: CtaPro
     );
   }
 
-  const outOfStock = variant ? !variant.inStock : false;
   return (
     <div>
-      {/* Cart lands in Stage 3; until then the button is a disabled stub. */}
-      <button type="button" disabled className={primaryButton} title="Online ordering opens soon">
-        <ShoppingCart size={14} />
-        {outOfStock ? "Out of Stock" : "Add to Cart"}
-      </button>
+      <AddToCart variant={variant} productName={productName ?? "this product"} />
       <p className="font-body text-[11px] text-muted-foreground mt-2">
-        Online ordering opens soon.{" "}
+        Ordering in bulk?{" "}
         <button type="button" onClick={onEnquire} className="text-primary hover:text-primary/80 transition-colors duration-200">
           Send an enquiry
         </button>{" "}
-        to order now.
+        for volume pricing.
       </p>
     </div>
   );
