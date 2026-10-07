@@ -1,9 +1,11 @@
 import { http, HttpResponse } from "msw";
 import type { components } from "@/lib/api/schema";
+import { createAdminCommerceHandlers, resetAdminCommerceDb } from "./admin-commerce";
 
 /**
  * MSW handlers for the admin app: Better Auth (`/api/v1/auth/*`, not in the OpenAPI spec), `GET /me`,
- * and the admin catalog routes (categories, products, variants, stock, uploads).
+ * and the admin catalog routes (categories, products, variants, stock, uploads). Orders, inventory, coupons,
+ * customers, B2B approvals, dashboard and enquiries live in admin-commerce.ts and are spread in below.
  * Registered from handlers.ts. Tests reset state with `resetAdminMockDb()`.
  *
  * Mock accounts (password for all: "password123"):
@@ -193,6 +195,7 @@ export function resetAdminMockDb() {
   categories = seedCategories();
   products = seedProducts(categories);
   uploads.clear();
+  resetAdminCommerceDb();
   sessionUserId = null;
   writeStoredSession(null);
 }
@@ -537,4 +540,7 @@ export const adminHandlers = [
     if (!file) return new HttpResponse(null, { status: 404 });
     return new HttpResponse(file.body, { headers: { "Content-Type": file.contentType } });
   }),
+
+  // ---- Stage 3: orders, inventory, coupons, customers, B2B, dashboard, enquiries ----
+  ...createAdminCommerceHandlers({ requireStaff, currentUser, products: () => products }),
 ];
