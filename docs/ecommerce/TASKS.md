@@ -104,39 +104,39 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 
 ---
 
-## Stage 3: Commerce core
+## Stage 3: Commerce core (in progress, started 2026-10-07)
 
 ### Agent `server-cart` [S] → PR-*, AUTH-*, CAT-*
-- [ ] COM-1 (import `PricingModule` from `src/pricing`) Cart service + endpoints: guest token cookie, add/update/remove, live price/stock, totals preview via `TotalsService`
-- [ ] COM-2 Merge guest cart on login
-- [ ] COM-5 Coupon apply/remove endpoints; admin coupons CRUD
+- [~] COM-1 (import `PricingModule` from `src/pricing`) Cart service + endpoints: guest token cookie, add/update/remove, live price/stock, totals preview via `TotalsService`
+- [~] COM-2 Merge guest cart on login
+- [~] COM-5 Coupon apply/remove endpoints; admin coupons CRUD
 
 ### Agent `server-checkout` [S] → PR-*, AUTH-*, CAT-*
-- [ ] COM-7 `POST /checkout/quote`
-- [ ] COM-8 `POST /checkout`: one transaction (lock variants FOR UPDATE, reserve stock, order + item snapshots, coupon usage) + Razorpay order; Idempotency-Key
-- [ ] COM-9 `POST /checkout/verify` (HMAC)
-- [ ] COM-10 Razorpay webhook (`req.rawBody`, signature, idempotent transitions)
-- [ ] COM-11 `@Cron` reservation expiry (release stock, cancel after 30 min unpaid)
-- [ ] COM-12 Order state machine + OrderEvent timeline; emits `order.paid`, `order.cancelled`, `order.shipped`
-- [ ] COM-13 Customer order endpoints (list, detail, cancel, return request)
-- [ ] COM-14 Admin order endpoints (filters, status, mark-paid, Razorpay refund, notes, CSV export); dashboard endpoint
-- [ ] COM-15 Concurrency test: last-unit race
-- [ ] COM-16 Payment retry for an unpaid order (`POST /me/orders/:number/pay`, additive contract change)
+- [~] COM-7 `POST /checkout/quote` (first: TD-19, checkout line `discount`/`netTotal`)
+- [~] COM-8 `POST /checkout`: one transaction (lock variants FOR UPDATE, reserve stock, order + item snapshots, coupon usage) + Razorpay order; Idempotency-Key
+- [~] COM-9 `POST /checkout/verify` (HMAC)
+- [~] COM-10 Razorpay webhook (`req.rawBody`, signature, idempotent transitions)
+- [~] COM-11 `@Cron` reservation expiry (release stock, cancel after 30 min unpaid)
+- [~] COM-12 Order state machine + OrderEvent timeline; emits `order.paid`, `order.cancelled`, `order.shipped`
+- [~] COM-13 Customer order endpoints (list, detail, cancel, return request)
+- [~] COM-14 Admin order endpoints (filters, status, mark-paid, Razorpay refund, notes, CSV export); dashboard endpoint
+- [~] COM-15 Concurrency test: last-unit race
+- [~] COM-16 Payment retry for an unpaid order (`POST /me/orders/:number/pay`, additive contract change)
 
 ### Agent `web-commerce` [W] → K-* (MSW until server lands)
-- [ ] WEB-CART-1 Cart drawer + cart page, quantity steppers, optimistic updates, coupon input, navbar count
-- [ ] WEB-CHK-1 Checkout: contact (login or guest) → address (saved/new, pincode autofill) → review (tax breakdown, GSTIN toggle) → pay
-- [ ] WEB-CHK-2 Razorpay Checkout.js + verify + success/failure/pending pages
-- [ ] WEB-ACC-1 Login, signup, OTP, reset pages
-- [ ] WEB-ACC-2 Account: profile, addresses, orders + timeline, invoice download, cancel/return
-- [ ] WEB-ACC-3 B2B application form + status
+- [~] WEB-CART-1 Cart drawer + cart page, quantity steppers, optimistic updates, coupon input, navbar count
+- [~] WEB-CHK-1 Checkout: contact (login or guest) → address (saved/new, pincode autofill) → review (tax breakdown, GSTIN toggle) → pay
+- [~] WEB-CHK-2 Razorpay Checkout.js + verify + success/failure/pending pages
+- [~] WEB-ACC-1 Login, signup, OTP, reset pages
+- [~] WEB-ACC-2 Account: profile, addresses, orders + timeline, invoice download, cancel/return
+- [~] WEB-ACC-3 B2B application form + status
 
 ### Agent `web-admin-orders` [W]
-- [ ] ADM-5 Orders list (filters, search, export) + detail (timeline, items, payment, actions)
-- [ ] ADM-6 Inventory view (low stock, adjust with reason)
-- [ ] ADM-7 Coupons CRUD
-- [ ] ADM-8 Customers + B2B approvals
-- [ ] ADM-9 Dashboard tiles + enquiries inbox
+- [~] ADM-5 Orders list (filters, search, export) + detail (timeline, items, payment, actions)
+- [~] ADM-6 Inventory view (low stock, adjust with reason)
+- [~] ADM-7 Coupons CRUD
+- [~] ADM-8 Customers + B2B approvals
+- [~] ADM-9 Dashboard tiles + enquiries inbox
 
 ---
 
@@ -212,8 +212,8 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [ ] TD-16 [S] `POST /admin/products/import` is still 501: CSV logic lives in `prisma/seed/lib` (outside the build root). Move it under `src/` or keep CLI-only
 - [ ] TD-17 [S] Public "newest" sort ignores `Product.sortOrder`; add a `featured` sort if the curated order matters
 - [ ] TD-18 [S] Local upload driver signs with a per-boot secret (tickets die on restart); R2 presign doesn't enforce size. Fine for dev; revisit with DEP-3
-- [ ] TD-19 [S] `checkoutLineSchema.taxAmount` says "GST included in lineTotal" but tax is computed on the post-coupon `netTotal`. Fix the description or add `discount`/`netTotal` (additive) before COM-7; same for order item snapshots
-- [ ] TD-20 [W] MSW `GET /queries` mock still expects a Bearer key; server now uses a session (`adminListQueries`). Align the mock / move to admin handlers
+- [~] TD-19 [S] (server-checkout) `checkoutLineSchema.taxAmount` says "GST included in lineTotal" but tax is computed on the post-coupon `netTotal`. Fix the description or add `discount`/`netTotal` (additive) before COM-7; same for order item snapshots
+- [~] TD-20 [W] (web-admin-orders) MSW `GET /queries` mock still expects a Bearer key; server now uses a session (`adminListQueries`). Align the mock / move to admin handlers
 - [ ] TD-21 [S] Admin API gaps from the admin UI: create/delete a single variant, stock-movement history, orphan upload cleanup; categories are flat (`subCategory` is free text)
 - [ ] TD-22 [S] Drop scratch DBs on :5434 (`kritex_test_{catalog,auth,pricing}`, `kritex_auth_dev`) when no longer needed
 - [ ] TD-5 [W] Rename package.json `name` from `vite_react_shadcn_ts` to `kritex-website`

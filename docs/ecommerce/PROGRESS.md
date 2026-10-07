@@ -3,7 +3,7 @@
 This is the running record of what has been built, where it lives, how to run it, and what's still open.
 Add a new section at the end of each stage.
 
-**Status as of 2026-10-07:** Stages 0, 1 and 2 are complete. **Next: Stage 3 (Commerce core).**
+**Status as of 2026-10-07:** Stages 0, 1 and 2 are complete. **Stage 3 (Commerce core) in progress** (started 2026-10-07).
 
 | Stage | Status | Integration commit |
 |---|---|---|
@@ -11,7 +11,7 @@ Add a new section at the end of each stage.
 | 0 Foundation | ✅ gate passed | server `6a900da` · web `782488e` |
 | 1 Contract + Data | ✅ gate passed | server `bfd1d38` · web `428f63c` |
 | 2 Catalog + Identity | ✅ gate passed | server `9a4aa64` · web `6520bbf` |
-| 3 Commerce core | next | — |
+| 3 Commerce core | 🔄 in progress | — |
 | 4–6 | not started | — |
 
 ---
