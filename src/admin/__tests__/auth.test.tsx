@@ -57,7 +57,7 @@ describe("admin auth guard", () => {
   it("lets staff straight in and signs out", async () => {
     setMockSession("admin@kritex.in");
     renderAdmin("/admin");
-    expect(await screen.findByRole("heading", { name: "Products" })).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: "Dashboard" })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole("button", { name: "Sign out" }));
     await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent(/^\/admin\/login/));

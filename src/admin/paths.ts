@@ -1,8 +1,17 @@
 export const adminPaths = {
   root: "/admin",
   login: "/admin/login",
+  dashboard: "/admin",
+  orders: "/admin/orders",
+  order: (id: string) => `/admin/orders/${id}`,
+  customers: "/admin/customers",
+  customer: (id: string) => `/admin/customers/${id}`,
+  b2bApprovals: "/admin/b2b-approvals",
+  coupons: "/admin/coupons",
+  enquiries: "/admin/enquiries",
   products: "/admin/products",
   newProduct: "/admin/products/new",
   product: (id: string) => `/admin/products/${id}`,
   categories: "/admin/categories",
+  inventory: "/admin/inventory",
 };

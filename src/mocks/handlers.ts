@@ -2,6 +2,7 @@ import { http, HttpResponse } from "msw";
 import type { paths } from "@/lib/api/schema";
 import { adminHandlers } from "./admin-handlers";
 import { catalogHandlers } from "./catalog";
+import { addMockQuery, getMockQueries, resetMockQueries } from "./queries-store";
 
 // Types come from paths (not component names), so they survive server-side DTO renames.
 type Query = paths["/api/v1/queries"]["get"]["responses"][200]["content"]["application/json"][number];
@@ -13,12 +14,9 @@ type ErrorResponse = paths["/api/v1/queries"]["post"]["responses"][400]["content
 // "*" prefix matches any origin, so handlers work with or without VITE_API_URL.
 export const apiPath = (path: string) => `*${path}`;
 
-/** In-memory store for mocked queries (reset between tests via resetMockDb). */
-let queries: Query[] = [];
-export const resetMockDb = () => {
-  queries = [];
-};
-export const getMockQueries = () => queries;
+/** Mocked queries live in ./queries-store (shared with the admin inbox); reset between tests via resetMockDb. */
+export const resetMockDb = () => resetMockQueries();
+export { getMockQueries };
 
 export const handlers = [
   // Admin app: Better Auth, /me and /admin/* catalog routes (see admin-handlers.ts).
@@ -45,22 +43,14 @@ export const handlers = [
       status: "NEW",
       createdAt: new Date().toISOString(),
     };
-    queries.push(query);
+    addMockQuery(query);
     return HttpResponse.json(
       { id: query.id, createdAt: query.createdAt } satisfies CreateQueryResponse,
       { status: 201 },
     );
   }),
 
-  http.get(apiPath("/api/v1/queries"), ({ request }) => {
-    if (!request.headers.get("authorization")?.startsWith("Bearer ")) {
-      return HttpResponse.json(
-        { error: { code: "UNAUTHORIZED", message: "Missing bearer token" } } satisfies ErrorResponse,
-        { status: 401 },
-      );
-    }
-    return HttpResponse.json(queries satisfies Query[]);
-  }),
+  // GET /queries (staff session, TD-20) is mocked with the admin inbox in admin-commerce.ts.
 
   // ---- Storefront catalog (web-catalog): data + handlers live in ./catalog.ts ----
   ...catalogHandlers,

@@ -39,3 +39,95 @@ export const STATUS_LABELS: Record<ProductStatus, string> = {
   ACTIVE: "Active",
   ARCHIVED: "Archived",
 };
+
+// ---- Stage 3: orders, inventory, coupons, customers, B2B, dashboard, enquiries ----
+export type AdminOrderList = S["AdminOrderListDto_Output"];
+export type AdminOrderListItem = AdminOrderList["items"][number];
+export type AdminOrder = S["AdminOrderDetailDto_Output"];
+export type OrderStatus = AdminOrder["status"];
+export type PaymentMethod = AdminOrder["paymentMethod"];
+export type PaymentStatus = NonNullable<AdminOrder["paymentStatus"]>;
+export type RefundStatus = AdminOrder["refunds"][number]["status"];
+export type OrderAddress = AdminOrder["shippingAddress"];
+export type UpdateOrderStatusInput = S["UpdateOrderStatusDto"];
+export type MarkOrderPaidInput = S["MarkOrderPaidDto"];
+export type RefundOrderInput = S["RefundOrderDto"];
+export type CancelOrderInput = S["AdminCancelOrderDto"];
+export type AddOrderNoteInput = S["AddOrderNoteDto"];
+export type InventoryList = S["InventoryListDto_Output"];
+export type InventoryRow = InventoryList["items"][number];
+export type StockReason = AdjustStockInput["reason"];
+export type Coupon = S["CouponDto_Output"];
+export type CouponList = S["CouponListDto_Output"];
+export type CouponType = Coupon["type"];
+export type CreateCouponInput = S["CreateCouponDto"];
+export type UpdateCouponInput = S["UpdateCouponDto"];
+export type AdminCustomerList = S["AdminCustomerListDto_Output"];
+export type AdminCustomerListItem = AdminCustomerList["items"][number];
+export type AdminCustomer = S["AdminCustomerDetailDto_Output"];
+export type BusinessProfile = S["AdminBusinessProfileDto_Output"];
+export type BusinessProfileList = S["AdminBusinessProfileListDto_Output"];
+export type BusinessStatus = BusinessProfile["status"];
+export type Dashboard = S["DashboardDto_Output"];
+export type Enquiry = S["QueryDto_Output"];
+export type EnquiryStatus = Enquiry["status"];
+
+export const ORDER_STATUSES: OrderStatus[] = [
+  "PENDING_PAYMENT",
+  "AWAITING_PAYMENT",
+  "PAID",
+  "PROCESSING",
+  "SHIPPED",
+  "DELIVERED",
+  "CANCELLED",
+  "RETURN_REQUESTED",
+  "RETURNED",
+  "REFUNDED",
+];
+export const ORDER_STATUS_LABELS: Record<OrderStatus, string> = {
+  PENDING_PAYMENT: "Pending payment",
+  AWAITING_PAYMENT: "Awaiting payment",
+  PAID: "Paid",
+  PROCESSING: "Processing",
+  SHIPPED: "Shipped",
+  DELIVERED: "Delivered",
+  CANCELLED: "Cancelled",
+  RETURN_REQUESTED: "Return requested",
+  RETURNED: "Returned",
+  REFUNDED: "Refunded",
+};
+export const PAYMENT_METHODS: PaymentMethod[] = ["RAZORPAY", "BANK_TRANSFER", "COD"];
+export const PAYMENT_METHOD_LABELS: Record<PaymentMethod, string> = {
+  RAZORPAY: "Razorpay",
+  BANK_TRANSFER: "Bank transfer",
+  COD: "Cash on delivery",
+};
+export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = {
+  CREATED: "Created",
+  CAPTURED: "Captured",
+  FAILED: "Failed",
+  REFUNDED: "Refunded",
+};
+export const STOCK_REASONS: StockReason[] = ["RESTOCK", "ADJUST", "RETURN"];
+export const STOCK_REASON_LABELS: Record<StockReason, string> = {
+  RESTOCK: "Restock",
+  ADJUST: "Adjustment",
+  RETURN: "Customer return",
+};
+export const COUPON_TYPES: CouponType[] = ["PERCENT", "FLAT", "FREE_SHIPPING"];
+export const COUPON_TYPE_LABELS: Record<CouponType, string> = {
+  PERCENT: "Percent off",
+  FLAT: "Flat amount off",
+  FREE_SHIPPING: "Free shipping",
+};
+export const BUSINESS_STATUS_LABELS: Record<BusinessStatus, string> = {
+  PENDING: "Pending",
+  APPROVED: "Approved",
+  REJECTED: "Rejected",
+};
+export const ENQUIRY_STATUSES: EnquiryStatus[] = ["NEW", "IN_PROGRESS", "RESOLVED"];
+export const ENQUIRY_STATUS_LABELS: Record<EnquiryStatus, string> = {
+  NEW: "New",
+  IN_PROGRESS: "In progress",
+  RESOLVED: "Resolved",
+};
