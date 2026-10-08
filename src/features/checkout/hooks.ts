@@ -56,6 +56,8 @@ export function checkoutErrorMessage(err: ApiError): string {
       return "Sorry, an item just went out of stock. Review your cart to continue.";
     case "PRICE_CHANGED":
       return "Prices changed since you reviewed your order. Check the new total and place the order again.";
+    case "INVALID_GSTIN":
+      return "That GSTIN isn't valid. Check it and try again.";
     case "GSTIN_STATE_MISMATCH":
       return "The GSTIN's state code doesn't match the billing address state.";
     case "PAYMENT_METHOD_NOT_ALLOWED":

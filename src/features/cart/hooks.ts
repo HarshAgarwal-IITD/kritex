@@ -28,12 +28,23 @@ export function useCartCount(): number {
   return useCart().data?.itemCount ?? 0;
 }
 
-/** Writes a server cart into the cache unless another cart mutation is still running (it will write its own). */
+/** Clients where a cart write was skipped because another mutation was still running. */
+const skippedWrite = new WeakSet<QueryClient>();
+
+/**
+ * Writes a server cart into the cache unless another cart mutation is still running (it will write its own).
+ * If writes were skipped, responses may have arrived out of order, so the last mutation also refetches.
+ */
 function settleCart(qc: QueryClient, cart: Cart | undefined) {
   const inFlight = qc.isMutating({ mutationKey: CART_MUTATION_KEY });
-  if (inFlight <= 1) {
-    if (cart) qc.setQueryData(cartKeys.cart, cart);
-    else void qc.invalidateQueries({ queryKey: cartKeys.cart });
+  if (inFlight > 1) {
+    skippedWrite.add(qc);
+    return;
+  }
+  if (cart) qc.setQueryData(cartKeys.cart, cart);
+  if (!cart || skippedWrite.has(qc)) {
+    skippedWrite.delete(qc);
+    void qc.invalidateQueries({ queryKey: cartKeys.cart });
   }
 }
 

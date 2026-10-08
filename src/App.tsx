@@ -42,6 +42,45 @@ const guard = (el: JSX.Element) => <RequireAuth>{el}</RequireAuth>;
 /** Blank page-height placeholder while a lazy route loads (keeps the dark background, no layout jump). */
 const RouteFallback = () => <div className="min-h-screen bg-background" />;
 
+/** Every route plus the cart drawer. Exported so tests can mount it inside a MemoryRouter. */
+export const AppRoutes = () => (
+  <CartDrawerProvider>
+    <Suspense fallback={<RouteFallback />}>
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/products" element={<Products />} />
+        {/* One page for every category; the old /products/tactical-footwear etc. URLs resolve here unchanged. */}
+        <Route path="/products/:categorySlug" element={<Category />} />
+        <Route path="/product/:id" element={<ProductDetail />} />
+        <Route path="/cart" element={<CartPage />} />
+        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout/success/:number" element={<CheckoutSuccess />} />
+        <Route path="/checkout/failure/:number" element={<CheckoutFailure />} />
+        <Route path="/checkout/pending/:number" element={<CheckoutPending />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/account" element={guard(<AccountProfile />)} />
+        <Route path="/account/orders" element={guard(<AccountOrders />)} />
+        <Route path="/account/orders/:number" element={guard(<AccountOrderDetail />)} />
+        <Route path="/account/addresses" element={guard(<AccountAddresses />)} />
+        <Route path="/account/business" element={guard(<AccountBusiness />)} />
+        <Route path="/legal" element={<LegalIndex />} />
+        <Route path="/legal/terms" element={<Terms />} />
+        <Route path="/legal/privacy" element={<Privacy />} />
+        <Route path="/legal/returns" element={<Returns />} />
+        <Route path="/legal/shipping" element={<Shipping />} />
+        <Route path="/legal/cancellation" element={<Cancellation />} />
+        <Route path="/legal/contact" element={<LegalContact />} />
+        <Route path="/admin/*" element={<AdminRoute />} />
+        {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Suspense>
+  </CartDrawerProvider>
+);
+
 const queryClient = new QueryClient();
 
 const App = () => (
@@ -51,41 +90,7 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <CartDrawerProvider>
-          <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/products" element={<Products />} />
-            {/* One page for every category; the old /products/tactical-footwear etc. URLs resolve here unchanged. */}
-            <Route path="/products/:categorySlug" element={<Category />} />
-            <Route path="/product/:id" element={<ProductDetail />} />
-            <Route path="/cart" element={<CartPage />} />
-            <Route path="/checkout" element={<Checkout />} />
-            <Route path="/checkout/success/:number" element={<CheckoutSuccess />} />
-            <Route path="/checkout/failure/:number" element={<CheckoutFailure />} />
-            <Route path="/checkout/pending/:number" element={<CheckoutPending />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
-            <Route path="/account" element={guard(<AccountProfile />)} />
-            <Route path="/account/orders" element={guard(<AccountOrders />)} />
-            <Route path="/account/orders/:number" element={guard(<AccountOrderDetail />)} />
-            <Route path="/account/addresses" element={guard(<AccountAddresses />)} />
-            <Route path="/account/business" element={guard(<AccountBusiness />)} />
-            <Route path="/legal" element={<LegalIndex />} />
-            <Route path="/legal/terms" element={<Terms />} />
-            <Route path="/legal/privacy" element={<Privacy />} />
-            <Route path="/legal/returns" element={<Returns />} />
-            <Route path="/legal/shipping" element={<Shipping />} />
-            <Route path="/legal/cancellation" element={<Cancellation />} />
-            <Route path="/legal/contact" element={<LegalContact />} />
-            <Route path="/admin/*" element={<AdminRoute />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-          </Suspense>
-          </CartDrawerProvider>
+          <AppRoutes />
         </BrowserRouter>
       </TooltipProvider>
     </QueryClientProvider>

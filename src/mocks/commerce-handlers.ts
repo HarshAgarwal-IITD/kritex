@@ -368,6 +368,7 @@ function checkoutChecks(body: QuoteBody): Response | null {
     return err(422, "CART_HAS_ISSUES", "Cart has issues", { lines: priced.items.filter((i) => i.issue).map((i) => i.variantId) });
   }
   if (body.gstin) {
+    if (!/^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(body.gstin)) return err(422, "INVALID_GSTIN", "GSTIN is invalid");
     if (!body.businessName) return err(400, "VALIDATION_ERROR", "businessName is required with gstin");
     const billState = (body.billingAddress ?? body.shippingAddress).stateCode;
     if (body.gstin.slice(0, 2) !== billState) return err(422, "GSTIN_STATE_MISMATCH", "GSTIN state does not match the billing state");
@@ -384,7 +385,10 @@ function quoteFor(body: QuoteBody): Quote {
     items: priced.items.map((i) => {
       // Prorate the discount for the per-line tax (display only).
       const net = priced.subtotal ? i.lineTotal - Math.round((priced.discount * i.lineTotal) / priced.subtotal) : i.lineTotal;
+      // `discount`/`netTotal` per line match the finished server (TD-19); not in the generated types yet.
       return {
+        discount: i.lineTotal - net,
+        netTotal: net,
         variantId: i.variantId,
         productName: i.productName,
         variantTitle: i.variantTitle,
@@ -395,7 +399,7 @@ function quoteFor(body: QuoteBody): Quote {
         lineTotal: i.lineTotal,
         gstRate: GST_RATE,
         taxAmount: taxIn(net),
-      };
+      } as Quote["items"][number];
     }),
     totals: priced.totals,
     couponCode: priced.coupon?.valid ? priced.coupon.code : null,
@@ -567,6 +571,10 @@ export const commerceHandlers = [
     }
     const body = JSON.parse(raw) as PlaceBody;
     if (!body.email?.includes("@") || !/^(?:\+91)?[6-9]\d{9}$/.test(body.phone ?? "")) return err(400, "VALIDATION_ERROR", "email and phone are required");
+    const gone = cartLines.filter((l) => stockOf(l.variantId) < l.quantity && findVariant(l.variantId)?.product.purchasable);
+    if (gone.length && cartLines.every((l) => lineIssue(l) !== "UNAVAILABLE")) {
+      return err(409, "OUT_OF_STOCK", "Some items are out of stock", { variantIds: gone.map((l) => l.variantId) });
+    }
     const problem = checkoutChecks(body);
     if (problem) return problem;
     const user = getMockSessionUser();
@@ -584,7 +592,8 @@ export const commerceHandlers = [
     const reservedUntil = new Date(Date.now() + 30 * 60_000).toISOString();
     const email = user?.email ?? body.email.toLowerCase();
     const shipping = { ...body.shippingAddress, line2: body.shippingAddress.line2 ?? null };
-    const razorpayOrderId = method === "RAZORPAY" ? `order_fake_${number.replace("-", "")}` : null;
+    const hex = Array.from({ length: 14 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+    const razorpayOrderId = method === "RAZORPAY" ? `order_fake_${hex}` : null;
     const order: (typeof orders)[number] = {
       number,
       status: method === "RAZORPAY" ? "PENDING_PAYMENT" : "AWAITING_PAYMENT",
@@ -799,6 +808,32 @@ export const commerceHandlers = [
     order.canRequestReturn = false;
     order.timeline.push({ type: "RETURN_REQUESTED", message: body.type === "EXCHANGE" ? "Exchange requested" : "Return requested", createdAt: now() });
     return HttpResponse.json<OrderDetail>(toPublicOrder(order));
+  }),
+
+  // payMyOrder (COM-16): not in the generated types yet; mocked so the retry flow can use it after `npm run api:gen`.
+  http.post(apiPath("/api/v1/me/orders/:number/pay"), ({ params }) => {
+    const user = requireUser();
+    if (user instanceof Response) return user;
+    const order = findOrder(String(params.number));
+    if (!order || order.userId !== user.id) return err(404, "NOT_FOUND", "Order not found");
+    if (order.status !== "PENDING_PAYMENT" || !order.razorpayOrderId) return err(409, "INVALID_TRANSITION", "Order is not awaiting payment");
+    return HttpResponse.json({
+      orderNumber: order.number,
+      status: order.status,
+      paymentMethod: order.paymentMethod,
+      totals: order.totals,
+      reservedUntil: order.reservedUntil,
+      razorpay: {
+        keyId: "rzp_fake",
+        orderId: order.razorpayOrderId,
+        amount: order.totals.total,
+        currency: "INR",
+        name: "Kritex",
+        description: `Order ${order.number}`,
+        prefill: { name: order.shippingAddress.name, email: order.email, contact: order.phone },
+      },
+      bankTransfer: null,
+    });
   }),
 
   http.get(apiPath("/api/v1/orders/:number/invoice"), ({ params }) => {
