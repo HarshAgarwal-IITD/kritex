@@ -104,40 +104,39 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 
 ---
 
-## Stage 3: Commerce core (in progress, started 2026-10-07; paused at integration)
+## Stage 3: Commerce core ✅ (2026-10-08; real-Razorpay payment pending test keys)
 
 ### Agent `server-cart` [S] → PR-*, AUTH-*, CAT-*
-- [x] COM-1 (import `PricingModule` from `src/pricing`) Cart service + endpoints: guest token cookie, add/update/remove, live price/stock, totals preview via `TotalsService` (merged server `6596b02`; Stage 3 gate not yet run)
-- [x] COM-2 Merge guest cart on login (merged server `6596b02`; Stage 3 gate not yet run)
-- [x] COM-5 Coupon apply/remove endpoints; admin coupons CRUD (merged server `6596b02`; Stage 3 gate not yet run)
+- [x] COM-1 (import `PricingModule` from `src/pricing`) Cart service + endpoints: guest token cookie, add/update/remove, live price/stock, totals preview via `TotalsService` (merged server `6596b02`)
+- [x] COM-2 Merge guest cart on login (merged server `6596b02`)
+- [x] COM-5 Coupon apply/remove endpoints; admin coupons CRUD (merged server `6596b02`)
 
 ### Agent `server-checkout` [S] → PR-*, AUTH-*, CAT-*
-- [x] COM-7 `POST /checkout/quote` (first: TD-19, checkout line `discount`/`netTotal`) (merged server `0afe4b0`; Stage 3 gate not yet run)
-- [x] COM-8 `POST /checkout`: one transaction (lock variants FOR UPDATE, reserve stock, order + item snapshots, coupon usage) + Razorpay order; Idempotency-Key (merged server `0afe4b0`; Stage 3 gate not yet run)
-- [x] COM-9 `POST /checkout/verify` (HMAC) (merged server `0afe4b0`; Stage 3 gate not yet run)
-- [x] COM-10 Razorpay webhook (`req.rawBody`, signature, idempotent transitions) (merged server `0afe4b0`; Stage 3 gate not yet run)
-- [x] COM-11 `@Cron` reservation expiry (release stock, cancel after 30 min unpaid) (merged server `0afe4b0`; Stage 3 gate not yet run)
-- [x] COM-12 Order state machine + OrderEvent timeline; emits `order.paid`, `order.cancelled`, `order.shipped` (merged server `0afe4b0`; Stage 3 gate not yet run)
-- [x] COM-13 Customer order endpoints (list, detail, cancel, return request) (merged server `0afe4b0`; Stage 3 gate not yet run)
-- [x] COM-14 Admin order endpoints (filters, status, mark-paid, Razorpay refund, notes, CSV export); dashboard endpoint (merged server `0afe4b0`; Stage 3 gate not yet run)
-- [x] COM-15 Concurrency test: last-unit race (merged server `0afe4b0`; Stage 3 gate not yet run)
-- [x] COM-16 Payment retry for an unpaid order (`POST /me/orders/:number/pay`, additive contract change) (merged server `0afe4b0`; Stage 3 gate not yet run)
+- [x] COM-7 `POST /checkout/quote` (first: TD-19, checkout line `discount`/`netTotal`) (merged server `0afe4b0`)
+- [x] COM-8 `POST /checkout`: one transaction (lock variants FOR UPDATE, reserve stock, order + item snapshots, coupon usage) + Razorpay order; Idempotency-Key (merged server `0afe4b0`)
+- [x] COM-9 `POST /checkout/verify` (HMAC) (merged server `0afe4b0`)
+- [x] COM-10 Razorpay webhook (`req.rawBody`, signature, idempotent transitions) (merged server `0afe4b0`)
+- [x] COM-11 `@Cron` reservation expiry (release stock, cancel after 30 min unpaid) (merged server `0afe4b0`)
+- [x] COM-12 Order state machine + OrderEvent timeline; emits `order.paid`, `order.cancelled`, `order.shipped` (merged server `0afe4b0`)
+- [x] COM-13 Customer order endpoints (list, detail, cancel, return request) (merged server `0afe4b0`)
+- [x] COM-14 Admin order endpoints (filters, status, mark-paid, Razorpay refund, notes, CSV export); dashboard endpoint (merged server `0afe4b0`)
+- [x] COM-15 Concurrency test: last-unit race (merged server `0afe4b0`)
+- [x] COM-16 Payment retry for an unpaid order (`POST /me/orders/:number/pay`, additive contract change) (merged server `0afe4b0`; "Pay now" in web `20364e6`)
 
 ### Agent `web-commerce` [W] → K-* (MSW until server lands)
-> Stopped before finishing: branch `s3/web-commerce` (worktree `.claude/worktrees/s3-web-commerce`) has commit `fa554b8` (cart, checkout with fake gateway, auth + account pages on MSW) plus 2 uncommitted files (Addresses / Business pages in progress). Not merged.
-- [~] WEB-CART-1 Cart drawer + cart page, quantity steppers, optimistic updates, coupon input, navbar count
-- [~] WEB-CHK-1 Checkout: contact (login or guest) → address (saved/new, pincode autofill) → review (tax breakdown, GSTIN toggle) → pay
-- [~] WEB-CHK-2 Razorpay Checkout.js + verify + success/failure/pending pages
-- [~] WEB-ACC-1 Login, signup, OTP, reset pages
-- [~] WEB-ACC-2 Account: profile, addresses, orders + timeline, invoice download, cancel/return
-- [~] WEB-ACC-3 B2B application form + status
+- [x] WEB-CART-1 Cart drawer + cart page, quantity steppers, optimistic updates, coupon input, navbar count (web `20364e6`)
+- [x] WEB-CHK-1 Checkout: contact (login or guest) → address (saved/new, pincode autofill) → review (tax breakdown, GSTIN toggle) → pay (web `20364e6`)
+- [x] WEB-CHK-2 Razorpay Checkout.js + verify + success/failure/pending pages (web `20364e6`)
+- [x] WEB-ACC-1 Login, signup, OTP, reset pages (web `20364e6`)
+- [x] WEB-ACC-2 Account: profile, addresses, orders + timeline, invoice download, cancel/return (web `20364e6`)
+- [x] WEB-ACC-3 B2B application form + status (web `20364e6`)
 
 ### Agent `web-admin-orders` [W]
-- [x] ADM-5 Orders list (filters, search, export) + detail (timeline, items, payment, actions) (merged web `3c207f0`; Stage 3 gate not yet run)
-- [x] ADM-6 Inventory view (low stock, adjust with reason) (merged web `3c207f0`; Stage 3 gate not yet run)
-- [x] ADM-7 Coupons CRUD (merged web `3c207f0`; Stage 3 gate not yet run)
-- [x] ADM-8 Customers + B2B approvals (merged web `3c207f0`; Stage 3 gate not yet run)
-- [x] ADM-9 Dashboard tiles + enquiries inbox (merged web `3c207f0`; Stage 3 gate not yet run)
+- [x] ADM-5 Orders list (filters, search, export) + detail (timeline, items, payment, actions) (merged web `3c207f0`)
+- [x] ADM-6 Inventory view (low stock, adjust with reason) (merged web `3c207f0`)
+- [x] ADM-7 Coupons CRUD (merged web `3c207f0`)
+- [x] ADM-8 Customers + B2B approvals (merged web `3c207f0`)
+- [x] ADM-9 Dashboard tiles + enquiries inbox (merged web `3c207f0`)
 
 ---
 
@@ -203,7 +202,7 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [ ] TD-6 [S] Category images seeded as `/assets/product-*.jpg`, but those are Vite-hashed `src/assets` imports, not public files → move to `public/` or R2 (with DEP-3)
 - [ ] TD-7 [business] Field duty jacket size "XX" (SKU `KTX-FDTJ-XX`) is probably a typo in website data; confirm
 - [ ] TD-8 [S] Prisma 7: move `package.json#prisma.seed` to `prisma.config.ts` (mind .env loading)
-- [ ] TD-9 [W] Main bundle 597 kB → route-level code splitting (with SEO-3)
+- [~] TD-9 [W] Main bundle 597 kB → route-level code splitting (with SEO-3). Stage 3 lazy-loads checkout/auth/account pages: main chunk now 353 kB
 - [ ] TD-10 [S] Check `TRUST_PROXY` on Render behind the Vercel `/api` proxy: log `req.ip` and confirm it is the client IP, not a Vercel/Render IP (otherwise all clients share one rate limit)
 - [ ] TD-11 [S] Before live payments: Render `plan: starter`, `branch: main`; Neon backup/PITR checked (ADR-008)
 - [ ] TD-12 [both] `GET /products` card DTO has no gallery/swatches, so `CatalogProductCard` calls `useProduct(slug)` per card (~26 extra requests on /products). Add `images[]` + colour swatches to the card DTO (additive), then drop the per-card fetch
@@ -217,10 +216,14 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [x] TD-20 [W] (web `3c207f0`) MSW `GET /queries` mock still expects a Bearer key; server now uses a session (`adminListQueries`). Align the mock / move to admin handlers
 - [ ] TD-21 [S] Admin API gaps from the admin UI: create/delete a single variant, stock-movement history, orphan upload cleanup; categories are flat (`subCategory` is free text)
 - [ ] TD-22 [S] Drop scratch DBs on :5434 (`kritex_test_{catalog,auth,pricing}`, `kritex_auth_dev`) when no longer needed
-- [ ] TD-23 [S] `render.yaml` (NODE_ENV=production) needs `RAZORPAY_KEY_ID/KEY_SECRET/WEBHOOK_SECRET` (test keys OK) or the staging API refuses to boot (fake gateway is blocked in production)
+- [x] TD-23 [S] (server `7f8882f`: declared, values still to be entered on Render) `render.yaml` (NODE_ENV=production) needs `RAZORPAY_KEY_ID/KEY_SECRET/WEBHOOK_SECRET` (test keys OK) or the staging API refuses to boot (fake gateway is blocked in production)
 - [ ] TD-24 [S] Guest payment retry / guest order lookup (no guest `/pay`); before expiring an order, check Razorpay for a captured payment whose webhook was missed (today a late capture is auto-refunded)
 - [ ] TD-25 [S] Coupon code uniqueness is case-insensitive in code only → unique index on `upper(code)`; guest cart tokens stored in plain text (hash them); `amountToFreeShipping` on CartDto (additive)
 - [ ] TD-26 [S] Admin API: enquiries list has no pagination/filters; refunds/cancel are STAFF+ADMIN (decide if ADMIN-only); returns stored as an internal event (own table later); no webhook event-id dedupe table
+- [ ] TD-27 [W] Admin orders list: add the `paymentStatus` filter control (API supports it since `0afe4b0`); link customer detail "All orders" via `userId` instead of an email search
+- [ ] TD-28 [W] PIN-code lookup is approximate (state by prefix, city for ~20 metros); consider an India Post dataset or API
+- [ ] TD-29 [both] Verification email `callbackURL` is `/account`; confirm Better Auth signs the user in after verifying (else they land on /login)
+- [ ] TD-30 [W] Add `checkout.razorpay.com` to any future CSP
 - [ ] TD-5 [W] Rename package.json `name` from `vite_react_shadcn_ts` to `kritex-website`
 
 ## Stage 6: Go-live (see EXECUTION.md)

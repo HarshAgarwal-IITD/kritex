@@ -232,6 +232,19 @@ Done 2026-10-06: the untracked `server/` folder was moved to `../kritex-server` 
 - **Uploads** go through a `StorageDriver` (local disk in dev with signed PUT/GET under `/api/v1/uploads/local/*`, R2 presigned PUT with hand-rolled SigV4, no AWS SDK).
 - **Website:** the three category pages collapsed into `src/pages/Category.tsx` at `/products/:categorySlug` (old URLs were already of that shape, so no redirects needed); PDP stays `/product/:slug`. Admin is a lazy `AdminApp` chunk at `/admin/*`; the auth client lives in `src/lib/auth/client.ts` for reuse by storefront login (Stage 3). Tests and visual screenshots pin `VITE_ASSET_BASE_URL=""` so they never depend on a local `.env`.
 
+## ADR-016: Stage 3 implementation decisions (cart, checkout, payments, orders)
+**Status:** Accepted · 2026-10-08 (recorded at Stage 3 integration)
+
+- **Fake payment gateway in dev/test.** `PaymentGateway` has `RazorpayGateway` and `FakeGateway`; the fake one is used when `RAZORPAY_KEY_ID` is unset and the app refuses to boot with it in production. Contract: `razorpay.keyId === "rzp_fake"`, `orderId = order_fake_<hex>`; verify accepts `razorpay_payment_id` `pay_fake_*` with signature `"fake"` (`pay_fake_fail*` = failed, order stays payable). The storefront shows a "Simulate payment" dialog instead of loading Checkout.js.
+- **Checkout loads the cart inside its own transaction** (`src/checkout/checkout-cart.ts`) so stock is re-read under `SELECT … FOR UPDATE`; line-issue rules are shared with the cart (`src/cart/cart-lines.ts`). The guest → user cart merge happens only in `CartService` (on any cart request with both a session and a `kritex_cart` cookie); checkout uses the signed-in user's cart.
+- **Cart:** the server always mints the guest token (httpOnly `kritex_cart`, `CART_GUEST_TTL_DAYS`, default 30); lines with an issue are excluded from totals; a stored coupon that stops applying stays on the cart with `coupon.valid: false` + `invalidReason`/`message`.
+- **Coupons:** per-customer usage = the customer's orders with that coupon excluding CANCELLED (guests counted by email at `POST /checkout`). `usedCount` is incremented in the checkout transaction and decremented when an *unpaid* order is cancelled or expires (kept when a paid order is cancelled).
+- **Idempotency:** `POST /checkout` requires `Idempotency-Key`; same key + same body → same response, different body → 409 `IDEMPOTENCY_KEY_REUSED` (`Order.idempotencyHash`). The gateway order is created after commit under the order row lock so retries never create two. The storefront reuses a key only for an identical retry after a network error / 5xx.
+- **Order lifecycle:** one `OrderLifecycleService` owns status changes (state machine table in `order-state-machine.ts`); every change writes an `OrderEvent` and emits `order.paid` / `order.cancelled` / `order.shipped` after commit. PAID is reachable only via verify / webhook / mark-paid. On PAID, stock and reserved drop together (InventoryMovement reason `ORDER`) and the ordered lines are removed from the cart.
+- **Reservations:** unpaid Razorpay orders hold stock for `ORDER_PAYMENT_TIMEOUT_MINUTES` (30); a cron releases them and cancels the order; a capture that arrives after expiry is refunded automatically. Bank-transfer orders (approved B2B only, when `BANK_TRANSFER_*` is configured) are `AWAITING_PAYMENT` with no automatic expiry.
+- **Order numbers** come from a Postgres sequence: `KTX-100001` onwards.
+- **Full-stack gate test** lives in the website repo (`e2e/fullstack/checkout.spec.ts`, `npm run test:e2e`) and creates its own product and coupon through the admin API.
+
 ---
 
 ## Open questions

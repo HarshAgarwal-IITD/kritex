@@ -3,7 +3,7 @@
 This is the running record of what has been built, where it lives, how to run it, and what's still open.
 Add a new section at the end of each stage.
 
-**Status as of 2026-10-07:** Stages 0, 1 and 2 are complete. **Stage 3 (Commerce core) paused at integration** (started and paused 2026-10-07).
+**Status as of 2026-10-08:** Stages 0, 1 and 2 are complete. **Stages 0–3 complete** (Stage 3 gate passed 2026-10-08 on the fake payment gateway). **Next: Stage 4 (Fulfilment + B2B + QA).**
 
 | Stage | Status | Integration commit |
 |---|---|---|
@@ -11,8 +11,9 @@ Add a new section at the end of each stage.
 | 0 Foundation | ✅ gate passed | server `6a900da` · web `782488e` |
 | 1 Contract + Data | ✅ gate passed | server `bfd1d38` · web `428f63c` |
 | 2 Catalog + Identity | ✅ gate passed | server `9a4aa64` · web `6520bbf` |
-| 3 Commerce core | ⏸ paused at integration (3/4 merged, gate not run) | server `0afe4b0` · web `3c207f0` |
-| 4–6 | not started | — |
+| 3 Commerce core | ✅ gate passed (fake gateway; real Razorpay check pending keys) | server `7f8882f` · web `f7b4f93` |
+| 4 Fulfilment + B2B + QA | next | — |
+| 5–6 | not started | — |
 
 ---
 
@@ -201,29 +202,39 @@ Started 2026-10-06; the first launch of the 5 agents stopped without committing 
 
 Final checks: **server** lint, typecheck, build, `openapi:check` OK; **272 unit + 317 e2e** tests pass. **Web** 0 lint errors, typecheck OK, **78 tests**, build OK, visual 22/22.
 
-## Stage 3: Commerce core ⏸ (paused 2026-10-07, owner asked to stop)
+## Stage 3: Commerce core ✅
 
-Started 2026-10-07 with 4 agents in worktrees (`../kritex-server-wt/s3-{cart,checkout}`, `.claude/worktrees/s3-web-{commerce,admin-orders}`), per-agent test DBs `kritex_test_{cart,checkout}`.
+Started 2026-10-07 with 4 agents (worktrees `../kritex-server-wt/s3-{cart,checkout}`, `.claude/worktrees/s3-web-{commerce,admin-orders}`; test DBs `kritex_test_{cart,checkout}`). Paused mid-integration at the owner's request on 2026-10-07 (the `web-commerce` agent was stopped with its work committed as `fa554b8` plus 2 files), resumed and finished 2026-10-08. Decisions: ADR-016.
 
-**Merged into `ecommerce` (not pushed):**
-- **server-cart** (`6596b02`): guest carts via httpOnly `kritex_cart` cookie, user carts, live price/stock + line issues, totals via `TotalsService`; guest → user merge on the first cart request after sign-in; cart coupon apply/remove (`appliedCoupon.valid/invalidReason/message`, additive); admin coupons CRUD; daily guest-cart cleanup (`CART_GUEST_TTL_DAYS`). Agent run: 283 unit + 327 e2e green.
-- **server-checkout** (`0afe4b0`): `PaymentGateway` (RazorpayGateway + FakeGateway when `RAZORPAY_KEY_ID` is unset; refused in production); checkout quote; `POST /checkout` with Idempotency-Key, `FOR UPDATE` stock reservation, order/item snapshots (TD-19 `discount`/`netTotal`), coupon `usedCount`; verify (HMAC / fake), Razorpay webhook (idempotent), reservation-expiry cron (30 min), order state machine + OrderEvent timeline + `order.*` events, customer orders (cancel / return / `payMyOrder` retry), admin orders (filters incl. `paymentStatus`/`userId`, status, mark-paid, refund, notes, CSV), dashboard (`last30Days`, `threshold`). Migration `20261007063642_checkout_orders` (idempotency hash, cartId, OrderItem discount/netTotal, order number sequence from KTX-100001). Agent run: 296 unit + 327 e2e green, incl. last-unit race and webhook replay.
-- **web-admin-orders** (`3c207f0`): dashboard landing, orders list + detail with actions (status, mark paid, refund with confirm, cancel, notes, CSV), inventory, coupons, customers, B2B approvals, enquiries inbox; TD-20. Agent run: 102 tests green; admin chunk still lazy.
+**Cart (`server-cart`, merged `6596b02`):**
+- Guest carts on an httpOnly `kritex_cart` cookie (token always made by the server), user carts, live price/stock and per-line issues on every read, totals via `TotalsService`.
+- Guest → user merge on the first cart request after sign-in.
+- Coupon apply/remove on the cart; a stored coupon that stops applying shows `valid: false` + reason. Admin coupons CRUD. Daily guest-cart cleanup.
 
-**Not merged:**
-- **web-commerce** was stopped before finishing. Branch `s3/web-commerce` has commit `fa554b8` (cart drawer/page, checkout steps, fake-gateway "Simulate payment" flow, login/signup/OTP/reset pages, account pages on MSW) plus 2 uncommitted files (Addresses / Business pages). Its checks have not been run.
+**Checkout, payments, orders (`server-checkout`, merged `0afe4b0`):**
+- `PaymentGateway`: real Razorpay, or a fake gateway when `RAZORPAY_KEY_ID` is unset (refused in production).
+- Checkout quote; `POST /checkout` with Idempotency-Key, `FOR UPDATE` stock reservation, order + item snapshots (TD-19: `discount`/`netTotal`), coupon usage; verify (HMAC / fake); Razorpay webhook (idempotent); 30-minute reservation expiry cron.
+- Order state machine + timeline + `order.*` events; customer orders (cancel, return, pay again via `payMyOrder`); admin orders (filters, status, mark paid, refund, notes, CSV export); dashboard (today / 7 / 30 days, low stock).
+- Migration `20261007063642_checkout_orders` (idempotency hash, cart id, item discount/netTotal, order-number sequence from `KTX-100001`).
 
-**Integration state (server main checkout):**
-- Both server merges committed; conflicts were env schema / `.env.example` only (kept both sides; no markers left).
-- **Uncommitted** in `kritex-server`: `src/checkout/checkout-cart.ts` now delegates line-issue rules to `cart/cart-lines.ts` (single source of truth; cart loading stays inside the checkout transaction for `FOR UPDATE`). Not yet tested.
-- Merged-tree checks **not run yet**. The last typecheck showed errors only because the Prisma client wasn't regenerated after the checkout migration (`npx prisma generate`), plus 7 lint errors from the same stale types.
-- Dev DB not yet migrated for Stage 3; `npm run api:gen` not yet run on the website.
+**Storefront (`web-commerce`, merged `20364e6`):** cart drawer + `/cart` (optimistic steppers, issue messages, coupon), 3-step `/checkout` (contact → address with PIN autofill → review with CGST/SGST or IGST and optional GSTIN), Razorpay Checkout.js or the fake "Simulate payment" dialog, success / failure / pending pages; `/login` (password or email code), `/signup`, password reset; `/account` profile, orders (timeline, invoice, cancel, return, **Pay now**), addresses, B2B application. Checkout, auth and account pages are lazy-loaded: the main JS chunk fell from 638 kB to 353 kB.
 
-**To resume Stage 3:**
-1. Server: `npx prisma generate && npx prisma migrate deploy`, then lint / typecheck / test / test:e2e / build / openapi:check; commit `checkout-cart.ts` if green.
-2. Finish `web-commerce` in its worktree (commit the 2 files, align MSW mocks with the real cart/checkout behaviour, run lint/typecheck/test/build/test:visual), then merge it; `npm run api:gen` and run the web checks.
-3. Gate: guest buys 2 variants with a coupon → (fake, then real Razorpay test) payment → success page → PAID in admin → stock decremented; webhook replay idempotent; unpaid order releases stock; last-unit race.
-4. Owner: Razorpay **test** keys in `kritex-server/.env` (and `render.yaml`, TD-23) for the real-payment part of the gate.
+**Admin (`web-admin-orders`, merged `3c207f0`):** dashboard as the `/admin` landing page, orders list + detail with actions (status, mark paid, refund with confirm, cancel, notes, CSV), inventory, coupons, customers, B2B approvals, enquiries inbox (TD-20).
+
+**Integration (main session):**
+- Server merges: env schema / `.env.example` conflicts only (kept both sides). Checkout now uses the cart's shared line-issue rules (`73ae064`); cart loading stays inside the checkout transaction.
+- Website: regenerated API types; admin mocks and UI updated for the new fields (`refundableAmount`, 30-day dashboard figures, item `discount`/`netTotal`); commerce mocks aligned (`ORDER_NOT_PAYABLE`); removed the temporary coupon-field casts; added **Pay now** for unpaid orders.
+- `render.yaml` declares the Razorpay variables (TD-23); the values still have to be entered on Render.
+- New full-stack Playwright gate test `e2e/fullstack/checkout.spec.ts` (`npm run test:e2e`, needs the API + dev server running and `E2E_ADMIN_PASSWORD`).
+- Note: the owner's `kritex-server/.env` now has `DATABASE_URL` pointing at Neon, and the value starts with a doubled quote (`""postgresql://…`), so it doesn't parse. It was left untouched; local runs passed the local URL on the command line (`DATABASE_URL=postgresql://kritex:kritex@localhost:5433/kritex?schema=public npm run start:dev`).
+
+**Gate (2026-10-08, fake gateway):**
+- Browser, full stack (`npm run test:e2e`, run twice): a guest adds 2 variants → applies a 10% coupon → checks out (CGST + SGST) → simulates payment → success page; admin API shows the order PAID with the coupon, and both variants' stock went 3 → 2 with nothing left reserved.
+- API script: same flow plus idempotent `POST /checkout` (same key → same order), a failed payment leaving the order payable, idempotent verify replay, and the guest cart cleared after payment.
+- Server e2e (on the merged code): webhook replay idempotent (`payment.captured` and `refund.processed` twice), unpaid order releases stock after the timeout, last-unit race (exactly one 201 and one 409), an 8-buyer oversell test.
+- **Not yet done:** paying with a real Razorpay test card / UPI. Needs Razorpay test keys (owner to-do 10).
+
+Final checks: **server** lint, typecheck, build, `openapi:check` OK; **313 unit + 337 e2e** tests pass. **Web** 0 lint errors, typecheck OK, **135 tests**, build OK, visual 22/22, full-stack e2e 1/1.
 
 ---
 
@@ -237,8 +248,9 @@ Started 2026-10-07 with 4 agents in worktrees (`../kritex-server-wt/s3-{cart,che
 | 4 | Which products are RETAIL vs B2B-only vs enquiry-only (Q1) | Stage 5 |
 | 5 | Legal review of `/legal/*`; fill `src/pages/legal/placeholders.ts` (entity name, address, GSTIN, grievance officer, shipping fee/threshold, dispatch times…) | Stage 5 |
 | 6 | CA review of the GST rules (ADR-006, ADR-015) and placeholder HSN/GST values. Specific questions: (a) seller state code (placeholder 27, Maharashtra); (b) apparel/footwear slab ₹2,500 / 5% / 18% and HSN chapters 61–64; (c) slab judged on the post-discount per-unit value (inclusive prices ₹2,625–₹2,950 are borderline); (d) GST on shipping at the highest line rate; (e) per-line rounding, odd paisa to CGST; (f) place of supply = shipping state, also for B2B with GSTIN | Stage 3–4 |
-| 8 | Stage 2 checkpoint: click through the storefront and `/admin` product editor. Copy the dev admin password from `kritex-server/.env` (`SEED_ADMIN_PASSWORD`) | Before Stage 3 |
-| 10 | Razorpay **test-mode** keys (key id, key secret, webhook secret) into `kritex-server/.env`; also needed on Render (TD-23) | Stage 3 gate |
+| 8 | Stage 3 checkpoint: place test orders yourself (desktop + phone) and review checkout + the admin order screen. (Stage 2: click through the storefront and `/admin` product editor.) Copy the dev admin password from `kritex-server/.env` (`SEED_ADMIN_PASSWORD`) | Before Stage 4 |
+| 10 | Razorpay **test-mode** keys (key id, key secret, webhook secret) into `kritex-server/.env` and on Render (TD-23). Needed for the real-payment part of the Stage 3 gate, and before the staging API can boot | Now |
+| 11 | Fix `DATABASE_URL` in `kritex-server/.env` (starts with `""`), and decide whether local dev should use Neon or the docker Postgres on :5433 | Now |
 | 9 | Decide which categories are "coming soon" (Base Layers) and confirm category page copy (TD-13, TD-14) | Stage 3 |
 | 7 | Confirm the field duty jacket size "XX" (probably a typo) | Any time |
 | 8 | **Hosting (ADR-008, free tier):** (a) Neon: create project `kritex` in AWS Singapore and copy the connection string. (b) Render: New → Blueprint → `kritex-server`, then enter `DATABASE_URL` and `CORS_ORIGIN`. (c) If the service URL is not `kritex-server.onrender.com`, update `vercel.json`. (d) Seed: `DATABASE_URL=<neon> npm run import:products` in kritex-server. (e) UptimeRobot on `https://kritex.in/api/v1/health` every 10 min. Full steps: kritex-server README → Deploy | Now (staging) |
@@ -250,7 +262,8 @@ Render (free, Singapore, Docker) + Neon (free, Singapore) + Vercel for the site.
 - kritex-website: `vercel.json` proxies `/api/*` → `https://kritex-server.onrender.com`.
 
 ## Open follow-ups / tech debt
-Tracked in [TASKS.md](TASKS.md) → "Tech-debt / follow-ups" (TD-1…TD-26), plus AUTH-6 and COM-16 added to Stages 2–3.
+Tracked in [TASKS.md](TASKS.md) → "Tech-debt / follow-ups" (TD-1…TD-30), plus AUTH-6 and COM-16 added to Stages 2–3.
 
-## Next: finish Stage 3 (Commerce core)
-Follow the resume checklist in the Stage 3 section above. Stage 4 has not started.
+## Next: Stage 4 (Fulfilment + B2B + QA)
+4 parallel agents: `server-ops`, `server-b2b`, `web-b2b-ops`, `qa`. See [EXECUTION.md](EXECUTION.md#stage-4-fulfilment--b2b--qa).
+Before kick-off: the owner's Stage 3 checkpoint and, ideally, a real Razorpay test payment.
