@@ -544,3 +544,6 @@ export const adminHandlers = [
   // ---- Stage 3: orders, inventory, coupons, customers, B2B, dashboard, enquiries ----
   ...createAdminCommerceHandlers({ requireStaff, currentUser, products: () => products }),
 ];
+
+/** The signed-in mock user (or null). Used by the storefront commerce mocks (commerce-handlers.ts). */
+export const getMockSessionUser = (): Me | null => currentUser();
