@@ -3,7 +3,7 @@
 This is the running record of what has been built, where it lives, how to run it, and what's still open.
 Add a new section at the end of each stage.
 
-**Status as of 2026-10-08:** Stages 0, 1 and 2 are complete. **Stages 0–3 complete** (Stage 3 gate passed 2026-10-08 on the fake payment gateway). **Next: Stage 4 (Fulfilment + B2B + QA).**
+**Status as of 2026-10-08:** Stages 0–3 are complete (Stage 3 gate passed on the fake payment gateway; the real Razorpay test payment waits for keys). **Next: Stage 4 (Fulfilment + B2B + QA).**
 
 | Stage | Status | Integration commit |
 |---|---|---|
