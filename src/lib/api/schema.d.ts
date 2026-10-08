@@ -633,7 +633,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Cart with live prices/stock and a totals preview (empty cart if none yet) */
+        /**
+         * Cart with live prices/stock and a totals preview (empty cart if none yet)
+         * @description Without a cart yet, returns an empty cart with `id: ""`. When signed in with a guest `kritex_cart` cookie, the guest cart is first merged into the account cart and the cookie is cleared.
+         */
         get: operations["getCart"];
         put?: never;
         post?: never;
@@ -692,7 +695,10 @@ export interface paths {
         delete: operations["removeCartItem"];
         options?: never;
         head?: never;
-        /** Set a line quantity (0 removes it) */
+        /**
+         * Set a line quantity (0 removes it)
+         * @description Lowering a quantity always works; raising it is checked like an add.
+         */
         patch: operations["updateCartItem"];
         trace?: never;
     };
@@ -897,6 +903,23 @@ export interface paths {
         put?: never;
         /** Cancel an order before it ships (releases stock; refunds if paid) */
         post: operations["cancelMyOrder"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/me/orders/{number}/pay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Retry payment: a new Razorpay order for an unpaid (PENDING_PAYMENT) order while its stock reservation is valid */
+        post: operations["payMyOrder"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1440,22 +1463,32 @@ export interface components {
                 number: string;
             } | null;
             items: {
+                /**
+                 * @description This line's share of the order discount
+                 * @example 129900
+                 */
+                discount: number;
                 /** @description GST rate in percent */
                 gstRate: number;
                 hsnCode: string | null;
                 id: string;
                 image: string | null;
                 /**
-                 * @description Integer paise (₹1 = 100)
+                 * @description unitPrice × quantity, before the coupon
                  * @example 129900
                  */
                 lineTotal: number;
+                /**
+                 * @description lineTotal - discount: the GST-inclusive amount taxAmount is part of
+                 * @example 129900
+                 */
+                netTotal: number;
                 productName: string;
                 productSlug: string | null;
                 quantity: number;
                 sku: string;
                 /**
-                 * @description GST included in lineTotal
+                 * @description GST included in netTotal (tax is computed after the coupon discount)
                  * @example 129900
                  */
                 taxAmount: number;
@@ -1496,6 +1529,11 @@ export interface components {
             }[];
             phone: string;
             quoteNumber: string | null;
+            /**
+             * @description Captured payments minus refunds that are not FAILED, paise
+             * @example 129900
+             */
+            refundableAmount: number;
             refunds: {
                 /**
                  * @description Integer paise (₹1 = 100)
@@ -1982,8 +2020,14 @@ export interface components {
         CartDto_Output: {
             coupon: {
                 code: string;
+                /** @enum {string|null} */
+                invalidReason: "COUPON_INACTIVE" | "COUPON_NOT_STARTED" | "COUPON_EXPIRED" | "COUPON_USAGE_LIMIT_REACHED" | "COUPON_LOGIN_REQUIRED" | "COUPON_PER_CUSTOMER_LIMIT_REACHED" | "COUPON_MIN_SUBTOTAL_NOT_MET" | null;
+                /** @description Customer-facing reason when not valid */
+                message: string | null;
                 /** @enum {string} */
                 type: "PERCENT" | "FLAT" | "FREE_SHIPPING";
+                /** @description false when the coupon no longer applies (e.g. the subtotal dropped below its minimum); totals then carry no discount */
+                valid: boolean;
             } | null;
             /** @description Any line has an issue */
             hasIssues: boolean;
@@ -2017,14 +2061,14 @@ export interface components {
                 saleChannel: "RETAIL" | "B2B_ONLY" | "ENQUIRY_ONLY";
                 sku: string;
                 /**
-                 * @description Live GST-inclusive unit price (B2B tiers applied)
+                 * @description Live GST-inclusive unit price (B2B tiers applied). 0 when the product has no public price (ENQUIRY_ONLY / unpriced)
                  * @example 129900
                  */
                 unitPrice: number;
                 variantId: string;
                 variantTitle: string;
             }[];
-            /** @description Preview. Shipping is the flat-rate estimate; the tax split assumes intra-state (CGST+SGST) until an address is given at checkout. */
+            /** @description Preview. Shipping is the flat-rate estimate; the tax split assumes intra-state (CGST+SGST) until an address is given at checkout. Only lines without an `issue` are included. */
             totals: {
                 /**
                  * @description Integer paise (₹1 = 100)
@@ -2089,19 +2133,29 @@ export interface components {
             /** @description true → IGST (shipping state ≠ seller state); false → CGST + SGST */
             interState: boolean;
             items: {
+                /**
+                 * @description This line's share of the coupon discount
+                 * @example 129900
+                 */
+                discount: number;
                 /** @description GST rate in percent */
                 gstRate: number;
                 image: string | null;
                 /**
-                 * @description Integer paise (₹1 = 100)
+                 * @description unitPrice × quantity, before the coupon
                  * @example 129900
                  */
                 lineTotal: number;
+                /**
+                 * @description lineTotal - discount: the GST-inclusive amount taxAmount is part of
+                 * @example 129900
+                 */
+                netTotal: number;
                 productName: string;
                 quantity: number;
                 sku: string;
                 /**
-                 * @description GST included in lineTotal
+                 * @description GST included in netTotal (tax is computed after the coupon discount)
                  * @example 129900
                  */
                 taxAmount: number;
@@ -2499,6 +2553,7 @@ export interface components {
                     /** @enum {string} */
                     status: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
                 }[];
+                last30Days: number;
                 last7Days: number;
                 today: number;
             };
@@ -2506,6 +2561,11 @@ export interface components {
             /** @description Status REQUESTED */
             pendingQuotes: number;
             revenue: {
+                /**
+                 * @description Paid order totals, rolling 30 days, paise
+                 * @example 129900
+                 */
+                last30Days: number;
                 /**
                  * @description Paid order totals, rolling 7 days, paise
                  * @example 129900
@@ -2656,22 +2716,32 @@ export interface components {
                 number: string;
             } | null;
             items: {
+                /**
+                 * @description This line's share of the order discount
+                 * @example 129900
+                 */
+                discount: number;
                 /** @description GST rate in percent */
                 gstRate: number;
                 hsnCode: string | null;
                 id: string;
                 image: string | null;
                 /**
-                 * @description Integer paise (₹1 = 100)
+                 * @description unitPrice × quantity, before the coupon
                  * @example 129900
                  */
                 lineTotal: number;
+                /**
+                 * @description lineTotal - discount: the GST-inclusive amount taxAmount is part of
+                 * @example 129900
+                 */
+                netTotal: number;
                 productName: string;
                 productSlug: string | null;
                 quantity: number;
                 sku: string;
                 /**
-                 * @description GST included in lineTotal
+                 * @description GST included in netTotal (tax is computed after the coupon discount)
                  * @example 129900
                  */
                 taxAmount: number;
@@ -4327,7 +4397,10 @@ export interface operations {
     };
     adminGetDashboard: {
         parameters: {
-            query?: never;
+            query?: {
+                /** @description Low stock: available units at or below this (default 5) */
+                threshold?: number;
+            };
             header?: never;
             path?: never;
             cookie?: never;
@@ -4341,6 +4414,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["DashboardDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
             /** @description UNAUTHORIZED: no session */
@@ -4424,6 +4506,10 @@ export interface operations {
             query?: {
                 status?: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
                 paymentMethod?: "RAZORPAY" | "COD" | "BANK_TRANSFER";
+                /** @description Orders with at least one payment in this status */
+                paymentStatus?: "CREATED" | "CAPTURED" | "FAILED" | "REFUNDED";
+                /** @description A customer's orders */
+                userId?: string;
                 /** @description Order number, email, phone or customer name */
                 q?: string;
                 /** @description createdAt >= from */
@@ -4483,6 +4569,10 @@ export interface operations {
             query?: {
                 status?: "PENDING_PAYMENT" | "AWAITING_PAYMENT" | "PAID" | "PROCESSING" | "SHIPPED" | "DELIVERED" | "CANCELLED" | "RETURN_REQUESTED" | "RETURNED" | "REFUNDED";
                 paymentMethod?: "RAZORPAY" | "COD" | "BANK_TRANSFER";
+                /** @description Orders with at least one payment in this status */
+                paymentStatus?: "CREATED" | "CAPTURED" | "FAILED" | "REFUNDED";
+                /** @description A customer's orders */
+                userId?: string;
                 /** @description Order number, email, phone or customer name */
                 q?: string;
                 /** @description createdAt >= from */
@@ -4847,8 +4937,26 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description REFUND_EXCEEDS_CAPTURED | NOT_REFUNDABLE */
+            /** @description REFUND_EXCEEDS_CAPTURED (details.refundable) | NOT_REFUNDABLE */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INVALID_RESTOCK_ITEM */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description PAYMENT_GATEWAY_ERROR */
+            502: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6332,7 +6440,16 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description COUPON_INVALID | COUPON_EXPIRED | COUPON_USAGE_LIMIT | COUPON_MIN_SUBTOTAL (details.minSubtotal) */
+            /** @description INVALID_ORIGIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description COUPON_NOT_FOUND | COUPON_INACTIVE | COUPON_NOT_STARTED | COUPON_EXPIRED | COUPON_USAGE_LIMIT_REACHED | COUPON_LOGIN_REQUIRED | COUPON_PER_CUSTOMER_LIMIT_REACHED | COUPON_MIN_SUBTOTAL_NOT_MET (details.minSubtotal, details.shortBy) */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -6370,6 +6487,15 @@ export interface operations {
                     "application/json": components["schemas"]["CartDto_Output"];
                 };
             };
+            /** @description INVALID_ORIGIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
         };
     };
     addCartItem: {
@@ -6403,7 +6529,16 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description NOT_FOUND: variant */
+            /** @description INVALID_ORIGIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND: variant (unknown, inactive or not on sale) */
             404: {
                 headers: {
                     [name: string]: unknown;
@@ -6412,7 +6547,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description INSUFFICIENT_STOCK */
+            /** @description INSUFFICIENT_STOCK (details.available) */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -6421,7 +6556,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description NOT_PURCHASABLE: sale channel */
+            /** @description NOT_PURCHASABLE: sale channel / unpriced · QUANTITY_LIMIT_EXCEEDED: line would exceed 999 */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -6450,6 +6585,15 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["CartDto_Output"];
+                };
+            };
+            /** @description INVALID_ORIGIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
             /** @description NOT_FOUND */
@@ -6496,6 +6640,15 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
+            /** @description INVALID_ORIGIN */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
             /** @description NOT_FOUND: line */
             404: {
                 headers: {
@@ -6505,8 +6658,17 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description INSUFFICIENT_STOCK */
+            /** @description INSUFFICIENT_STOCK (details.available) */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_PURCHASABLE */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6588,7 +6750,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description CART_EMPTY | CART_HAS_ISSUES | COUPON_* | GSTIN_STATE_MISMATCH */
+            /** @description CART_EMPTY | CART_HAS_ISSUES (details: lines) | COUPON_* | INVALID_GSTIN | GSTIN_STATE_MISMATCH */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -6599,6 +6761,15 @@ export interface operations {
             };
             /** @description TOO_MANY_REQUESTS */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description PAYMENT_GATEWAY_ERROR (retry with the same key) */
+            502: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -6639,7 +6810,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description CART_EMPTY | CART_HAS_ISSUES (details: lines) | GSTIN_STATE_MISMATCH */
+            /** @description CART_EMPTY | CART_HAS_ISSUES (details: lines) | COUPON_* | INVALID_GSTIN | GSTIN_STATE_MISMATCH */
             422: {
                 headers: {
                     [name: string]: unknown;
@@ -6692,6 +6863,15 @@ export interface operations {
             };
             /** @description TOO_MANY_REQUESTS */
             429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description PAYMENT_GATEWAY_ERROR (retry) */
+            502: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -7167,6 +7347,73 @@ export interface operations {
             };
         };
     };
+    payMyOrder: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                number: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Payment details for Checkout.js */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PlacedOrderDto_Output"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description ORDER_NOT_PAYABLE: not PENDING_PAYMENT, not RAZORPAY, or the reservation expired */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description TOO_MANY_REQUESTS */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description PAYMENT_GATEWAY_ERROR */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
     requestOrderReturn: {
         parameters: {
             query?: never;
@@ -7220,6 +7467,15 @@ export interface operations {
             };
             /** @description RETURN_NOT_ALLOWED: not DELIVERED or outside the return window */
             409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description INVALID_RETURN_ITEMS */
+            422: {
                 headers: {
                     [name: string]: unknown;
                 };

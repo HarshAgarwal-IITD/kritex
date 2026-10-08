@@ -184,6 +184,8 @@ function item(id: string, name: string, sku: string, variantTitle: string, unitP
     hsnCode: gstRate === 12 ? "6109" : "6403",
     // GST-inclusive: tax = A·r/(100+r), half up.
     taxAmount: Math.round((lineTotal * gstRate) / (100 + gstRate)),
+    discount: 0,
+    netTotal: lineTotal,
   };
 }
 
@@ -243,7 +245,7 @@ function mkOrder(seed: OrderSeed): MockOrder {
   if (seed.paid) {
     events.push({ id: `evt_${seed.id}_2`, type: "PAYMENT_CAPTURED", message: "Payment received", internal: false, actor: null, createdAt: seed.createdAt });
   }
-  return {
+  const order: MockOrder = {
     id: seed.id,
     number: seed.number,
     userId: seed.customer.userId,
@@ -271,7 +273,19 @@ function mkOrder(seed: OrderSeed): MockOrder {
     canRequestReturn: seed.status === "DELIVERED",
     createdAt: seed.createdAt,
     updatedAt: seed.createdAt,
+    refundableAmount: 0,
   };
+  // Like the server: captured minus non-failed refunds. A getter so refunds made by handlers show up.
+  Object.defineProperty(order, "refundableAmount", { enumerable: true, get: () => refundableOf(order) });
+  return order;
+}
+
+function refundableOf(order: Pick<MockOrder, "payments" | "refunds">): number {
+  const captured = order.payments
+    .filter((p) => p.status === "CAPTURED" || p.status === "REFUNDED")
+    .reduce((n, p) => n + p.amount, 0);
+  const refunded = order.refunds.filter((r) => r.status !== "FAILED").reduce((n, r) => n + r.amount, 0);
+  return Math.max(0, captured - refunded);
 }
 
 const chris = { userId: "usr_customer", name: "Chris Customer", email: "customer@example.com", phone: "9876543210" };
@@ -902,13 +916,19 @@ export function createAdminCommerceHandlers(deps: CommerceDeps) {
       midnight.setHours(0, 0, 0, 0);
       const today = midnight.toISOString();
       const weekAgo = new Date(Date.now() - 7 * 86400_000).toISOString();
+      const monthAgo = new Date(Date.now() - 30 * 86400_000).toISOString();
       const paid = orders.filter((o) => PAID_STATUSES.includes(o.status));
       const sum = (rows: MockOrder[]) => rows.reduce((n, o) => n + o.totals.total, 0);
       return HttpResponse.json<S["DashboardDto_Output"]>({
-        revenue: { today: sum(paid.filter((o) => o.createdAt >= today)), last7Days: sum(paid.filter((o) => o.createdAt >= weekAgo)) },
+        revenue: {
+          today: sum(paid.filter((o) => o.createdAt >= today)),
+          last7Days: sum(paid.filter((o) => o.createdAt >= weekAgo)),
+          last30Days: sum(paid.filter((o) => o.createdAt >= monthAgo)),
+        },
         orders: {
           today: orders.filter((o) => o.createdAt >= today).length,
           last7Days: orders.filter((o) => o.createdAt >= weekAgo).length,
+          last30Days: orders.filter((o) => o.createdAt >= monthAgo).length,
           byStatus: ORDER_STATUSES.map((status) => ({ status, count: orders.filter((o) => o.status === status).length })),
         },
         lowStock: inventoryRows(deps, 5)

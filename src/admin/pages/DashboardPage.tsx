@@ -56,8 +56,10 @@ export default function DashboardPage() {
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <Tile label="Revenue today" value={formatPaise(d.revenue.today)} hint="Paid orders since midnight IST" />
             <Tile label="Revenue, last 7 days" value={formatPaise(d.revenue.last7Days)} hint="Paid orders" />
+            <Tile label="Revenue, last 30 days" value={formatPaise(d.revenue.last30Days)} hint="Paid orders" />
             <Tile label="Orders today" value={String(d.orders.today)} to={adminPaths.orders} />
             <Tile label="Orders, last 7 days" value={String(d.orders.last7Days)} to={adminPaths.orders} />
+            <Tile label="Orders, last 30 days" value={String(d.orders.last30Days)} to={adminPaths.orders} />
             <Tile
               label="Awaiting payment"
               value={String(d.awaitingPaymentOrders)}

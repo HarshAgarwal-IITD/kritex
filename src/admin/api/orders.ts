@@ -104,13 +104,8 @@ export function useOrderAction(id: string) {
 }
 
 /** Paise still refundable: captured payments minus refunds that haven't failed. */
-export function refundableAmount(order: AdminOrder): number {
-  const captured = order.payments
-    .filter((p) => p.status === "CAPTURED" || p.status === "REFUNDED")
-    .reduce((n, p) => n + p.amount, 0);
-  const refunded = order.refunds.filter((r) => r.status !== "FAILED").reduce((n, r) => n + r.amount, 0);
-  return Math.max(0, captured - refunded);
-}
+/** What can still be refunded (paise), as computed by the server. */
+export const refundableAmount = (order: AdminOrder): number => order.refundableAmount;
 
 /** Statuses offered in "Change status": the server's allowed transitions, minus CANCELLED (it has its own dialog). */
 export const statusTargets = (order: AdminOrder) => order.allowedTransitions.filter((s) => s !== "CANCELLED");
