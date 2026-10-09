@@ -23,3 +23,68 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  # Full-stack Playwright suite (QA-1): real kritex-server (fake payment gateway) + Postgres + Vite.
+  # The server repo is checked out next to this one, so the harness's default KRITEX_SERVER_DIR (../kritex-server) works.
+  # If kritex-server is private, add a SERVER_REPO_TOKEN secret (fine-grained PAT, contents:read on that repo).
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: kritex
+          POSTGRES_PASSWORD: kritex
+          POSTGRES_DB: kritex_e2e
+        ports:
+          - 5434:5432
+        options: >-
+          --health-cmd "pg_isready -U kritex -d kritex_e2e"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 10
+    env:
+      E2E_DATABASE_URL: postgresql://kritex:kritex@localhost:5434/kritex_e2e?schema=public
+      E2E_LOG_DIR: ${{ github.workspace }}/e2e-logs
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: kritex-website
+      - uses: actions/checkout@v4
+        with:
+          repository: HarshAgarwal-IITD/kritex-server
+          ref: ecommerce
+          path: kritex-server
+          token: ${{ secrets.SERVER_REPO_TOKEN || github.token }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: |
+            kritex-website/package-lock.json
+            kritex-server/package-lock.json
+      - name: Install kritex-server
+        working-directory: kritex-server
+        run: |
+          npm ci
+          npx prisma generate
+      - name: Install kritex-website
+        working-directory: kritex-website
+        run: npm ci
+      - name: Install Playwright (chromium)
+        working-directory: kritex-website
+        run: npx playwright install --with-deps chromium
+      - name: Full-stack e2e
+        working-directory: kritex-website
+        run: npm run test:e2e
+      - name: Upload report and logs
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-report
+          path: |
+            kritex-website/playwright-report/fullstack
+            kritex-website/test-results/fullstack
+            e2e-logs
+          retention-days: 7

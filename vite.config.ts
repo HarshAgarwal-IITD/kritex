@@ -11,9 +11,10 @@ export default defineConfig(({ mode }) => ({
       overlay: false,
     },
     // The API client uses a relative base URL in dev, so /api is proxied to kritex-server.
+    // VITE_API_PROXY_TARGET points it elsewhere (the full-stack e2e harness uses its own API port).
     proxy: {
       "/api": {
-        target: "http://localhost:4000",
+        target: process.env.VITE_API_PROXY_TARGET || "http://localhost:4000",
         changeOrigin: true,
       },
     },
