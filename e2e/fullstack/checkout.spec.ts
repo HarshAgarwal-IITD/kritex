@@ -1,10 +1,11 @@
-import { expect, request, test, type APIRequestContext } from "@playwright/test";
+import type { APIRequestContext } from "@playwright/test";
+import { apiContext, expect, test } from "./fixtures";
 
 /**
  * Stage 3 gate, full stack: real kritex-server (fake payment gateway, i.e. no RAZORPAY_KEY_ID) behind the
- * Vite dev server. Needs both running (`npm run start:dev` in kritex-server, `npm run dev` here) and the
- * seeded admin's credentials:
- *   E2E_ADMIN_EMAIL=admin@kritex.in E2E_ADMIN_PASSWORD=... npm run test:e2e
+ * Vite dev server. `npm run test:e2e` boots both (scripts/e2e-stack.mjs). Against an already running stack:
+ *   E2E_BASE_URL=http://localhost:8080 E2E_ADMIN_EMAIL=admin@kritex.in E2E_ADMIN_PASSWORD=... \
+ *     npx playwright test -c e2e/fullstack/playwright.config.ts checkout
  * Creates its own RETAIL product (2 sizes × 3 units) and a 10% coupon, so it never depends on catalog data.
  */
 const BASE = process.env.E2E_BASE_URL ?? "http://localhost:8080";
@@ -30,7 +31,7 @@ test.beforeAll(async () => {
   const email = process.env.E2E_ADMIN_EMAIL ?? "admin@kritex.in";
   const password = process.env.E2E_ADMIN_PASSWORD;
   test.skip(!password, "E2E_ADMIN_PASSWORD is not set");
-  admin = await request.newContext({ extraHTTPHeaders: { Origin: BASE } });
+  admin = await apiContext();
   await json(await admin.post(`${API}/auth/sign-in/email`, { data: { email, password } }));
 
   const stamp = Date.now().toString(36);
