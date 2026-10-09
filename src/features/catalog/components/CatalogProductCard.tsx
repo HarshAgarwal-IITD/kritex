@@ -36,7 +36,10 @@ const CatalogProductCard = ({ product, index }: { product: ProductCardDto; index
       // Enquiry-only and B2B-only products can go straight into the quote cart (quantity is set on /quote).
       action={
         product.saleChannel === "RETAIL" ? undefined : (
-          <AddToQuoteLink product={{ id: product.id, slug: product.slug, name: product.name, image: product.image?.url ?? null }} />
+          <AddToQuoteLink
+            className="uppercase tracking-wider"
+            product={{ id: product.id, slug: product.slug, name: product.name, image: product.image?.url ?? null }}
+          />
         )
       }
       index={index}
