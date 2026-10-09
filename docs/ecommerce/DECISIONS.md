@@ -249,6 +249,18 @@ Done 2026-10-06: the untracked `server/` folder was moved to `../kritex-server` 
 - **Order numbers** come from a Postgres sequence: `KTX-100001` onwards.
 - **Full-stack gate test** lives in the website repo (`e2e/fullstack/checkout.spec.ts`, `npm run test:e2e`) and creates its own product and coupon through the admin API.
 
+## ADR-017: Stage 4 implementation decisions (fulfilment, B2B, QA)
+**Status:** Accepted · 2026-10-09 (recorded at Stage 4 integration)
+
+- **Third-party services degrade instead of blocking boot.** Payments: real Razorpay keys are required in production (ADR-016). Email: Resend when `RESEND_API_KEY` is set, else SMTP, else log. Shipping: Shiprocket when `SHIPROCKET_EMAIL` is set; otherwise the fake provider in dev/test and, in production, an "unconfigured" provider (Shiprocket actions → 503 `SHIPPING_PROVIDER_NOT_CONFIGURED`) so staff ship manually. The webhook token is required only when Shiprocket is configured.
+- **Emails are idempotent and never block the order flow.** Listeners send in the background; each email is claimed in a `Notification` row by a unique key (once per event, retried on the next delivery of the event). Admin actions forward `notifyCustomer`; `false` suppresses the customer email. Events: `order.paid/payment_failed/shipped/delivered/cancelled`, `quote.requested/responded/accepted`.
+- **GST invoices** are numbered `KTX/<FY>/<00001>` per Indian financial year (IST), gap-free (counter bumped in the same transaction as the insert), issued once on `order.paid` (or on demand), stored as PDFs behind short-lived signed links.
+- **Quotes** use statuses REQUESTED → QUOTED → CONVERTED (an order exists), plus REJECTED and EXPIRED; there is no ACCEPTED. Accepting creates an order at the quoted GST-inclusive prices (no coupons, standard shipping), with Idempotency-Key, paid by Razorpay or bank transfer (approved B2B only).
+- **Bank-transfer orders** hold stock for `BANK_TRANSFER_HOLD_DAYS` (default 7), then the expiry job cancels them (this replaces ADR-016's "no automatic expiry").
+- **Config hygiene:** an empty env value means "not set"; tests never read a developer's `.env` (ConfigModule ignores it under test and third-party credentials are blanked), because Prisma loads `.env` at runtime.
+- **Admin media URLs** must be `/path` or `https://` (swatches may be `#hex`) to close a stored-XSS path (SEC-2).
+- **Full-stack E2E** runs through `scripts/e2e-stack.mjs` (`npm run test:e2e`): builds kritex-server, migrates/seeds a local `kritex_e2e` DB, starts API :4007 (fake gateway) + Vite :8087. CI checks out kritex-server at `ecommerce`. Real Razorpay is opt-in (`E2E_RAZORPAY=1`).
+
 ---
 
 ## Open questions

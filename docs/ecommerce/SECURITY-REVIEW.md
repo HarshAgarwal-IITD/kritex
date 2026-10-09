@@ -68,6 +68,16 @@ The following checks all passed. Each has a test that proves it.
 
 ---
 
+## Status after Stage 4 integration (2026-10-09)
+
+| Finding | Status |
+|---|---|
+| SEC-1 (High) shared rate-limit bucket behind the Vercel rewrite | **Open: release blocker (RL-1).** A deployment decision, not code: either point the storefront at the API directly (`api.kritex.in`, cookies via `AUTH_COOKIE_DOMAIN`) or verify the hop count and set `TRUST_PROXY` to match (see TD-10). |
+| SEC-2 (Medium) `javascript:` media URLs | **Fixed.** Server accepts only `/path` or `https://` for images, spec sheets, category images and swatches (+ `#hex`); `assetUrl()` blanks anything else. `SEC-XSS-URL` now passes. (server `3b9cdc7`, web `f650d61`) |
+| SEC-3 (Medium) stock hoarding with unpaid orders | **Open: release blocker (RL-2).** Needs an owner decision on limits (guest per-line cap, open unpaid orders per email/IP, hold time). |
+| SEC-21 (Low) `.env` leaking into tests / ConfigService fallback | **Fixed.** Tests ignore `.env` and blank third-party credentials; empty env values are treated as unset (server `9275b80`). |
+| SEC-4…SEC-11, SEC-12…SEC-20 | Open (low / info); tracked as TD-31. |
+
 ## Findings
 
 ### SEC-1 (High): behind the Vercel `/api` rewrite, every client shares a rate-limit bucket

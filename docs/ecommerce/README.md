@@ -17,9 +17,9 @@ into a full ecommerce platform. Update these files as decisions are made and wor
 
 ## Current status (2026-10-09)
 
-- **Stage:** ✅ Stages 0–3 complete (Stage 3 gate passed 2026-10-08 on the fake payment gateway; the real Razorpay test-payment check waits for test keys). 🔄 **Stage 4 (Fulfilment + B2B + QA) in progress** (started 2026-10-09).
-- **Decisions:** all ADRs Accepted (latest ADR-016). Open questions run on defaults (owner, 2026-10-06). Q1/Q2 real data is still needed before launch.
-- **Human checkpoint (Stage 3):** place test orders yourself (desktop + phone) on `npm run dev` with the API running: add to cart → checkout → "Simulate payment" → order in `/admin/orders`. Review the checkout UX and the admin order screen. Add Razorpay **test** keys to `kritex-server/.env` to try the real payment window.
+- **Stage:** ✅ Stages 0–4 complete (Stage 4 gate passed 2026-10-09; two security findings carried to release as RL-1/RL-2). **Next: Stage 5 (Launch prep).** Production still runs `main` (the prototype); `ecommerce` ships by merging into `main`.
+- **Decisions:** all ADRs Accepted (latest ADR-017). Open questions run on defaults (owner, 2026-10-06). Q1/Q2 real data is still needed before launch.
+- **Human checkpoint (Stage 4):** CA approves the GST invoice format (seller details are placeholders); staff walk through fulfilment (`/admin/orders` → Ship manually / Shiprocket) and quotes (`/admin/quotes`); decide the launch catalog (which products are `RETAIL`); make one real Razorpay test payment by hand (card 4111 1111 1111 1111, any future expiry, any CVV).
 - **Run locally:** `cd ../kritex-server && docker compose up -d && npm run start:dev` (API :4000, docs at /api/docs), then `npm run dev` here (:8080, proxies /api).
 
 ## Where we're starting from

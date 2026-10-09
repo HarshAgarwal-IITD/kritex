@@ -140,34 +140,38 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 
 ---
 
-## Stage 4: Fulfilment + B2B + QA (in progress, started 2026-10-09)
+## Stage 4: Fulfilment + B2B + QA ✅ (2026-10-09; SEC-1 and SEC-3 carried to release as RL-1/RL-2)
 
 ### Agent `server-ops` [S]
-- [~] OPS-1 `NotificationsModule` listening to order/quote events; Resend + React Email templates (confirmation, failed, shipped, delivered, verify, reset, quote)
-- [~] OPS-2 GST invoice PDF (FY-sequential numbers, CGST/SGST/IGST, HSN summary) → R2; `/orders/:number/invoice`
-- [~] OPS-3 Shiprocket: auth, create order, AWB, label, pickup; tracking webhook → Shipment + OrderEvent; manual-ship fallback; public tracking endpoint
+- [x] OPS-1 `NotificationsModule` listening to order/quote events; Resend + React Email templates (confirmation, failed, shipped, delivered, verify, reset, quote) (server `3e5975c`)
+- [x] OPS-2 GST invoice PDF (FY-sequential numbers, CGST/SGST/IGST, HSN summary) → R2; `/orders/:number/invoice` (server `3e5975c`)
+- [x] OPS-3 Shiprocket: auth, create order, AWB, label, pickup; tracking webhook → Shipment + OrderEvent; manual-ship fallback; public tracking endpoint (server `3e5975c`)
 
 ### Agent `server-b2b` [S]
-- [~] B2B-1 Quotes API (create RFQ, list, admin respond, accept → order)
-- [~] B2B-3 Tier pricing applied in `TotalsService` for approved B2B users
-- [~] B2B-4 Bank transfer / PO payment method (AWAITING_PAYMENT; admin mark-paid)
+- [x] B2B-1 Quotes API (create RFQ, list, admin respond, accept → order) (server `d9e153f`)
+- [x] B2B-3 Tier pricing applied in `TotalsService` for approved B2B users (server `d9e153f`)
+- [x] B2B-4 Bank transfer / PO payment method (AWAITING_PAYMENT; admin mark-paid) (server `d9e153f`)
 
 ### Agent `web-b2b-ops` [W]
-- [~] B2B-2 Quote cart: add items + quantities from PDP/listing → RFQ form (replaces mailto enquiry)
-- [~] B2B-3 Tier price display for approved B2B users
-- [~] B2B-5 Admin quotes inbox + respond UI; customer quote list + accept
-- [~] OPS-4 Admin: ship action, label print, tracking display
-- [~] OPS-5 Public `/track/:orderNumber` page
+- [x] B2B-2 Quote cart: add items + quantities from PDP/listing → RFQ form (replaces mailto enquiry) (web `be8de5d`)
+- [x] B2B-3 Tier price display for approved B2B users (web `be8de5d`)
+- [x] B2B-5 Admin quotes inbox + respond UI; customer quote list + accept (web `be8de5d`)
+- [x] OPS-4 Admin: ship action, label print, tracking display (web `be8de5d`)
+- [x] OPS-5 Public `/track/:orderNumber` page (web `be8de5d`)
 
 ### Agent `qa` [both]
-- [~] QA-1 Playwright full-stack harness (boots kritex-server + test DB; website CI checks out kritex-server)
-- [~] QA-2 E2E: browse → filter → PDP → cart → guest checkout (Razorpay test) → confirmation
-- [~] QA-3 E2E: login, cart merge, account orders, cancel
-- [~] QA-4 E2E: admin creates product → storefront; fulfil order
-- [~] QA-5 E2E: RFQ → quote → accept → order
-- [~] QA-6 Security review of both repos: authz on admin routes, IDOR (orders/addresses/quotes), webhook spoofing, price tampering, throttling, cookie/CORS config
+- [x] QA-1 Playwright full-stack harness (boots kritex-server + test DB; website CI checks out kritex-server) (web `cdf32b3`)
+- [x] QA-2 E2E: browse → filter → PDP → cart → guest checkout (Razorpay test) → confirmation (web `cdf32b3`)
+- [x] QA-3 E2E: login, cart merge, account orders, cancel (web `cdf32b3`)
+- [x] QA-4 E2E: admin creates product → storefront; fulfil order (web `cdf32b3`)
+- [x] QA-5 E2E: RFQ → quote → accept → order (web `cdf32b3`)
+- [x] QA-6 Security review (SECURITY-REVIEW.md; SEC-2 and SEC-21 fixed, SEC-1/SEC-3 → RL-1/RL-2) of both repos: authz on admin routes, IDOR (orders/addresses/quotes), webhook spoofing, price tampering, throttling, cookie/CORS config (web `cdf32b3`)
 
 ---
+
+### Release blockers (from the Stage 4 security review)
+- [ ] RL-1 SEC-1: behind the Vercel `/api` rewrite all clients share one rate-limit bucket. Decide: storefront calls `api.kritex.in` directly, or verify hop count and set `TRUST_PROXY` (TD-10)
+- [ ] RL-2 SEC-3: unpaid orders can hoard stock (999/line for 30 min). Decide limits: guest per-line cap, max open unpaid orders per email/IP, hold time
 
 ## Stage 5: Launch prep
 
@@ -224,6 +228,12 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [ ] TD-28 [W] PIN-code lookup is approximate (state by prefix, city for ~20 metros); consider an India Post dataset or API
 - [ ] TD-29 [both] Verification email `callbackURL` is `/account`; confirm Better Auth signs the user in after verifying (else they land on /login)
 - [ ] TD-30 [W] Add `checkout.razorpay.com` to any future CSP
+- [ ] TD-31 [both] Remaining low/info security findings SEC-4…SEC-20 (SECURITY-REVIEW.md): tokens in request logs, Origin check on /checkout for guest cookies, exchange variant check, captured-amount check, STAFF vs ADMIN permissions, JSON-LD escaping before prerender, CSP, dependency advisories
+- [ ] TD-32 [S] Shiprocket may reject webhook URLs containing "shiprocket"; add a neutral alias (e.g. `/webhooks/courier-tracking`) when configuring it
+- [ ] TD-33 [S] Credit notes for cancelled/refunded invoiced orders; invoices in a private R2 bucket/prefix (now: media bucket, random keys, signed links)
+- [ ] TD-34 [W] Real Razorpay Checkout asked for the mobile number although `prefill.contact` (`+91…`) is sent; check on a manual test payment and send the 10-digit form if needed. The opt-in e2e (`E2E_RAZORPAY=1`) stops at that step
+- [ ] TD-35 [S] ENQUIRY_ONLY items often have no stock, so accepting a quote for them fails with OUT_OF_STOCK until staff set stock; consider "made to order" quotes. No `quote.rejected` email yet
+- [ ] TD-36 [W] Admin: no route to regenerate a Shiprocket label / request pickup after creation in the UI flow beyond the new endpoints; quote variant picker uses the public product endpoint (hidden for inactive variants)
 - [ ] TD-5 [W] Rename package.json `name` from `vite_react_shadcn_ts` to `kritex-website`
 
 ## Stage 6: Go-live (see EXECUTION.md)

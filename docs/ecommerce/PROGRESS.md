@@ -3,7 +3,7 @@
 This is the running record of what has been built, where it lives, how to run it, and what's still open.
 Add a new section at the end of each stage.
 
-**Status as of 2026-10-08:** Stages 0–3 are complete (Stage 3 gate passed on the fake payment gateway; the real Razorpay test payment waits for keys). **Stage 4 (Fulfilment + B2B + QA) in progress** (started 2026-10-09).
+**Status as of 2026-10-09:** Stages 0–4 are complete. Stage 4's gate passed; two security findings (SEC-1, SEC-3) are carried to release as RL-1/RL-2. **Next: Stage 5 (Launch prep).**
 
 | Stage | Status | Integration commit |
 |---|---|---|
@@ -12,8 +12,9 @@ Add a new section at the end of each stage.
 | 1 Contract + Data | ✅ gate passed | server `bfd1d38` · web `428f63c` |
 | 2 Catalog + Identity | ✅ gate passed | server `9a4aa64` · web `6520bbf` |
 | 3 Commerce core | ✅ gate passed (fake gateway; real Razorpay check pending keys) | server `7f8882f` · web `f7b4f93` |
-| 4 Fulfilment + B2B + QA | 🔄 in progress | — |
-| 5–6 | not started | — |
+| 4 Fulfilment + B2B + QA | ✅ gate passed (RL-1/RL-2 open for release) | server `52b4c7a` · web `f650d61` |
+| 5 Launch prep | next | — |
+| 6 | not started | — |
 
 ---
 
@@ -236,6 +237,41 @@ Started 2026-10-07 with 4 agents (worktrees `../kritex-server-wt/s3-{cart,checko
 
 Final checks: **server** lint, typecheck, build, `openapi:check` OK; **313 unit + 337 e2e** tests pass. **Web** 0 lint errors, typecheck OK, **135 tests**, build OK, visual 22/22, full-stack e2e 1/1.
 
+## Stage 4: Fulfilment + B2B + QA ✅
+
+Started and finished 2026-10-09 with 4 agents (worktrees `../kritex-server-wt/s4-{ops,b2b}`, `.claude/worktrees/s4-{web-b2b-ops,qa}`; test DBs `kritex_test_{ops,b2b}`, `kritex_e2e`). Three agents were cut off by a usage limit mid-run and resumed. Decisions: ADR-017.
+
+**Fulfilment (`server-ops`, merged `3e5975c`):**
+- Emails (`src/notifications`): order confirmation (invoice PDF attached), payment failed, shipped, delivered, cancelled, quote responded; branded auth emails. Resend → SMTP → log. Idempotent via a `Notification` table (migration `20261009113012_notifications`); never blocks the order flow.
+- GST invoice PDFs (`src/invoices`): `KTX/2026-27/00001`, gap-free per financial year, CGST/SGST or IGST, HSN summary, amount in words; signed short-lived links (`GET /orders/:number/invoice`).
+- Shipping (`src/shipping`): Shiprocket (order, AWB, label, pickup, tracking), fake provider in dev/test, manual-ship fallback, `POST /webhooks/shiprocket` (token, idempotent, forward-only), public `GET /orders/:number/tracking?email=`.
+
+**B2B (`server-b2b`, merged `d9e153f`):** quotes API (RFQ incl. guests and honeypot, admin respond/re-respond/reject, accept → order at quoted prices with Idempotency-Key, Razorpay or bank transfer, expiry job, `quote.*` events; `quote_number_seq` → `KTQ-1000xx`). B2B tier pricing verified end to end (already worked). Bank-transfer orders now hold stock for `BANK_TRANSFER_HOLD_DAYS` (7), then expire.
+
+**Storefront + admin (`web-b2b-ops`, merged `be8de5d`):** quote cart (localStorage) with "Add to Quote" on enquiry/B2B products and cards, `/quote` RFQ form (replaces the product mailto), tier price table for approved B2B, `/account/quotes` with accept → payment, admin quotes inbox + respond/decline, admin order shipping (Shiprocket + manual), `/track` + `/track/:orderNumber`. Visual baselines re-shot for the new PDP/card CTAs.
+
+**QA (`qa`, merged `cdf32b3`):** full-stack harness `npm run test:e2e` (`scripts/e2e-stack.mjs`: builds kritex-server, local `kritex_e2e` DB, API :4007 with the fake gateway, Vite :8087; refuses non-local DBs; hides the server `.env`). Specs: storefront, account (sign-up → verify → cart merge → cancel), admin (product → storefront, refund, **fulfilment**), quotes (API + **UI**), security (15 probes). CI `e2e` job checks out kritex-server at `ecommerce` (`secrets.SERVER_REPO_TOKEN` if private). Security review: [SECURITY-REVIEW.md](SECURITY-REVIEW.md).
+
+**Integration (main session):**
+- Merges: env schema / contract spec conflicts only (kept both sides). Regenerated API types.
+- **Real Razorpay keys leaked into tests** (Prisma loads `.env` at runtime; ConfigService falls back to `process.env`): tests now ignore `.env`, blank third-party credentials, and empty env values mean unset (`9275b80`, SEC-21). `resetDatabase` retries a TRUNCATE that deadlocks with background email/invoice work.
+- **Quote accept bug:** the refetched (CONVERTED) quote unmounted the payment dialog before payment; fixed and covered by the new quote UI e2e (`64db4e8`). Enabled the fulfilment and quote UI e2e specs with the real UI labels.
+- **SEC-2 fixed** (`3b9cdc7`, `f650d61`): admin media URLs must be `/path` or `https://`.
+- **Production without Shiprocket** (`0ae2cfd`): manual shipping only, Shiprocket actions 503; `notifyCustomer` now honoured; a manual DELIVERED sends the email; `order.payment_failed` is emitted (`52b4c7a`). `render.yaml` declares the bank-transfer, Resend, seller and Shiprocket vars.
+- Website tests: async waits get more headroom (flaky under load).
+- Restored `kritex-server/.env.example`, which had the pasted Razorpay prompt (with the key secret) appended; it was never committed.
+- Product photos: the object store now serves the original images, not the bg-removed cut-outs (`d1ee9be`; 40 objects re-uploaded to `kritex-assets`, `asset()` adds `?v=2`).
+- Dev setup: `DATABASE_URL_DEV` (dev Neon) migrated + seeded (seed transaction timeout raised for remote DBs, `a34dde0`); Razorpay test keys in `kritex-server/.env`.
+
+**Gate (2026-10-09):**
+- Paid order → confirmation email with invoice PDF → admin generates AWB (fake Shiprocket) → webhook DELIVERED → tracking/emails: server e2e (`shipping`, `notifications`, `invoices`). In the browser: guest buys → admin "Ship manually" → `/track/KTX-…` shows the AWB → shipped email logged.
+- RFQ → admin quote → buyer accepts → order: browser (quote cart → `/admin/quotes` respond → `/account/quotes` accept → fake-gateway payment → success) and API (incl. bank transfer → mark paid).
+- Full-stack suite green locally (24 passed; the real-Razorpay spec is opt-in). The CI job was validated with actionlint and a local CI-equivalent run, not on GitHub.
+- Security: no critical; SEC-2 fixed; **SEC-1 (high) and SEC-3 (medium) are deployment / policy decisions, carried to release as RL-1 and RL-2.**
+- Real Razorpay (test mode): checkout creates real `order_…` ids under the test key and a forged signature is rejected; the real Checkout.js window opens in Test Mode. Completing a card payment is left to a manual check (TD-34).
+
+Final checks: **server** lint, typecheck, build, `openapi:check` OK; **364 unit + 374 e2e** tests pass. **Web** 0 lint errors, typecheck OK, **153 tests**, build OK, visual 22/22, full-stack e2e 24/24 (+1 opt-in).
+
 ## Deployment (as of 2026-10-09)
 
 - **Live:** the API runs on **Render** (`https://kritex-server.onrender.com`) with Postgres on **Neon** (Singapore). The website on Vercel proxies `/api/*` to it (`vercel.json`).
@@ -261,7 +297,7 @@ Final checks: **server** lint, typecheck, build, `openapi:check` OK; **313 unit 
 | 4 | Which products are RETAIL vs B2B-only vs enquiry-only (Q1) | Stage 5 |
 | 5 | Legal review of `/legal/*`; fill `src/pages/legal/placeholders.ts` (entity name, address, GSTIN, grievance officer, shipping fee/threshold, dispatch times…) | Stage 5 |
 | 6 | CA review of the GST rules (ADR-006, ADR-015) and placeholder HSN/GST values. Specific questions: (a) seller state code (placeholder 27, Maharashtra); (b) apparel/footwear slab ₹2,500 / 5% / 18% and HSN chapters 61–64; (c) slab judged on the post-discount per-unit value (inclusive prices ₹2,625–₹2,950 are borderline); (d) GST on shipping at the highest line rate; (e) per-line rounding, odd paisa to CGST; (f) place of supply = shipping state, also for B2B with GSTIN | Stage 3–4 |
-| 8 | Stage 3 checkpoint: place test orders yourself (desktop + phone) and review checkout + the admin order screen. (Stage 2: click through the storefront and `/admin` product editor.) Copy the dev admin password from `kritex-server/.env` (`SEED_ADMIN_PASSWORD`) | Before Stage 4 |
+| 8 | Stage 4 checkpoint: CA approves the invoice format; staff walk-through of fulfilment and quotes; decide the launch catalog (RETAIL products); one manual Razorpay test payment. (Stage 3: place test orders yourself and review checkout + the admin order screen.) (Stage 2: click through the storefront and `/admin` product editor.) Copy the dev admin password from `kritex-server/.env` (`SEED_ADMIN_PASSWORD`) | Before Stage 4 |
 | 10 | Razorpay test keys are in `kritex-server/.env` (2026-10-09). Still to do: create the dashboard webhook (gives the real webhook secret) and set all three on Render before the release (TD-23). Needed for the real-payment part of the Stage 3 gate, and before the staging API can boot | Now |
 | 11 | Fix `DATABASE_URL` in `kritex-server/.env` (starts with `""`), and decide whether local dev should use Neon or the docker Postgres on :5433 | Now |
 | 9 | Decide which categories are "coming soon" (Base Layers) and confirm category page copy (TD-13, TD-14) | Stage 3 |
@@ -275,8 +311,8 @@ Render (free, Singapore, Docker) + Neon (free, Singapore) + Vercel for the site.
 - kritex-website: `vercel.json` proxies `/api/*` → `https://kritex-server.onrender.com`.
 
 ## Open follow-ups / tech debt
-Tracked in [TASKS.md](TASKS.md) → "Tech-debt / follow-ups" (TD-1…TD-30), plus AUTH-6 and COM-16 added to Stages 2–3.
+Tracked in [TASKS.md](TASKS.md) → "Tech-debt / follow-ups" (TD-1…TD-36, release blockers RL-1/RL-2), plus AUTH-6 and COM-16 added to Stages 2–3.
 
-## Next: Stage 4 (Fulfilment + B2B + QA)
-4 parallel agents: `server-ops`, `server-b2b`, `web-b2b-ops`, `qa`. See [EXECUTION.md](EXECUTION.md#stage-4-fulfilment--b2b--qa).
-Before kick-off: the owner's Stage 3 checkpoint and, ideally, a real Razorpay test payment.
+## Next: Stage 5 (Launch prep)
+3 parallel agents: `deploy`, `web-seo-perf`, `data-import`. See [EXECUTION.md](EXECUTION.md#stage-5-launch-prep).
+Before release: RL-1 and RL-2 (TASKS.md), the owner checkpoint above, and the release checklist in "Deployment".
