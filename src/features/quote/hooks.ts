@@ -63,7 +63,9 @@ export function useAcceptQuote(number: string) {
       return data;
     },
     onSuccess: () => {
-      void qc.invalidateQueries({ queryKey: quoteKeys.mine });
+      // Mark stale without refetching now: the refetched quote is CONVERTED, which would unmount the accept
+      // panel (and its payment dialog) before the customer has paid. Quote pages refetch on their next mount.
+      void qc.invalidateQueries({ queryKey: quoteKeys.mine, refetchType: "none" });
       void qc.invalidateQueries({ queryKey: ["me", "orders"] });
     },
   });

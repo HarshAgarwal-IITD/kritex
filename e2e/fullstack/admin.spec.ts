@@ -9,6 +9,7 @@ import {
   checkoutWithFakeGateway,
   createRetailProduct,
   expect,
+  readMail,
   stamp,
   test,
 } from "./fixtures";
@@ -162,24 +163,26 @@ test("non-staff users are kept out of /admin and the admin API", async ({ page }
  *   5. Public /track/KTX-…?email=… (OPS-5) shows SHIPPED with the AWB; wrong email → not found.
  *   6. Admin marks DELIVERED → customer order detail shows "Return / Exchange".
  */
-test.fixme("admin fulfils an order (ship → tracking → delivered)", async ({ page }) => {
+test("admin fulfils an order (manual ship → tracking page)", async ({ page }) => {
   const product = await createRetailProduct(admin, { name: "Ship Me", sizes: ["M"], stock: 2 });
   cleanup.push(product.id);
   await addSizesToCart(page, product.slug, ["M"]);
   await page.goto("/checkout");
-  const number = await checkoutWithFakeGateway(page, { guestEmail: "e2e-ship@example.com" });
+  const email = `e2e-ship-${stamp()}@example.com`;
+  const number = await checkoutWithFakeGateway(page, { guestEmail: email });
   const order = await adminOrderByNumber(admin, number);
 
   await adminLogin(page);
   await page.goto(`/admin/orders/${order.id}`);
-  await page.getByRole("button", { name: /^Ship/ }).click();
+  await page.getByRole("button", { name: "Ship manually" }).click();
   const dialog = page.getByRole("dialog");
-  await dialog.getByLabel("Carrier").fill("Delhivery");
-  await dialog.getByLabel(/AWB/).fill("E2E123456");
-  await dialog.getByRole("button", { name: /Ship|Mark shipped/ }).click();
+  await dialog.getByLabel("Courier").fill("Delhivery");
+  await dialog.getByLabel("AWB / tracking number").fill("E2E123456");
+  await dialog.getByRole("button", { name: "Mark shipped" }).click();
   await expect.poll(async () => (await adminOrderByNumber(admin, number)).status).toBe("SHIPPED");
-  await expect(page.getByText("E2E123456")).toBeVisible();
 
-  await page.goto(`/track/${number}?email=e2e-ship@example.com`);
-  await expect(page.getByText("E2E123456")).toBeVisible();
+  // Public tracking (OPS-5) with the order email; the shipped email went out (OPS-1).
+  await page.goto(`/track/${number}?email=${encodeURIComponent(email)}`);
+  await expect(page.getByText(/E2E123456/).first()).toBeVisible();
+  expect(await readMail(email, "order-shipped")).toContain(number);
 });

@@ -1,10 +1,10 @@
 import { randomUUID } from "node:crypto";
 import type { APIRequestContext } from "@playwright/test";
-import { API, adminApi, apiContext, createRetailProduct, expect, firstLink, json, readMail, stamp, test, type CreatedProduct } from "./fixtures";
+import { ADMIN_EMAIL, ADMIN_PASSWORD, API, adminApi, apiContext, createRetailProduct, expect, firstLink, json, readMail, stamp, test, type CreatedProduct } from "./fixtures";
 
 /**
  * QA-5: RFQ → quote → accept → order.
- * The API flow runs now (server B2B-1). The UI flow waits for the web quote cart / inboxes (B2B-2, B2B-5) and is fixme.
+ * Both the API flow (server B2B-1) and the UI flow (quote cart, admin respond, account accept: B2B-2, B2B-5) run.
  */
 let admin: APIRequestContext;
 let product: CreatedProduct;
@@ -114,9 +114,65 @@ test("API: customer RFQ → admin quotes per line → customer accepts → order
  *   4. Approved B2B customer with BANK_TRANSFER_* configured: accept with "Bank transfer / PO" → AWAITING_PAYMENT →
  *      admin "Mark paid" with a UTR → PAID.
  */
-test.fixme("UI: B2B customer requests a quote, admin responds, customer accepts → order", async ({ page }) => {
-  await page.goto(`/product/${product.slug}`);
-  await page.getByRole("button", { name: "Request Quote" }).click();
-  await page.goto("/account/quotes");
-  await expect(page.getByText(/KTQ-\d+/)).toBeVisible();
+test("UI: customer requests a quote, admin responds, customer accepts → paid order", async ({ page, browser }) => {
+  // An enquiry-only product shows "Add to Quote" on the PDP (B2B-2).
+  const rfqProduct = await createRetailProduct(admin, { name: "Quote Cap", sizes: ["M", "L"], stock: 100 });
+  await json(await admin.patch(`${API}/admin/products/${rfqProduct.id}`, { data: { saleChannel: "ENQUIRY_ONLY" } }));
+
+  // Verified customer, signed in through the UI.
+  const email = `e2e-rfq-ui-${stamp()}@example.com`;
+  const password = "Sup3r-secret-pass";
+  const customer = await apiContext();
+  await json(await customer.post(`${API}/auth/sign-up/email`, { data: { name: "E2E Buyer", email, password } }));
+  await customer.get(firstLink(await readMail(email, "verify-email")));
+  await customer.dispose();
+  await page.goto("/login");
+  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Password").fill(password);
+  await page.getByRole("button", { name: "Log In" }).click();
+  await expect(page).not.toHaveURL(/\/login/);
+
+  // 1. Quote cart → RFQ form.
+  await page.goto(`/product/${rfqProduct.slug}`);
+  await page.getByRole("button", { name: "L", exact: true }).click();
+  await page.getByRole("button", { name: /Add to Quote/ }).click();
+  await page.goto("/quote");
+  await page.getByLabel("Your name").fill("E2E Buyer");
+  await page.getByLabel("Company / organisation").fill("E2E Security Pvt Ltd");
+  const emailField = page.getByLabel("Email");
+  if (await emailField.isEditable()) await emailField.fill(email);
+  await page.getByLabel("Mobile number").fill("98200 12345");
+  await page.getByRole("button", { name: "Send Quote Request" }).click();
+  const quoteNumber = (await page.getByTestId("quote-number").textContent())!.trim();
+  expect(quoteNumber).toMatch(/^KTQ-\d+$/);
+
+  // 2. Admin responds with a unit price.
+  const staff = await browser.newPage();
+  await staff.goto("/admin/login");
+  await staff.getByLabel("Email").fill(ADMIN_EMAIL);
+  await staff.getByLabel("Password").fill(ADMIN_PASSWORD);
+  await staff.getByRole("button", { name: "Sign in" }).click();
+  await expect(staff).not.toHaveURL(/\/admin\/login/);
+  await staff.goto("/admin/quotes");
+  await staff.getByText(quoteNumber).click();
+  await staff.getByLabel(`Unit price for ${rfqProduct.name}`).fill("399");
+  await staff.getByRole("button", { name: "Send quote" }).click();
+  await expect.poll(async () => {
+    const list = await json<{ items: { number: string; status: string }[] }>(await admin.get(`${API}/admin/quotes?q=${quoteNumber}`));
+    return list.items.find((q) => q.number === quoteNumber)?.status;
+  }).toBe("QUOTED");
+  await staff.close();
+
+  // 3. Customer accepts → fake gateway → success.
+  await page.goto(`/account/quotes/${quoteNumber}`);
+  await page.getByLabel("Full name").fill("E2E Buyer");
+  await page.getByLabel("Mobile number").fill("9820012345");
+  await page.getByLabel("Address", { exact: true }).fill("5 Dock Road");
+  await page.getByLabel("PIN code").fill("400001");
+  await page.getByRole("button", { name: "Deliver Here" }).click();
+  await page.getByRole("button", { name: /^Accept & (Pay|Place Order)/ }).click();
+  await page.getByRole("dialog").getByRole("button", { name: "Success" }).click();
+  await expect(page).toHaveURL(/\/checkout\/success\/KTX-\d+$/);
+
+  await admin.delete(`${API}/admin/products/${rfqProduct.id}`, { failOnStatusCode: false });
 });
