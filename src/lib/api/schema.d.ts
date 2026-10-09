@@ -986,7 +986,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Accept a QUOTED quote: creates an order at the quoted prices (→ Razorpay or bank transfer) */
+        /** Accept a QUOTED quote: creates an order at the quoted prices (→ Razorpay or bank transfer); the quote becomes CONVERTED */
         post: operations["acceptMyQuote"];
         delete?: never;
         options?: never;
@@ -6000,7 +6000,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description QUOTE_ITEMS_UNPRICED */
+            /** @description QUOTE_ITEMS_UNPRICED | INVALID_VARIANT */
             422: {
                 headers: {
                     [name: string]: unknown;

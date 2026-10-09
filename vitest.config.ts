@@ -9,6 +9,8 @@ export default defineConfig({
     globals: true,
     setupFiles: ["./src/test/setup.ts"],
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    // Whole-app tests (MSW + lazy routes) can be slow on a busy machine / CI runner.
+    testTimeout: 20_000,
     // Node's fetch/Request reject relative URLs, so give the API client an absolute base in tests.
     // MSW handlers match any origin.
     // Asset base is pinned empty so tests don't depend on a developer's local .env.
