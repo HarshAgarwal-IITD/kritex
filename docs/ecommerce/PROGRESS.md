@@ -236,6 +236,19 @@ Started 2026-10-07 with 4 agents (worktrees `../kritex-server-wt/s3-{cart,checko
 
 Final checks: **server** lint, typecheck, build, `openapi:check` OK; **313 unit + 337 e2e** tests pass. **Web** 0 lint errors, typecheck OK, **135 tests**, build OK, visual 22/22, full-stack e2e 1/1.
 
+## Deployment (as of 2026-10-09)
+
+- **Live:** the API runs on **Render** (`https://kritex-server.onrender.com`) with Postgres on **Neon** (Singapore). The website on Vercel proxies `/api/*` to it (`vercel.json`).
+- **What is live is still the Express prototype from `main`** (`117f8cc`: `GET /api/health`, `POST/GET /api/queries`, `x-powered-by: Express`), matching the live website on `main`. `/api/v1/*` (the NestJS `ecommerce` code) is not deployed yet. `render.yaml` says `branch: ecommerce`, but the running service builds `main`.
+- **Migrations are compatible:** `ecommerce` keeps the prototype's `20260922093957_init`, and the Docker image runs `prisma migrate deploy` on boot, so switching adds the 5 newer migrations on top of the existing Neon data.
+- **Before pointing Render (and Vercel) at `ecommerce`:**
+  1. Render env: `NODE_ENV=production`, `DATABASE_URL` (Neon, direct not pooled), `CORS_ORIGIN`, `TRUST_PROXY=1`, `BETTER_AUTH_SECRET` (≥ 32 chars), `BETTER_AUTH_URL` (public API origin), `WEB_URL`, `AUTH_COOKIE_DOMAIN`, and **`RAZORPAY_KEY_ID/KEY_SECRET/WEBHOOK_SECRET`** (test keys are fine). Without Razorpay keys the API refuses to boot in production (fake gateway is dev-only). Remove `ADMIN_API_KEY`.
+  2. Back up / branch the Neon database first (Neon branch), then deploy; migrations apply on boot.
+  3. Deploy the website from `ecommerce` at the same time: the new site calls `/api/v1/*`, which the prototype doesn't have, and the old site calls `/api/queries`, which the new API serves at `/api/v1/queries`.
+  4. Seed the catalog once (`DATABASE_URL=<neon> npx prisma db seed`, with `SEED_ADMIN_EMAIL` + `SEED_ADMIN_PASSWORD`), or import real data with `npm run import:products`.
+  5. Smoke test: `/api/v1/health`, `/products`, admin login, a test order.
+- **Local dev:** `kritex-server/.env` now points `DATABASE_URL` at Neon (and starts with a doubled quote, `""postgresql://…`, so it doesn't parse). Never run migrations, seeds or tests against it from a dev machine; for local work use `DATABASE_URL=postgresql://kritex:kritex@localhost:5433/kritex?schema=public`.
+
 ---
 
 ## What's needed from the owner
