@@ -84,3 +84,14 @@ describe("productJsonLd", () => {
     });
   });
 });
+
+describe("assetUrl", () => {
+  it("passes http(s) and site paths, blanks anything else", async () => {
+    const { assetUrl } = await import("./view");
+    expect(assetUrl("https://cdn.example/x.webp")).toBe("https://cdn.example/x.webp");
+    expect(assetUrl("/products/a/b.png")).toBe("/products/a/b.png");
+    expect(assetUrl("javascript:alert(1)")).toBe("about:blank");
+    expect(assetUrl("//evil.example/x.png")).toBe("about:blank");
+    expect(assetUrl("data:text/html,x")).toBe("about:blank");
+  });
+});

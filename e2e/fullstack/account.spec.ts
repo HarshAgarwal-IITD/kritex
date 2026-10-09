@@ -61,7 +61,11 @@ test("sign up, verify, cart merge on login, orders list/detail, cancel", async (
   // ---- Signed-in cart line (L), log out, guest cart line (M), log in → both lines.
   await addSizesToCart(page, product.slug, ["L"]);
   await page.goto("/account");
-  await page.getByRole("button", { name: "Log out" }).click();
+  // The UI leaves /account first, then signs out; wait for the sign-out response before reading the cart.
+  await Promise.all([
+    page.waitForResponse((r) => r.url().includes("/auth/sign-out")),
+    page.getByRole("button", { name: "Log out" }).click(),
+  ]);
   await expect(page).not.toHaveURL(/\/account$/);
   await page.goto("/cart");
   await expect(page.getByTestId("cart-line")).toHaveCount(0);

@@ -12,7 +12,16 @@ export const SIZE_OPTION = "Size";
 const isColourOption = (o: ProductOption) => /^colou?r$/i.test(o.name);
 
 /** asset() for site paths; absolute URLs (already on a CDN) pass through. */
-export const assetUrl = (url: string): string => (/^https?:\/\//i.test(url) ? url : asset(url));
+/**
+ * Media URL for `src`/`href`: absolute http(s) URLs pass through, site paths go through `asset()`, and anything
+ * else (`javascript:`, `data:`, `//host`) becomes `about:blank`. The API already rejects those (SEC-2); this is
+ * defence in depth for older data.
+ */
+export const assetUrl = (url: string): string => {
+  if (/^https?:\/\//i.test(url)) return url;
+  if (/^\/(?!\/)/.test(url)) return asset(url);
+  return "about:blank";
+};
 
 const looksLikeUrl = (s: string) => /^(https?:\/\/|\/)/i.test(s);
 

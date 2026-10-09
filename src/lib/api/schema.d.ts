@@ -341,7 +341,10 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Create a Shiprocket shipment: order + AWB + label (+ pickup) */
+        /**
+         * Create a Shiprocket shipment: order + AWB + label (+ pickup)
+         * @description Resumable: if a step fails (422 SHIPROCKET_ERROR, details.step = create_order | assign_awb | generate_label | request_pickup) call it again and it continues where it stopped. With schedulePickup (default) the order moves to SHIPPED, otherwise PAID → PROCESSING. Dev/test without SHIPROCKET_EMAIL use a fake provider (AWB FAKE…, example.com label).
+         */
         post: operations["adminCreateShiprocketShipment"];
         delete?: never;
         options?: never;
@@ -534,6 +537,40 @@ export interface paths {
         put?: never;
         /** Send prices + validity (status → QUOTED; re-respond allowed while QUOTED) */
         post: operations["adminRespondQuote"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/shipments/{id}/label": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Regenerate the courier label of a Shiprocket shipment */
+        post: operations["adminGenerateShipmentLabel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/admin/shipments/{id}/pickup": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Schedule the courier pickup; the order moves to SHIPPED */
+        post: operations["adminRequestShipmentPickup"];
         delete?: never;
         options?: never;
         head?: never;
@@ -787,6 +824,23 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/invoices/files/{file}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Invoice PDF behind a signed link (local storage driver only; R2 links go to R2) */
+        get: operations["downloadInvoiceFile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/me": {
         parameters: {
             query?: never;
@@ -1001,7 +1055,10 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Signed URL to the GST invoice PDF (order owner, or STAFF/ADMIN) */
+        /**
+         * Signed URL to the GST invoice PDF (order owner, or STAFF/ADMIN)
+         * @description Issues the invoice on first request if the order is paid and has none yet. The URL is valid for 15 minutes: fetch a new one each time the user clicks "Download invoice".
+         */
         get: operations["getOrderInvoice"];
         put?: never;
         post?: never;
@@ -5097,7 +5154,7 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description INVALID_TRANSITION: order not PAID/PROCESSING | SHIPMENT_EXISTS */
+            /** @description INVALID_TRANSITION: order not PAID/PROCESSING | SHIPMENT_EXISTS (handed over / in progress) */
             409: {
                 headers: {
                     [name: string]: unknown;
@@ -6011,6 +6068,158 @@ export interface operations {
             };
         };
     };
+    adminGenerateShipmentLabel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Shipment with labelUrl */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminShipmentDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description SHIPMENT_NOT_READY (no AWB yet) | SHIPMENT_CLOSED */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description SHIPROCKET_ERROR (details from Shiprocket) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    adminRequestShipmentPickup: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Shipment */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminShipmentDto_Output"];
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description FORBIDDEN: role not allowed */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description SHIPMENT_NOT_READY | SHIPMENT_CLOSED | INVALID_TRANSITION */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description SHIPROCKET_ERROR (details from Shiprocket) */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
     adminCreateUpload: {
         parameters: {
             query?: never;
@@ -6906,6 +7115,58 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    downloadInvoiceFile: {
+        parameters: {
+            query: {
+                expires: number;
+                sig: string;
+            };
+            header?: never;
+            path: {
+                file: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description PDF */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+            /** @description VALIDATION_ERROR / BAD_REQUEST */
+            400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND: bad / expired link */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description TOO_MANY_REQUESTS */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": components["schemas"]["ErrorResponseDto"];
                 };
             };
         };

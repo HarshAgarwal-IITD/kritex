@@ -453,8 +453,7 @@ test("SEC-CSV: formula-looking customer input is neutralised in the orders CSV e
   await ctx.dispose();
 });
 
-test("SEC-XSS-URL (open, medium): product media URLs accept javascript: (rendered as <a href> on the PDP)", async () => {
-  test.fail(true, "SEC-XSS-URL: image/spec-sheet URLs are free text; should be https:// or /path only");
+test("SEC-XSS-URL (fixed, SEC-2): product media URLs must be https:// or /path (javascript: is rejected)", async () => {
   const res = await admin.post(`${API}/admin/products`, {
     data: {
       slug: `e2e-xss-${stamp()}`,
