@@ -3,7 +3,7 @@
 This is the running record of what has been built, where it lives, how to run it, and what's still open.
 Add a new section at the end of each stage.
 
-**Status as of 2026-10-08:** Stages 0–3 are complete (Stage 3 gate passed on the fake payment gateway; the real Razorpay test payment waits for keys). **Next: Stage 4 (Fulfilment + B2B + QA).**
+**Status as of 2026-10-08:** Stages 0–3 are complete (Stage 3 gate passed on the fake payment gateway; the real Razorpay test payment waits for keys). **Stage 4 (Fulfilment + B2B + QA) in progress** (started 2026-10-09).
 
 | Stage | Status | Integration commit |
 |---|---|---|
@@ -12,7 +12,7 @@ Add a new section at the end of each stage.
 | 1 Contract + Data | ✅ gate passed | server `bfd1d38` · web `428f63c` |
 | 2 Catalog + Identity | ✅ gate passed | server `9a4aa64` · web `6520bbf` |
 | 3 Commerce core | ✅ gate passed (fake gateway; real Razorpay check pending keys) | server `7f8882f` · web `f7b4f93` |
-| 4 Fulfilment + B2B + QA | next | — |
+| 4 Fulfilment + B2B + QA | 🔄 in progress | — |
 | 5–6 | not started | — |
 
 ---

@@ -140,32 +140,32 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 
 ---
 
-## Stage 4: Fulfilment + B2B + QA
+## Stage 4: Fulfilment + B2B + QA (in progress, started 2026-10-09)
 
 ### Agent `server-ops` [S]
-- [ ] OPS-1 `NotificationsModule` listening to order/quote events; Resend + React Email templates (confirmation, failed, shipped, delivered, verify, reset, quote)
-- [ ] OPS-2 GST invoice PDF (FY-sequential numbers, CGST/SGST/IGST, HSN summary) → R2; `/orders/:number/invoice`
-- [ ] OPS-3 Shiprocket: auth, create order, AWB, label, pickup; tracking webhook → Shipment + OrderEvent; manual-ship fallback; public tracking endpoint
+- [~] OPS-1 `NotificationsModule` listening to order/quote events; Resend + React Email templates (confirmation, failed, shipped, delivered, verify, reset, quote)
+- [~] OPS-2 GST invoice PDF (FY-sequential numbers, CGST/SGST/IGST, HSN summary) → R2; `/orders/:number/invoice`
+- [~] OPS-3 Shiprocket: auth, create order, AWB, label, pickup; tracking webhook → Shipment + OrderEvent; manual-ship fallback; public tracking endpoint
 
 ### Agent `server-b2b` [S]
-- [ ] B2B-1 Quotes API (create RFQ, list, admin respond, accept → order)
-- [ ] B2B-3 Tier pricing applied in `TotalsService` for approved B2B users
-- [ ] B2B-4 Bank transfer / PO payment method (AWAITING_PAYMENT; admin mark-paid)
+- [~] B2B-1 Quotes API (create RFQ, list, admin respond, accept → order)
+- [~] B2B-3 Tier pricing applied in `TotalsService` for approved B2B users
+- [~] B2B-4 Bank transfer / PO payment method (AWAITING_PAYMENT; admin mark-paid)
 
 ### Agent `web-b2b-ops` [W]
-- [ ] B2B-2 Quote cart: add items + quantities from PDP/listing → RFQ form (replaces mailto enquiry)
-- [ ] B2B-3 Tier price display for approved B2B users
-- [ ] B2B-5 Admin quotes inbox + respond UI; customer quote list + accept
-- [ ] OPS-4 Admin: ship action, label print, tracking display
-- [ ] OPS-5 Public `/track/:orderNumber` page
+- [~] B2B-2 Quote cart: add items + quantities from PDP/listing → RFQ form (replaces mailto enquiry)
+- [~] B2B-3 Tier price display for approved B2B users
+- [~] B2B-5 Admin quotes inbox + respond UI; customer quote list + accept
+- [~] OPS-4 Admin: ship action, label print, tracking display
+- [~] OPS-5 Public `/track/:orderNumber` page
 
 ### Agent `qa` [both]
-- [ ] QA-1 Playwright full-stack harness (boots kritex-server + test DB; website CI checks out kritex-server)
-- [ ] QA-2 E2E: browse → filter → PDP → cart → guest checkout (Razorpay test) → confirmation
-- [ ] QA-3 E2E: login, cart merge, account orders, cancel
-- [ ] QA-4 E2E: admin creates product → storefront; fulfil order
-- [ ] QA-5 E2E: RFQ → quote → accept → order
-- [ ] QA-6 Security review of both repos: authz on admin routes, IDOR (orders/addresses/quotes), webhook spoofing, price tampering, throttling, cookie/CORS config
+- [~] QA-1 Playwright full-stack harness (boots kritex-server + test DB; website CI checks out kritex-server)
+- [~] QA-2 E2E: browse → filter → PDP → cart → guest checkout (Razorpay test) → confirmation
+- [~] QA-3 E2E: login, cart merge, account orders, cancel
+- [~] QA-4 E2E: admin creates product → storefront; fulfil order
+- [~] QA-5 E2E: RFQ → quote → accept → order
+- [~] QA-6 Security review of both repos: authz on admin routes, IDOR (orders/addresses/quotes), webhook spoofing, price tampering, throttling, cookie/CORS config
 
 ---
 

@@ -15,9 +15,9 @@ into a full ecommerce platform. Update these files as decisions are made and wor
 
 **Repos:** `kritex-website` (this repo: storefront, admin, planning hub; github.com/HarshAgarwal-IITD/kritex) · `../kritex-server` (NestJS API; github.com/HarshAgarwal-IITD/kritex-server). See ADR-013.
 
-## Current status (2026-10-08)
+## Current status (2026-10-09)
 
-- **Stage:** ✅ Stages 0–3 complete (Stage 3 gate passed 2026-10-08 on the fake payment gateway; the real Razorpay test-payment check waits for test keys). **Next: Stage 4 (Fulfilment + B2B + QA).**
+- **Stage:** ✅ Stages 0–3 complete (Stage 3 gate passed 2026-10-08 on the fake payment gateway; the real Razorpay test-payment check waits for test keys). 🔄 **Stage 4 (Fulfilment + B2B + QA) in progress** (started 2026-10-09).
 - **Decisions:** all ADRs Accepted (latest ADR-016). Open questions run on defaults (owner, 2026-10-06). Q1/Q2 real data is still needed before launch.
 - **Human checkpoint (Stage 3):** place test orders yourself (desktop + phone) on `npm run dev` with the API running: add to cart → checkout → "Simulate payment" → order in `/admin/orders`. Review the checkout UX and the admin order screen. Add Razorpay **test** keys to `kritex-server/.env` to try the real payment window.
 - **Run locally:** `cd ../kritex-server && docker compose up -d && npm run start:dev` (API :4000, docs at /api/docs), then `npm run dev` here (:8080, proxies /api).
