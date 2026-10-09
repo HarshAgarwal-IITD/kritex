@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, Menu, ShoppingBag, User, X } from "lucide-react";
+import { ChevronDown, ClipboardList, Menu, ShoppingBag, User, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useCategories } from "@/features/catalog/hooks";
 import { useCartCount } from "@/features/cart/hooks";
+import { useQuoteCount } from "@/features/quote/store";
 import { asset } from "@/lib/asset";
 
 const navLinks = [
@@ -11,9 +12,22 @@ const navLinks = [
   { label: "Timeline", href: "#timeline" },
 ];
 
-/** Account + cart icons with the cart's item count badge. */
-export const AccountCartLinks = ({ cartCount = 0 }: { cartCount?: number }) => (
+const countBadge =
+  "absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-display text-[9px] text-primary-foreground tabular";
+
+/** Account + cart icons with the cart's item count badge; the quote-request icon appears once the quote cart has items. */
+export const AccountCartLinks = ({ cartCount = 0, quoteCount = 0 }: { cartCount?: number; quoteCount?: number }) => (
   <div className="flex items-center gap-5">
+    {quoteCount > 0 && (
+      <Link
+        to="/quote"
+        aria-label={`Quote request (${quoteCount} items)`}
+        className="relative text-muted-foreground hover:text-primary transition-colors duration-300"
+      >
+        <ClipboardList size={16} />
+        <span className={countBadge}>{quoteCount}</span>
+      </Link>
+    )}
     <Link
       to="/account"
       aria-label="Account"
@@ -28,9 +42,7 @@ export const AccountCartLinks = ({ cartCount = 0 }: { cartCount?: number }) => (
     >
       <ShoppingBag size={16} />
       {cartCount > 0 && (
-        <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-display text-[9px] text-primary-foreground tabular">
-          {cartCount}
-        </span>
+        <span className={countBadge}>{cartCount}</span>
       )}
     </Link>
   </div>
@@ -44,6 +56,7 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { data: categoryData } = useCategories();
   const cartCount = useCartCount();
+  const quoteCount = useQuoteCount();
   const productCategories = (categoryData?.items ?? []).map((c) => ({
     slug: c.slug,
     title: c.name,
@@ -133,7 +146,7 @@ const Navbar = () => {
               {link.label}
             </a>
           ))}
-          <AccountCartLinks cartCount={cartCount} />
+          <AccountCartLinks cartCount={cartCount} quoteCount={quoteCount} />
           <a
             href="#contact"
             onClick={(e) => handleSectionLink(e, "#contact")}
@@ -145,7 +158,7 @@ const Navbar = () => {
 
         {/* Mobile: account/cart + menu toggle */}
         <div className="md:hidden flex items-center gap-5">
-          <AccountCartLinks cartCount={cartCount} />
+          <AccountCartLinks cartCount={cartCount} quoteCount={quoteCount} />
           <button
             onClick={() => setOpen(!open)}
             className="text-foreground"

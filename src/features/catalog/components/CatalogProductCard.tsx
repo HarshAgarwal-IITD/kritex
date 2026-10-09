@@ -1,4 +1,5 @@
 import ProductCard from "@/components/ProductCard";
+import { AddToQuoteLink } from "@/features/quote/components/AddToQuote";
 import { formatPaise, formatPriceRange } from "../format";
 import { useProduct } from "../hooks";
 import type { ProductCardDto, SaleChannel } from "../types";
@@ -6,8 +7,8 @@ import { assetUrl, colourVariants, galleryImages } from "../view";
 
 const CTA: Record<SaleChannel, string> = {
   RETAIL: "View Details",
-  B2B_ONLY: "View Details & Request Quote",
-  ENQUIRY_ONLY: "View Details & Enquire",
+  B2B_ONLY: "View Details",
+  ENQUIRY_ONLY: "View Details",
 };
 
 /**
@@ -32,6 +33,12 @@ const CatalogProductCard = ({ product, index }: { product: ProductCardDto; index
       price={formatPriceRange(product.price)}
       compareAtPrice={product.price && product.compareAtPrice ? formatPaise(product.compareAtPrice) : null}
       ctaLabel={CTA[product.saleChannel]}
+      // Enquiry-only and B2B-only products can go straight into the quote cart (quantity is set on /quote).
+      action={
+        product.saleChannel === "RETAIL" ? undefined : (
+          <AddToQuoteLink product={{ id: product.id, slug: product.slug, name: product.name, image: product.image?.url ?? null }} />
+        )
+      }
       index={index}
     />
   );

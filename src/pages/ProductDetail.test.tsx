@@ -1,32 +1,16 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { beforeEach, describe, expect, it } from "vitest";
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { server } from "@/mocks/server";
 import { apiPath } from "@/mocks/handlers";
 import { mockProducts } from "@/mocks/catalog";
 import { renderRoute } from "@/features/catalog/test-utils";
+import { quoteCart } from "@/features/quote/store";
 import ProductDetail from "./ProductDetail";
 
 const renderPdp = (slug: string) => renderRoute(<ProductDetail />, { route: `/product/${slug}`, path: "/product/:id" });
 
-const originalLocation = window.location;
-let hrefs: string[];
-beforeEach(() => {
-  hrefs = [];
-  // Capture the mailto: navigation from the enquiry/quote buttons.
-  Object.defineProperty(window, "location", {
-    configurable: true,
-    value: {
-      ...originalLocation,
-      set href(v: string) {
-        hrefs.push(v);
-      },
-    },
-  });
-});
-afterEach(() => {
-  Object.defineProperty(window, "location", { configurable: true, value: originalLocation });
-});
+beforeEach(() => quoteCart.clear());
 
 const ldJson = () =>
   Array.from(document.head.querySelectorAll('script[type="application/ld+json"]')).map((s) => JSON.parse(s.textContent!));
@@ -42,12 +26,14 @@ describe("ProductDetail", () => {
     const crumbs = screen.getByRole("navigation", { name: "Breadcrumb" });
     expect(within(crumbs).getByRole("link", { name: "Combat Apparel" })).toHaveAttribute("href", "/products/combat-apparel");
 
+    // Enquiry-only: Add to Quote (no mailto) puts the selected option into the quote cart.
     fireEvent.click(screen.getByRole("button", { name: "M" }));
-    fireEvent.click(screen.getByRole("button", { name: /Send Enquiry/ }));
-    const mail = decodeURIComponent(hrefs[0]);
-    expect(mail).toContain("mailto:procurement@kritex.in?subject=Procurement Enquiry: Tactical Combat OG Polo T-Shirt");
-    expect(mail).toContain("Size: M");
-    expect(mail).toContain("SKU: KTX-OPT-M");
+    fireEvent.click(screen.getByRole("button", { name: "Increase quantity of Tactical Combat OG Polo T-Shirt" }));
+    fireEvent.click(screen.getByRole("button", { name: /Add to Quote/ }));
+    expect(quoteCart.get()).toEqual([
+      expect.objectContaining({ productId: "prd_og-polo-tshirt", variantId: "var_og-polo-tshirt_M", sku: "KTX-OPT-M", quantity: 2 }),
+    ]);
+    expect(screen.getByRole("link", { name: /View quote request \(1 item\)/ })).toHaveAttribute("href", "/quote");
 
     await waitFor(() => expect(document.title).toBe("Tactical Combat OG Polo T-Shirt | Kritex"));
     const ld = ldJson().find((b) => b["@type"] === "Product");
@@ -86,13 +72,16 @@ describe("ProductDetail", () => {
     await waitFor(() => expect(ldJson().find((b) => b["@type"] === "Product")?.offers?.price).toBe("1299.00"));
   });
 
-  it("B2B_ONLY for a regular visitor: Request Quote", async () => {
+  it("B2B_ONLY for a regular visitor: Add to Quote, no tier table", async () => {
     renderPdp("tactical-cargo-shorts");
     await screen.findByRole("heading", { name: "Tactical Cargo Shorts" });
     expect(screen.getByTestId("price")).toHaveTextContent("₹1,099.00");
     expect(screen.queryByRole("button", { name: /Add to Cart/ })).toBeNull();
-    fireEvent.click(screen.getByRole("button", { name: /Request Quote/ }));
-    expect(decodeURIComponent(hrefs[0])).toContain("subject=Quote Request: Tactical Cargo Shorts");
+    expect(screen.queryByTestId("price-tiers")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: /Add to Quote/ }));
+    // No options picked: the RFQ quotes the product generally.
+    expect(quoteCart.get()).toEqual([expect.objectContaining({ productId: "prd_tactical-cargo-shorts", quantity: 1 })]);
+    expect(quoteCart.get()[0].variantId).toBeUndefined();
   });
 
   it("B2B_ONLY for an approved B2B viewer: Add to Cart and tier prices", async () => {
@@ -105,7 +94,7 @@ describe("ProductDetail", () => {
     renderPdp("tactical-cargo-shorts");
     await screen.findByRole("heading", { name: "Tactical Cargo Shorts" });
     expect(screen.getByRole("button", { name: /Add to Cart/ })).toBeInTheDocument();
-    expect(screen.getByLabelText("Volume pricing")).toHaveTextContent("50+ units · ₹899.00");
+    expect(screen.getByRole("table", { name: "Volume pricing" })).toHaveTextContent("From 50 units₹899.00 each");
   });
 
   it("renders the not-found state for an unknown product", async () => {

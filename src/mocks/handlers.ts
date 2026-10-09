@@ -4,6 +4,7 @@ import { adminHandlers } from "./admin-handlers";
 import { catalogHandlers } from "./catalog";
 import { addMockQuery, getMockQueries, resetMockQueries } from "./queries-store";
 import { commerceHandlers, resetCommerceMockDb } from "./commerce-handlers";
+import { b2bOpsHandlers, resetB2bOpsMockDb } from "./b2b-ops-handlers";
 
 // Types come from paths (not component names), so they survive server-side DTO renames.
 type Query = paths["/api/v1/queries"]["get"]["responses"][200]["content"]["application/json"][number];
@@ -19,10 +20,14 @@ export const apiPath = (path: string) => `*${path}`;
 export const resetMockDb = () => {
   resetMockQueries();
   resetCommerceMockDb();
+  resetB2bOpsMockDb();
 };
 export { getMockQueries };
 
 export const handlers = [
+  // Stage 4 quotes, shipping, tracking, B2B tier prices (web-b2b-ops). First: some of its handlers fall through.
+  ...b2bOpsHandlers,
+
   // Storefront cart / checkout / account (web-commerce). First, so its sign-in handler can answer for
   // mock-created (unverified) users before the admin one; it falls through for everyone else.
   ...commerceHandlers,

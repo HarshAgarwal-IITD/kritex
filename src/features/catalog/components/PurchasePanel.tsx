@@ -1,5 +1,5 @@
-import { ClipboardList, Mail } from "lucide-react";
 import AddToCart from "@/features/cart/components/AddToCart";
+import AddToQuote, { AddToQuoteLink, QuoteCartLink } from "@/features/quote/components/AddToQuote";
 import { cn } from "@/lib/utils";
 import { formatPaise, formatPriceRange } from "../format";
 import type { ProductDetail, ProductVariant } from "../types";
@@ -20,21 +20,31 @@ export const PriceBlock = ({ product, variant }: { product: ProductDetail; varia
         {compareAt && <span className="ml-3 text-sm text-muted-foreground line-through">{compareAt}</span>}
       </p>
       <p className="font-body text-[11px] text-muted-foreground mt-1">Inclusive of GST</p>
-      {product.priceTiers && product.priceTiers.length > 0 && (
-        <ul className="mt-3 flex flex-wrap gap-2" aria-label="Volume pricing">
-          {product.priceTiers.map((t) => (
-            <li
-              key={t.minQty}
-              className="font-display text-[10px] uppercase tracking-wider border border-border px-3 py-1.5 text-muted-foreground"
-            >
-              {t.minQty}+ units · <span className="text-foreground">{formatPaise(t.unitPrice)}</span>
-            </li>
-          ))}
-        </ul>
-      )}
+      {product.priceTiers && product.priceTiers.length > 0 && <TierTable tiers={product.priceTiers} />}
     </div>
   );
 };
+
+/** Volume (tier) prices, sent only to approved B2B accounts. */
+export const TierTable = ({ tiers }: { tiers: NonNullable<ProductDetail["priceTiers"]> }) => (
+  <div className="mt-4 max-w-xs" data-testid="price-tiers">
+    <p className="font-display text-[10px] uppercase tracking-wider text-muted-foreground mb-2">Volume pricing · business account</p>
+    <table aria-label="Volume pricing" className="w-full border border-border">
+      <tbody>
+        {[...tiers]
+          .sort((a, b) => a.minQty - b.minQty)
+          .map((t) => (
+            <tr key={t.minQty} className="border-b border-border last:border-b-0">
+              <th scope="row" className="px-3 py-2 text-left font-body text-xs font-normal text-muted-foreground">
+                From {t.minQty} units
+              </th>
+              <td className="px-3 py-2 text-right font-display text-xs text-foreground tabular">{formatPaise(t.unitPrice)} each</td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
+  </div>
+);
 
 /** Stock line for sellable products; enquiry-only products never show stock. */
 export const StockState = ({
@@ -63,52 +73,48 @@ export const StockState = ({
   );
 };
 
-const primaryButton =
-  "inline-flex items-center gap-2 font-display text-xs bg-primary text-primary-foreground px-6 py-3 hover:bg-primary/90 transition-colors duration-300 active:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-primary disabled:active:translate-y-0";
-
 interface CtaProps {
   kind: CtaKind;
+  product: ProductDetail;
   variant?: ProductVariant;
-  onEnquire: () => void;
-  onRequestQuote: () => void;
-  /** Used for the quantity control's accessible label. */
-  productName?: string;
 }
 
-export const PurchaseCta = ({ kind, variant, onEnquire, onRequestQuote, productName }: CtaProps) => {
-  if (kind === "enquiry") {
-    return (
-      <button type="button" onClick={onEnquire} className={primaryButton}>
-        <Mail size={14} />
-        Send Enquiry
-      </button>
-    );
-  }
+const quoteProduct = (p: ProductDetail) => ({
+  id: p.id,
+  slug: p.slug,
+  name: p.name,
+  image: (p.images.find((i) => i.variantOptionValue === null) ?? p.images[0])?.url ?? null,
+});
+
+/** Buy box: Add to Cart for purchasable products, otherwise Add to Quote (the quote cart → RFQ at /quote). */
+export const PurchaseCta = ({ kind, product, variant }: CtaProps) => {
+  const qp = quoteProduct(product);
+  const hasOptions = product.options.length > 0;
+
+  if (kind === "enquiry") return <AddToQuote product={qp} variant={variant} hasOptions={hasOptions} />;
 
   if (kind === "quote") {
     return (
-      <div>
-        <button type="button" onClick={onRequestQuote} className={primaryButton}>
-          <ClipboardList size={14} />
-          Request Quote
-        </button>
-        <p className="font-body text-[11px] text-muted-foreground mt-2">
-          Available to approved business accounts. Request a quote for volume pricing and lead times.
-        </p>
-      </div>
+      <AddToQuote
+        product={qp}
+        variant={variant}
+        hasOptions={hasOptions}
+        hint="Available to approved business accounts. Request a quote for volume pricing and lead times."
+      />
     );
   }
 
   return (
     <div>
-      <AddToCart variant={variant} productName={productName ?? "this product"} />
+      <AddToCart variant={variant} productName={product.name} />
       <p className="font-body text-[11px] text-muted-foreground mt-2">
         Ordering in bulk?{" "}
-        <button type="button" onClick={onEnquire} className="text-primary hover:text-primary/80 transition-colors duration-200">
-          Send an enquiry
-        </button>{" "}
+        <AddToQuoteLink product={qp} variant={variant}>
+          Add it to a quote request
+        </AddToQuoteLink>{" "}
         for volume pricing.
       </p>
+      <QuoteCartLink className="mt-3 inline-block" />
     </div>
   );
 };

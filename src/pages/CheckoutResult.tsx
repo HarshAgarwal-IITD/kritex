@@ -56,6 +56,13 @@ export const CheckoutSuccess = () => {
       )}
       <div className="mt-10 flex flex-wrap gap-3">
         <OrderLink number={number} />
+        <Link
+          to={`/track/${encodeURIComponent(number)}`}
+          state={placed?.razorpay?.prefill.email ? { email: placed.razorpay.prefill.email } : undefined}
+          className={secondaryButtonClass}
+        >
+          Track Order
+        </Link>
         <Link to="/products" className={primaryButtonClass}>
           Continue Shopping
         </Link>

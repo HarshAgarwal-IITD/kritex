@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { ExternalLink, FileText, Loader2 } from "lucide-react";
+import { ExternalLink, FileText, Loader2, Truck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FormError } from "@/components/shop/Field";
 import { panelClass, secondaryButtonClass, sectionTitleClass } from "@/components/shop/styles";
@@ -61,6 +61,12 @@ const OrderDetail = () => {
               {invoice.isPending ? <Loader2 size={14} className="animate-spin" /> : <FileText size={14} />}
               Invoice {order.invoice.number}
             </button>
+          )}
+          {!["PENDING_PAYMENT", "AWAITING_PAYMENT", "CANCELLED"].includes(order.status) && (
+            <Link to={`/track/${encodeURIComponent(order.number)}`} state={{ email: order.email }} className={secondaryButtonClass}>
+              <Truck size={14} />
+              Track order
+            </Link>
           )}
           {order.canCancel && <CancelOrderDialog order={order} />}
           {order.canRequestReturn && <ReturnRequestDialog order={order} />}
