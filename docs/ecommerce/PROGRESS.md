@@ -247,7 +247,7 @@ Final checks: **server** lint, typecheck, build, `openapi:check` OK; **313 unit 
   3. Merge the server first, wait for `/api/v1/health`, then merge the website (the new site calls `/api/v1/*`; the contact form moves to `/api/v1/queries`).
   4. Seed the catalog once (`DATABASE_URL=<neon> npx prisma db seed`, with `SEED_ADMIN_EMAIL` + `SEED_ADMIN_PASSWORD`), or import real data with `npm run import:products`.
   5. Smoke test: `/api/v1/health`, `/products`, admin login, a test order.
-- **Local dev:** `kritex-server/.env` now points `DATABASE_URL` at Neon (and starts with a doubled quote, `""postgresql://…`, so it doesn't parse). Never run migrations, seeds or tests against it from a dev machine; for local work use `DATABASE_URL=postgresql://kritex:kritex@localhost:5433/kritex?schema=public`.
+- **Local dev (2026-10-09):** `kritex-server/.env` has `DATABASE_URL` = **production** Neon and `DATABASE_URL_DEV` = a separate **dev** Neon database (migrated + seeded with placeholder prices). Run the API with `DATABASE_URL="$DATABASE_URL_DEV" npm run start:dev`; migrate/seed the dev DB through the direct (non-`-pooler`) host. Never run migrations, seeds or tests against `DATABASE_URL` from a dev machine. Razorpay **test** keys are in the same `.env`; `RAZORPAY_WEBHOOK_SECRET` is a local placeholder until a dashboard webhook exists. Tests and the QA harness always use the fake gateway.
 
 ---
 
@@ -262,7 +262,7 @@ Final checks: **server** lint, typecheck, build, `openapi:check` OK; **313 unit 
 | 5 | Legal review of `/legal/*`; fill `src/pages/legal/placeholders.ts` (entity name, address, GSTIN, grievance officer, shipping fee/threshold, dispatch times…) | Stage 5 |
 | 6 | CA review of the GST rules (ADR-006, ADR-015) and placeholder HSN/GST values. Specific questions: (a) seller state code (placeholder 27, Maharashtra); (b) apparel/footwear slab ₹2,500 / 5% / 18% and HSN chapters 61–64; (c) slab judged on the post-discount per-unit value (inclusive prices ₹2,625–₹2,950 are borderline); (d) GST on shipping at the highest line rate; (e) per-line rounding, odd paisa to CGST; (f) place of supply = shipping state, also for B2B with GSTIN | Stage 3–4 |
 | 8 | Stage 3 checkpoint: place test orders yourself (desktop + phone) and review checkout + the admin order screen. (Stage 2: click through the storefront and `/admin` product editor.) Copy the dev admin password from `kritex-server/.env` (`SEED_ADMIN_PASSWORD`) | Before Stage 4 |
-| 10 | Razorpay **test-mode** keys (key id, key secret, webhook secret) into `kritex-server/.env` and on Render (TD-23). Needed for the real-payment part of the Stage 3 gate, and before the staging API can boot | Now |
+| 10 | Razorpay test keys are in `kritex-server/.env` (2026-10-09). Still to do: create the dashboard webhook (gives the real webhook secret) and set all three on Render before the release (TD-23). Needed for the real-payment part of the Stage 3 gate, and before the staging API can boot | Now |
 | 11 | Fix `DATABASE_URL` in `kritex-server/.env` (starts with `""`), and decide whether local dev should use Neon or the docker Postgres on :5433 | Now |
 | 9 | Decide which categories are "coming soon" (Base Layers) and confirm category page copy (TD-13, TD-14) | Stage 3 |
 | 7 | Confirm the field duty jacket size "XX" (probably a typo) | Any time |
