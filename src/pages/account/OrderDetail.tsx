@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { ExternalLink, FileText, Loader2 } from "lucide-react";
+import { ExternalLink, FileText, Loader2, Truck } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { FormError } from "@/components/shop/Field";
 import { panelClass, secondaryButtonClass, sectionTitleClass } from "@/components/shop/styles";
@@ -62,6 +62,12 @@ const OrderDetail = () => {
               Invoice {order.invoice.number}
             </button>
           )}
+          {!["PENDING_PAYMENT", "AWAITING_PAYMENT", "CANCELLED"].includes(order.status) && (
+            <Link to={`/track/${encodeURIComponent(order.number)}`} state={{ email: order.email }} className={secondaryButtonClass}>
+              <Truck size={14} />
+              Track order
+            </Link>
+          )}
           {order.canCancel && <CancelOrderDialog order={order} />}
           {order.canRequestReturn && <ReturnRequestDialog order={order} />}
         </div>
@@ -71,6 +77,12 @@ const OrderDetail = () => {
         <FormError className="mb-6">
           This order hasn't been paid
           {order.reservedUntil ? ` and will be cancelled automatically after ${formatDateTime(order.reservedUntil)}` : ""}.
+        </FormError>
+      )}
+      {order.status === "AWAITING_PAYMENT" && (
+        <FormError className="mb-6">
+          Awaiting your bank transfer (quote {order.number} as the reference)
+          {order.reservedUntil ? `. Pay by ${formatDateTime(order.reservedUntil)} or the order is cancelled automatically` : ""}.
         </FormError>
       )}
       {order.status === "PENDING_PAYMENT" && order.paymentMethod === "RAZORPAY" && (

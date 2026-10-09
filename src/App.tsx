@@ -36,6 +36,11 @@ const AccountOrders = lazy(() => import("./pages/account/Orders.tsx"));
 const AccountOrderDetail = lazy(() => import("./pages/account/OrderDetail.tsx"));
 const AccountAddresses = lazy(() => import("./pages/account/Addresses.tsx"));
 const AccountBusiness = lazy(() => import("./pages/account/Business.tsx"));
+const AccountQuotes = lazy(() => import("./pages/account/Quotes.tsx"));
+const AccountQuoteDetail = lazy(() => import("./pages/account/QuoteDetail.tsx"));
+const QuotePage = lazy(() => import("./pages/Quote.tsx"));
+const TrackLookup = lazy(() => import("./pages/Track.tsx").then((m) => ({ default: m.TrackLookup })));
+const TrackOrder = lazy(() => import("./pages/Track.tsx").then((m) => ({ default: m.TrackOrder })));
 
 const guard = (el: JSX.Element) => <RequireAuth>{el}</RequireAuth>;
 
@@ -66,6 +71,11 @@ export const AppRoutes = () => (
         <Route path="/account/orders/:number" element={guard(<AccountOrderDetail />)} />
         <Route path="/account/addresses" element={guard(<AccountAddresses />)} />
         <Route path="/account/business" element={guard(<AccountBusiness />)} />
+        <Route path="/account/quotes" element={guard(<AccountQuotes />)} />
+        <Route path="/account/quotes/:number" element={guard(<AccountQuoteDetail />)} />
+        <Route path="/quote" element={<QuotePage />} />
+        <Route path="/track" element={<TrackLookup />} />
+        <Route path="/track/:orderNumber" element={<TrackOrder />} />
         <Route path="/legal" element={<LegalIndex />} />
         <Route path="/legal/terms" element={<Terms />} />
         <Route path="/legal/privacy" element={<Privacy />} />

@@ -9,6 +9,8 @@ export const adminPaths = {
   b2bApprovals: "/admin/b2b-approvals",
   coupons: "/admin/coupons",
   enquiries: "/admin/enquiries",
+  quotes: "/admin/quotes",
+  quote: (id: string) => `/admin/quotes/${id}`,
   products: "/admin/products",
   newProduct: "/admin/products/new",
   product: (id: string) => `/admin/products/${id}`,

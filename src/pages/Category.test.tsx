@@ -27,7 +27,9 @@ describe("Category page", () => {
   it("shows prices on priced product cards", async () => {
     renderCategory("combat-apparel");
     expect(await screen.findByText("₹1,299.00")).toBeInTheDocument();
-    expect(screen.getByText("View Details & Request Quote")).toBeInTheDocument();
+    // Enquiry-only and B2B-only cards get "Add to quote"; retail cards don't.
+    expect(screen.getByRole("button", { name: "Add Tactical Cargo Shorts to quote" })).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Add Tactical Combat Full Sleeve T-Shirt to quote" })).toBeNull();
   });
 
   it("404s for an unknown category", async () => {

@@ -9,6 +9,7 @@ import { useCurrentUser, useLogout } from "../hooks";
 const LINKS = [
   { to: "/account", label: "Profile", end: true },
   { to: "/account/orders", label: "Orders" },
+  { to: "/account/quotes", label: "Quotes" },
   { to: "/account/addresses", label: "Addresses" },
   { to: "/account/business", label: "Business account" },
 ];

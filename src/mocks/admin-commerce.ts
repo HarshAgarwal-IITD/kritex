@@ -460,6 +460,7 @@ if (import.meta.env.MODE !== "test") resetMockQueries(seedQueries());
 /** Resets commerce state. `resetAdminMockDb()` calls this (and seeds the enquiries inbox). */
 export function resetAdminCommerceDb() {
   orders = seedOrders();
+  seedShipments(orders);
   coupons = seedCoupons();
   customers = seedCustomers();
   businessProfiles = seedBusinessProfiles();
@@ -467,6 +468,40 @@ export function resetAdminCommerceDb() {
 }
 
 export const getAdminCommerceDb = () => ({ orders, coupons, customers, businessProfiles, queries: getMockQueries() });
+
+/** The shipped seed order (KTX-100004) went out through Shiprocket (web-b2b-ops, OPS-4). */
+function seedShipments(list: MockOrder[]) {
+  const shipped = list.find((o) => o.id === "ord_1004");
+  if (!shipped) return;
+  const at = (h: number) => new Date(new Date(shipped.createdAt).getTime() + h * 3600_000).toISOString();
+  shipped.shipments = [
+    {
+      id: "shp_1004",
+      carrier: "Delhivery",
+      awb: "DLV1004556677",
+      status: "IN_TRANSIT",
+      trackingUrl: "https://www.delhivery.com/track/package/DLV1004556677",
+      labelUrl: "/__mock-labels/shp_1004.pdf",
+      manual: false,
+      shiprocketOrderId: "SR-881004",
+      shiprocketShipmentId: "SRS-771004",
+      shippedAt: at(20),
+      deliveredAt: null,
+      events: [
+        { at: at(20), status: "PICKED UP", description: "Shipment picked up", location: "Mumbai" },
+        { at: at(40), status: "IN TRANSIT", description: "Arrived at hub", location: "Bengaluru" },
+      ],
+    },
+  ];
+}
+
+/** For handlers outside this file (web-b2b-ops ship actions): status change with the same side effects. */
+export const setMockAdminOrderStatus = (order: MockOrder, status: OrderStatus) => setStatus(order, status);
+/** Live quote count for the dashboard, registered by b2b-ops-handlers. */
+let pendingQuotesCount: () => number = () => 2;
+export const setPendingQuotesSource = (fn: () => number) => {
+  pendingQuotesCount = fn;
+};
 
 // ---------------------------------------------------------------------------------------------
 // Helpers
@@ -936,7 +971,7 @@ export function createAdminCommerceHandlers(deps: CommerceDeps) {
           .sort((a, b) => a.available - b.available)
           .slice(0, 20)
           .map(({ variantId, productId, productName, sku, title, available }) => ({ variantId, productId, productName, sku, title, available })),
-        pendingQuotes: 2,
+        pendingQuotes: pendingQuotesCount(),
         newEnquiries: getMockQueries().filter((q) => q.status === "NEW").length,
         pendingBusinessProfiles: businessProfiles.filter((b) => b.status === "PENDING").length,
         awaitingPaymentOrders: orders.filter((o) => o.status === "AWAITING_PAYMENT").length,

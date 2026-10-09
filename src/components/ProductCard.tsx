@@ -48,6 +48,8 @@ export interface ProductCardProps {
   compareAtPrice?: string | null;
   /** Footer call to action, e.g. "View Details & Enquire". */
   ctaLabel?: string;
+  /** Optional footer action rendered above the card link (e.g. "Add to quote"). */
+  action?: React.ReactNode;
 }
 
 const ProductCard = ({
@@ -62,6 +64,7 @@ const ProductCard = ({
   price,
   compareAtPrice,
   ctaLabel = "View Details & Enquire",
+  action,
 }: ProductCardProps) => {
   const [activeImage, setActiveImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
@@ -183,10 +186,19 @@ const ProductCard = ({
           </p>
         )}
 
-        {id && (
+        {id && !action && (
           <div className="mt-4 pt-4 border-t border-border flex items-center justify-between font-display text-[10px] uppercase tracking-wider text-primary">
             {ctaLabel}
             <ChevronRight size={12} className="transition-transform duration-200 group-hover:translate-x-1" />
+          </div>
+        )}
+        {id && action && (
+          <div className="mt-4 pt-4 border-t border-border flex items-center justify-between gap-3 font-display text-[10px] uppercase tracking-wider text-primary">
+            <span className="flex items-center gap-1">
+              {ctaLabel}
+              <ChevronRight size={12} className="transition-transform duration-200 group-hover:translate-x-1" />
+            </span>
+            <span className="relative z-20">{action}</span>
           </div>
         )}
       </div>

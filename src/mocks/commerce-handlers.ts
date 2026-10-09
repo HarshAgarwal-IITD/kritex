@@ -92,6 +92,34 @@ const findVariant = (variantId: string) => {
 };
 const stockOf = (variantId: string) => stock.get(variantId) ?? (findVariant(variantId)?.variant.inStock ? 10 : 0);
 
+// ---- B2B (web-b2b-ops, Stage 4): tier prices + B2B_ONLY purchasable for approved business accounts ----
+
+/** Volume prices for approved B2B accounts, by product slug (mirrors ProductPriceTier; GST-inclusive paise). */
+export const MOCK_PRICE_TIERS: Record<string, { minQty: number; unitPrice: number }[]> = {
+  "full-sleeve-combat-tshirt": [
+    { minQty: 10, unitPrice: 119900 },
+    { minQty: 50, unitPrice: 109900 },
+  ],
+  "tactical-cargo-shorts": [
+    { minQty: 20, unitPrice: 99900 },
+    { minQty: 100, unitPrice: 89900 },
+  ],
+};
+
+/** Like the server: role B2B_CUSTOMER with an APPROVED business profile. */
+export const isApprovedB2B = (user: Me | null = getMockSessionUser()) =>
+  !!user && user.role === "B2B_CUSTOMER" && user.businessProfile?.status === "APPROVED";
+
+/** Unit price for a quantity: the best tier the viewer qualifies for, else the base price. */
+export function tierUnitPrice(slug: string | undefined, base: number, quantity: number): number {
+  if (!slug || !isApprovedB2B()) return base;
+  const tier = (MOCK_PRICE_TIERS[slug] ?? []).filter((t) => quantity >= t.minQty).sort((a, b) => b.minQty - a.minQty)[0];
+  return tier ? Math.min(base, tier.unitPrice) : base;
+}
+
+const purchasableNow = (product: { purchasable: boolean; saleChannel: string }) =>
+  product.purchasable || (product.saleChannel === "B2B_ONLY" && isApprovedB2B());
+
 /** Test helper: set available stock for a variant. */
 export const setMockStock = (variantId: string, available: number) => stock.set(variantId, available);
 /** Test helper: inspect state. */
@@ -201,7 +229,11 @@ function seedOrders() {
       trackingUrl: "https://www.delhivery.com/track/package/1234567890",
       shippedAt: "2026-09-21T10:00:00.000Z",
       deliveredAt: "2026-09-24T10:00:00.000Z",
-      events: [],
+      events: [
+        { at: "2026-09-21T10:00:00.000Z", status: "PICKED_UP", description: "Shipment picked up", location: "Mumbai" },
+        { at: "2026-09-22T18:30:00.000Z", status: "IN_TRANSIT", description: "In transit to destination hub", location: "Bhiwandi" },
+        { at: "2026-09-24T10:00:00.000Z", status: "DELIVERED", description: "Delivered", location: "Mumbai" },
+      ],
     },
   ];
   delivered.invoice = { number: "KTX/2026-27/00001", issuedAt: "2026-09-20T10:05:00.000Z" };
@@ -247,7 +279,7 @@ function computeTotals(subtotal: number, discount: number, shipping: number, int
 function lineIssue(line: Line): CartLine["issue"] {
   const found = findVariant(line.variantId);
   if (!found) return "UNAVAILABLE";
-  if (!found.product.purchasable) return "NOT_PURCHASABLE";
+  if (!purchasableNow(found.product)) return "NOT_PURCHASABLE";
   const available = stockOf(line.variantId);
   if (available <= 0) return "OUT_OF_STOCK";
   if (available < line.quantity) return "INSUFFICIENT_STOCK";
@@ -274,7 +306,7 @@ function priceCart(interState = false) {
     const issue = lineIssue(l);
     const p = found?.product;
     const v = found?.variant;
-    const unitPrice = p?.saleChannel === "ENQUIRY_ONLY" ? 0 : (v?.price ?? 0);
+    const unitPrice = p?.saleChannel === "ENQUIRY_ONLY" ? 0 : tierUnitPrice(p?.slug, v?.price ?? 0, l.quantity);
     const img = p?.images.find((i) => i.variantOptionValue === null) ?? p?.images[0];
     return {
       variantId: l.variantId,
@@ -412,6 +444,115 @@ function quoteFor(body: QuoteBody): Quote {
 
 const findOrder = (number: string) => orders.find((o) => o.number === number.toUpperCase());
 
+/** One line of an order created outside the cart (quote accept, web-b2b-ops). */
+export interface MockOrderLine {
+  variantId: string | null;
+  productName: string;
+  productSlug: string | null;
+  variantTitle: string;
+  sku: string;
+  image: string | null;
+  unitPrice: number;
+  quantity: number;
+}
+
+/**
+ * Creates an order from explicit lines (quote accept): same numbering, totals, fake-gateway payment and
+ * bank-transfer details as `POST /checkout`, so `/checkout/verify` and `/me/orders` see it.
+ */
+export function placeMockOrder(input: {
+  lines: MockOrderLine[];
+  email: string;
+  phone: string;
+  shippingAddress: Address;
+  billingAddress?: Address;
+  gstin?: string | null;
+  businessName?: string | null;
+  method: Placed["paymentMethod"];
+  userId: string | null;
+  quoteNumber?: string | null;
+}): Placed {
+  const interState = (input.billingAddress ?? input.shippingAddress).stateCode !== SELLER_STATE;
+  const items = input.lines.map((l, n) => {
+    const lineTotal = l.unitPrice * l.quantity;
+    return {
+      id: `oi_${orderSeq + 1}_${n}`,
+      productName: l.productName,
+      productSlug: l.productSlug,
+      variantId: l.variantId,
+      variantTitle: l.variantTitle,
+      sku: l.sku,
+      image: l.image,
+      quantity: l.quantity,
+      unitPrice: l.unitPrice,
+      lineTotal,
+      gstRate: GST_RATE,
+      taxAmount: taxIn(lineTotal),
+      hsnCode: null,
+      discount: 0,
+      netTotal: lineTotal,
+    };
+  });
+  const subtotal = items.reduce((n, i) => n + i.lineTotal, 0);
+  const totals = computeTotals(subtotal, 0, subtotal >= FREE_SHIPPING_ABOVE ? 0 : SHIPPING_FEE, interState);
+  const number = `KTX-${++orderSeq}`;
+  const createdAt = now();
+  const method = input.method;
+  // Razorpay holds stock 30 min; bank transfer BANK_TRANSFER_HOLD_DAYS (7) — shown as the pay-by date.
+  const reservedUntil = new Date(Date.now() + (method === "RAZORPAY" ? 30 * 60_000 : 7 * 86400_000)).toISOString();
+  const hex = Array.from({ length: 14 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
+  const razorpayOrderId = method === "RAZORPAY" ? `order_fake_${hex}` : null;
+  const shipping = { ...input.shippingAddress, line2: input.shippingAddress.line2 ?? null };
+  orders.unshift({
+    number,
+    status: method === "RAZORPAY" ? "PENDING_PAYMENT" : "AWAITING_PAYMENT",
+    paymentMethod: method,
+    paymentStatus: method === "RAZORPAY" ? "CREATED" : null,
+    email: input.email,
+    phone: input.phone,
+    shippingAddress: shipping,
+    billingAddress: input.billingAddress ? { ...input.billingAddress, line2: input.billingAddress.line2 ?? null } : shipping,
+    gstin: input.gstin ?? null,
+    businessName: input.businessName ?? null,
+    couponCode: null,
+    items,
+    totals,
+    timeline: [{ type: "CREATED", message: input.quoteNumber ? `Order placed from quote ${input.quoteNumber}` : "Order placed", createdAt }],
+    shipments: [],
+    invoice: null,
+    quoteNumber: input.quoteNumber ?? null,
+    reservedUntil,
+    canCancel: true,
+    canRequestReturn: false,
+    createdAt,
+    updatedAt: createdAt,
+    userId: input.userId,
+    razorpayOrderId,
+  });
+  return {
+    orderNumber: number,
+    status: method === "RAZORPAY" ? "PENDING_PAYMENT" : "AWAITING_PAYMENT",
+    paymentMethod: method,
+    totals,
+    reservedUntil,
+    razorpay: razorpayOrderId
+      ? {
+          keyId: "rzp_fake",
+          orderId: razorpayOrderId,
+          amount: totals.total,
+          currency: "INR",
+          name: "Kritex",
+          description: `Order ${number}`,
+          prefill: { name: input.shippingAddress.name, email: input.email, contact: input.phone },
+        }
+      : null,
+    bankTransfer:
+      method === "BANK_TRANSFER"
+        ? { accountName: "Kritex Pvt Ltd", accountNumber: "000000000000", ifsc: "HDFC0000000", bankName: "HDFC Bank", amount: totals.total, reference: number }
+        : null,
+  };
+}
+
 // ---------------------------------------------------------------------------------------------
 // Handlers
 
@@ -499,7 +640,7 @@ export const commerceHandlers = [
     if (!body.variantId || !Number.isInteger(quantity) || quantity < 1) return err(400, "VALIDATION_ERROR", "variantId and quantity >= 1 required");
     const found = findVariant(body.variantId);
     if (!found) return err(404, "NOT_FOUND", "Variant not found");
-    if (!found.product.purchasable) return err(422, "NOT_PURCHASABLE", "This product can't be bought online");
+    if (!purchasableNow(found.product)) return err(422, "NOT_PURCHASABLE", "This product can't be bought online");
     const existing = cartLines.find((l) => l.variantId === body.variantId);
     const next = (existing?.quantity ?? 0) + quantity;
     if (next > 999) return err(422, "QUANTITY_LIMIT_EXCEEDED", "Max 999 per line");
@@ -573,7 +714,10 @@ export const commerceHandlers = [
     }
     const body = JSON.parse(raw) as PlaceBody;
     if (!body.email?.includes("@") || !/^(?:\+91)?[6-9]\d{9}$/.test(body.phone ?? "")) return err(400, "VALIDATION_ERROR", "email and phone are required");
-    const gone = cartLines.filter((l) => stockOf(l.variantId) < l.quantity && findVariant(l.variantId)?.product.purchasable);
+    const gone = cartLines.filter((l) => {
+      const p = findVariant(l.variantId)?.product;
+      return stockOf(l.variantId) < l.quantity && !!p && purchasableNow(p);
+    });
     if (gone.length && cartLines.every((l) => lineIssue(l) !== "UNAVAILABLE")) {
       return err(409, "OUT_OF_STOCK", "Some items are out of stock", { variantIds: gone.map((l) => l.variantId) });
     }

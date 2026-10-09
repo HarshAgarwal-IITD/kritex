@@ -92,25 +92,6 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
 
   const selectedColorLabel = selectedColor >= 0 ? colorVariants[selectedColor]?.label : null;
 
-  // Enquiries and (until the quote flow lands) quote requests go through the existing procurement mail flow.
-  const sendMail = (subjectPrefix: string, ask: string) => {
-    const subject = `${subjectPrefix}: ${product.name}`;
-    const lines = [
-      `Product: ${product.name}`,
-      `Category: ${[product.category.name, product.subCategory].filter(Boolean).join(" — ")}`,
-      ...product.options.map((o) => (selection[o.name] ? `${o.name}: ${selection[o.name]}` : null)),
-      variant && product.options.length > 0 ? `SKU: ${variant.sku}` : null,
-      "",
-      ask,
-    ].filter((l) => l !== null);
-    const body = lines.join("\n");
-    window.location.href = `mailto:procurement@kritex.in?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-  };
-  const handleEnquiry = () =>
-    sendMail("Procurement Enquiry", "Please share pricing, MOQ and lead time for the above item.");
-  const handleQuote = () =>
-    sendMail("Quote Request", "Please send a quotation for the above item. Quantity required: ");
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Seo
@@ -298,7 +279,7 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
               )}
 
               <StockState product={product} variant={variant} needsSelection={product.options.length > 0} />
-              <PurchaseCta kind={kind} variant={variant} onEnquire={handleEnquiry} onRequestQuote={handleQuote} />
+              <PurchaseCta kind={kind} product={product} variant={variant} />
             </div>
           </motion.div>
 

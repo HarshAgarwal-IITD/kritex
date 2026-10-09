@@ -5,6 +5,7 @@ import { FormError } from "@/components/shop/Field";
 import { panelClass, primaryButtonClass, secondaryButtonClass } from "@/components/shop/styles";
 import { formatPaise } from "@/features/catalog/format";
 import { useCurrentUser, useMyOrder } from "@/features/account/hooks";
+import { formatDateTime } from "@/features/account/orders";
 import TotalsSummary from "@/features/cart/components/TotalsSummary";
 import FakePaymentDialog from "@/features/checkout/components/FakePaymentDialog";
 import { usePayment, type CheckoutResultState } from "@/features/checkout/usePayment";
@@ -56,6 +57,13 @@ export const CheckoutSuccess = () => {
       )}
       <div className="mt-10 flex flex-wrap gap-3">
         <OrderLink number={number} />
+        <Link
+          to={`/track/${encodeURIComponent(number)}`}
+          state={placed?.razorpay?.prefill.email ? { email: placed.razorpay.prefill.email } : undefined}
+          className={secondaryButtonClass}
+        >
+          Track Order
+        </Link>
         <Link to="/products" className={primaryButtonClass}>
           Continue Shopping
         </Link>
@@ -139,6 +147,8 @@ export const CheckoutPending = () => {
             ["IFSC", bank.ifsc],
             ["Bank", bank.bankName],
             ["Reference", bank.reference],
+            // Bank-transfer orders hold stock for a few days, then cancel automatically.
+            ...(placed?.reservedUntil ? [["Pay by", formatDateTime(placed.reservedUntil)]] : []),
           ].map(([k, v]) => (
             <div key={k} className="flex justify-between gap-4">
               <dt className="font-body text-sm text-muted-foreground">{k}</dt>

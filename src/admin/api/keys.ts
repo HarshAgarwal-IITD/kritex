@@ -3,6 +3,7 @@ import type { AdminOrderFilters } from "./orders";
 import type { InventoryFilters } from "./inventory";
 import type { CouponFilters } from "./coupons";
 import type { BusinessProfileFilters, CustomerFilters } from "./customers";
+import type { AdminQuoteFilters } from "./quotes";
 
 export const adminKeys = {
   session: ["auth", "session"] as const,
@@ -25,4 +26,7 @@ export const adminKeys = {
   businessProfileList: (filters: BusinessProfileFilters) => ["admin", "business-profiles", "list", filters] as const,
   dashboard: ["admin", "dashboard"] as const,
   enquiries: ["admin", "enquiries"] as const,
+  quotes: ["admin", "quotes"] as const,
+  quoteList: (filters: AdminQuoteFilters) => ["admin", "quotes", "list", filters] as const,
+  quote: (id: string) => ["admin", "quotes", "detail", id] as const,
 };
