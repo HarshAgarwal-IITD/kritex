@@ -1,6 +1,7 @@
 # Security review (QA-6, Stage 4)
 
-**Scope:** kritex-server `ecommerce` @ `9668c01` (Stage 3 + Stage 4 B2B-1/3/4 merged) and kritex-website `s4/qa` (Stage 3
+**Scope:** kritex-server `ecommerce` @ `9668c01` (Stage 3 + Stage 4 B2B-1/3/4 merged; the suite also passes on
+`3e5975c`, which adds server-ops) and kritex-website `s4/qa` (Stage 3
 storefront + admin). Shipping (OPS-3), invoices (OPS-2), notifications (OPS-1) and the B2B web UI were still being built,
 so they are covered as **requirements** in the last section, not as reviewed code.
 **Method:** code read of every controller, guard, auth config, payment/checkout/coupon/refund path, uploads, CSV export,
@@ -16,7 +17,7 @@ storefront rendering of server data. Live probes run against the full-stack harn
 | Critical | 0 | |
 | High | 1 | SEC-1 |
 | Medium | 2 | SEC-2, SEC-3 |
-| Low | 8 | SEC-4 … SEC-11 |
+| Low | 9 | SEC-4 … SEC-11, SEC-21 |
 | Info | 9 | SEC-12 … SEC-20 |
 
 The following checks all passed. Each has a test that proves it.
@@ -299,6 +300,32 @@ TD-1 (throttler) and TD-18 (upload driver) are already tracked. R2 presigned PUT
 
 `csvCell` covers `= + - @ \t \r`. Some guidance also prefixes cells that start with `|` or `%`, and fullwidth `＝`.
 This is optional.
+
+### SEC-21 (Low): Prisma Client loads `kritex-server/.env` at runtime, and `ConfigService.get()` falls back to `process.env`
+
+**Location:**
+- `node_modules/.prisma/client/index.js`: `relativeEnvPaths` points at the repo `.env`, which is loaded when
+  `new PrismaClient()` runs.
+- `src/config/config.module.ts`: `ConfigModule.forRoot({ validate })`.
+
+**Problem:** Variables that are missing from the process env are filled from the server's `.env` *after* boot-time
+validation, and `config.get()` returns them. Found live: the e2e API was started with an explicit allowlisted env and no
+`RAZORPAY_*`, but it still used the real `rzp_test_…` keys from the developer `.env`.
+- Risk 1: a `.env` copied into an image or deploy directory silently supplies config, such as payment keys or a second
+  `DATABASE_URL_DEV`, and that config never went through the env schema.
+- Risk 2: tests or tools that think they are running the fake gateway can hit real Razorpay.
+
+**Repro:** start `dist/main.js` without `RAZORPAY_*` from a directory with no `.env` while `kritex-server/.env` has keys.
+`POST /checkout` then returns `razorpay.keyId = rzp_test_…`. The harness now hides those files with
+`scripts/e2e-api-preload.cjs`, and SEC-WEBHOOK asserts `keyId === "rzp_fake"`.
+
+**Fix:**
+- Make sure the Docker image never contains `.env`: add it to `.dockerignore`, and check that `COPY . .` doesn't include
+  it.
+- In `AppConfigService.get`, read only the validated config (`this.config.get(key, { infer: true })` with
+  `ConfigModule.forRoot({ ignoreEnvVars: true })`, or keep a validated `Env` object and read from it), so late
+  `process.env` writes can't change config.
+- Prisma 7 / TD-8 (`prisma.config.ts`) removes the automatic dotenv loading.
 
 ---
 

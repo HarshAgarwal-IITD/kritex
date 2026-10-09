@@ -192,7 +192,9 @@ test("SEC-IDOR-QUOTES: a quote is visible only to its creator / the verified own
 
 test("SEC-WEBHOOK: forged Razorpay webhooks and verify calls can't mark an order paid", async () => {
   const { ctx, res } = await guestCheckout();
-  const placed = await json<Placed>(res);
+  const placed = await json<Placed & { razorpay: { keyId: string } }>(res);
+  // The harness must never let the API pick up real Razorpay keys (e.g. from kritex-server/.env via Prisma's dotenv).
+  if (process.env.E2E_RAZORPAY !== "1") expect(placed.razorpay.keyId).toBe("rzp_fake");
   const providerOrderId = placed.razorpay!.orderId;
   const body = JSON.stringify({
     event: "payment.captured",

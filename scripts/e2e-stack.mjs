@@ -23,6 +23,7 @@
  *   E2E_API_PORT=4007   E2E_WEB_PORT=8087
  *   E2E_ADMIN_EMAIL / E2E_ADMIN_PASSWORD   seeded admin (defaults below)
  *   E2E_LOG_DIR         where server.log / web.log go (default <tmp>/kritex-e2e/logs)
+ *   E2E_ALLOW_REMOTE_DB=1  allow a non-localhost E2E_DATABASE_URL (refused by default)
  *   E2E_RESET=1         wipe the DB first (`prisma migrate reset --force`; Prisma refuses this when run by an AI agent)
  *   E2E_RAZORPAY=1      pass RAZORPAY_KEY_ID/KEY_SECRET/WEBHOOK_SECRET (test mode) through to the API instead of the fake gateway
  *
@@ -133,7 +134,11 @@ async function waitFor(url, child, name, timeoutMs = 90_000) {
   fail(`${name} not ready at ${url} after ${timeoutMs / 1000}s`);
 }
 
-/** API env: explicit values only. The server's own .env is never read (cwd is the temp dir). */
+/**
+ * API env: an explicit allowlist, never the parent env. The server's own .env (which may hold hosted DATABASE_URLs and
+ * real Razorpay keys) is never read: cwd is the temp dir, and DATABASE_URL is always the e2e DB. Without
+ * E2E_RAZORPAY=1 no RAZORPAY_* var is set, so the API always runs the fake gateway.
+ */
 function apiEnv() {
   const e = {
     PATH: env.PATH,
@@ -150,6 +155,8 @@ function apiEnv() {
     TRUST_PROXY: "1",
     UPLOADS_DIR: path.join(work, "uploads"),
     LOG_LEVEL: "info",
+    // Prisma Client would load these into process.env (see scripts/e2e-api-preload.cjs).
+    E2E_HIDE_ENV_FILES: [".env", "prisma/.env"].map((f) => path.join(serverDir, f)).join(path.delimiter),
   };
   if (env.E2E_RAZORPAY === "1") {
     for (const k of ["RAZORPAY_KEY_ID", "RAZORPAY_KEY_SECRET", "RAZORPAY_WEBHOOK_SECRET"]) {
@@ -171,6 +178,12 @@ process.on("SIGTERM", () => {
 process.on("exit", cleanup);
 
 async function main() {
+  // Safety: this DB is migrated and seeded with test data. Never point it at a hosted (e.g. Neon) database.
+  const dbHost = new URL(databaseUrl).hostname;
+  if (!["localhost", "127.0.0.1", "::1", "[::1]"].includes(dbHost) && env.E2E_ALLOW_REMOTE_DB !== "1") {
+    fail(`E2E_DATABASE_URL must be a local database (got host ${dbHost}); set E2E_ALLOW_REMOTE_DB=1 to override`);
+  }
+  if (existsSync(path.join(work, ".env"))) fail(`unexpected ${path.join(work, ".env")}; remove it`);
   if (!existsSync(path.join(serverDir, "package.json"))) {
     fail(`kritex-server not found at ${serverDir} (set KRITEX_SERVER_DIR)`);
   }
@@ -196,8 +209,10 @@ async function main() {
   );
 
   // Prisma CLI reads the server's .env too, but explicit env vars win; DATABASE_URL is always passed.
+  // RAZORPAY_* are dropped (the CLI never needs them); the server's .env may hold real keys.
+  const { RAZORPAY_KEY_ID: _k, RAZORPAY_KEY_SECRET: _s, RAZORPAY_WEBHOOK_SECRET: _w, ...baseEnv } = env;
   const prismaEnv = {
-    ...env,
+    ...baseEnv,
     PATH: `${path.join(serverDir, "node_modules/.bin")}${path.delimiter}${env.PATH}`,
     DATABASE_URL: databaseUrl,
     SEED_PLACEHOLDER_PRICES: "true",
@@ -223,7 +238,7 @@ async function main() {
   const api = start(
     "API",
     process.execPath,
-    ["--enable-source-maps", path.join(outDir, "main.js")],
+    ["--enable-source-maps", "--require", path.join(root, "scripts/e2e-api-preload.cjs"), path.join(outDir, "main.js")],
     { cwd: work, env: apiEnv() },
     serverLog,
   );
