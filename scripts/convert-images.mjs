@@ -1,12 +1,14 @@
 // Usage: npm run images:convert  (or: node scripts/convert-images.mjs <publicDir> <outDir>)
 // Converts PNG/JPG under products, logos, brand, achievements to WebP, keeping folder structure.
-// In products/<slug>/, a file with a bg-removed/ twin is converted from the bg-removed version
-// and written at the original's path; bg-removed/ folders themselves are not emitted.
+// Product images are converted from the normal (original) files; the bg-removed/ folders are
+// skipped. Pass --bg-removed to use a file's bg-removed/ twin instead, when one exists.
 import sharp from "sharp";
 import fs from "node:fs/promises";
 import path from "node:path";
 
-const [publicDir = "public", outDir = "r2-upload"] = process.argv.slice(2);
+const args = process.argv.slice(2);
+const preferBgRemoved = args.includes("--bg-removed");
+const [publicDir = "public", outDir = "r2-upload"] = args.filter((a) => !a.startsWith("--"));
 const DIRS = ["products", "logos", "brand", "achievements"];
 const RASTER = /\.(png|jpe?g)$/i;
 const MAX_EDGE = 2400;
@@ -35,7 +37,7 @@ for (const d of DIRS) {
   for await (const file of walk(path.join(publicDir, d))) {
     const rel = path.relative(publicDir, file);
     const bg = path.join(path.dirname(file), "bg-removed", path.basename(file));
-    const src = d === "products" && (await exists(bg)) ? bg : file;
+    const src = preferBgRemoved && d === "products" && (await exists(bg)) ? bg : file;
     if (src === bg) fromBg++;
 
     let outRel = rel;
