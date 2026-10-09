@@ -122,7 +122,11 @@ moving the API and DB to an India region later is a host change, not a code chan
 **Free-plan caveats (accepted until launch).** The API sleeps after ~15 min idle (first request ~30-60 s;
 the Vercel `/api` proxy may time out on that first request). `@nestjs/schedule` jobs only run while it is awake.
 Razorpay webhooks retry, and `/checkout/verify` also marks orders paid. **Gate for live payments:** Render `starter`
-plan, `branch: main`, Neon backups checked.
+plan, Neon backups checked.
+
+**Production branches (owner, 2026-10-09).** Production always deploys `main` in both repos (Render API, Vercel
+website). `ecommerce` is the integration branch and is never deployed; it reaches production only by merging into
+`main` (both repos together, server first), after the owner approves.
 
 ## ADR-009: Frontend state & data
 **Status:** Accepted · 2026-10-06 (owner accepted defaults)

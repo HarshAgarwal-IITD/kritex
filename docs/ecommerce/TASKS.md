@@ -204,7 +204,7 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [ ] TD-8 [S] Prisma 7: move `package.json#prisma.seed` to `prisma.config.ts` (mind .env loading)
 - [~] TD-9 [W] Main bundle 597 kB → route-level code splitting (with SEO-3). Stage 3 lazy-loads checkout/auth/account pages: main chunk now 353 kB
 - [ ] TD-10 [S] Check `TRUST_PROXY` on Render behind the Vercel `/api` proxy: log `req.ip` and confirm it is the client IP, not a Vercel/Render IP (otherwise all clients share one rate limit)
-- [ ] TD-11 [S] Before live payments: Render `plan: starter`, `branch: main`; Neon backup/PITR checked (ADR-008)
+- [ ] TD-11 [S] Before live payments: Render `plan: starter`; Neon backup/PITR checked (ADR-008). (`render.yaml` already deploys `main`.)
 - [ ] TD-12 [both] `GET /products` card DTO has no gallery/swatches, so `CatalogProductCard` calls `useProduct(slug)` per card (~26 extra requests on /products). Add `images[]` + colour swatches to the card DTO (additive), then drop the per-card fetch
 - [ ] TD-13 [S] "Coming soon" categories: `GET /categories` hides inactive ones (Base Layers), so the home tile disappears against the real API. Add a `comingSoon` flag (or return inactive-but-visible) and use it in the UI instead of `productCount === 0`
 - [ ] TD-14 [S] Seed category `description` is the short tile text; the category page header shows it. Switch the seed to the long page copy (the mocks already use it)
