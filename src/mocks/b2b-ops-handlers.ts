@@ -10,6 +10,7 @@
  *
  * Mock B2B buyer: buyer@b2b.example / password123 (role B2B_CUSTOMER, APPROVED). Call `ensureMockB2BUser()`
  * in tests before `setMockSession(MOCK_B2B_EMAIL)` (resetAdminMockDb() re-seeds the users without it).
+ * Statuses as on the server: REQUESTED → QUOTED → CONVERTED (no ACCEPTED), REJECTED, EXPIRED.
  * Seed quotes: KTQ-100001 QUOTED for customer@example.com, KTQ-100002 + KTQ-100003 REQUESTED (guests),
  * KTQ-100004 REJECTED. Accepting a quote creates an order through commerce-handlers (fake gateway).
  * Shiprocket mock: `weightGrams > 50000` fails with 422 SHIPROCKET_ERROR.
@@ -308,7 +309,7 @@ export const b2bOpsHandlers = [
     if (!body.contactName?.trim() || !body.organization?.trim() || !email.includes("@") || !PHONE_RE.test(body.phone ?? "")) {
       return err(400, "VALIDATION_ERROR", "contactName, organization, email and a valid phone are required");
     }
-    if (body.gstin && !GSTIN_RE.test(body.gstin)) return err(400, "VALIDATION_ERROR", "gstin is invalid");
+    if (body.gstin && !GSTIN_RE.test(body.gstin)) return err(422, "INVALID_GSTIN", "GSTIN is invalid");
     if (!body.items?.length || body.items.length > 50) return err(400, "VALIDATION_ERROR", "1–50 items required");
     const items: AdminQuote["items"] = [];
     for (const [n, i] of body.items.entries()) {
@@ -391,13 +392,19 @@ export const b2bOpsHandlers = [
     const q = quotes.find((x) => x.number === String(params.number).toUpperCase());
     if (!q || !visibleTo(q, user)) return err(404, "NOT_FOUND", "Quote not found");
     refreshExpiry(q);
-    if (q.status !== "QUOTED") return err(409, "QUOTE_NOT_ACCEPTABLE", `Quote is ${q.status}`);
+    if (q.status !== "QUOTED") {
+      return err(409, "QUOTE_NOT_ACCEPTABLE", `Quote is ${q.status}`, { status: q.status, ...(q.orderNumber ? { orderNumber: q.orderNumber } : {}) });
+    }
     const body = JSON.parse(raw) as S["AcceptQuoteDto"];
     const a = body.shippingAddress;
     if (!a?.name || !a.line1 || !a.city || !a.stateCode || !/^[1-9]\d{5}$/.test(a.pincode ?? "") || !PHONE_RE.test(a.phone ?? "")) {
       return err(400, "VALIDATION_ERROR", "shippingAddress is invalid");
     }
     if (body.paymentMethod !== "RAZORPAY" && body.paymentMethod !== "BANK_TRANSFER") return err(400, "VALIDATION_ERROR", "paymentMethod is invalid");
+    const gstin = body.gstin ?? q.gstin;
+    if (gstin && gstin.slice(0, 2) !== (body.billingAddress ?? a).stateCode) {
+      return err(422, "GSTIN_STATE_MISMATCH", "The GSTIN's state code doesn't match the billing state");
+    }
     if (body.paymentMethod === "BANK_TRANSFER" && !isApprovedB2B(user)) {
       return err(403, "PAYMENT_METHOD_NOT_ALLOWED", "Bank transfer needs an approved business account");
     }
@@ -419,7 +426,7 @@ export const b2bOpsHandlers = [
       phone: body.phone ?? q.phone,
       shippingAddress: a,
       billingAddress: body.billingAddress,
-      gstin: body.gstin ?? q.gstin,
+      gstin,
       businessName: body.businessName ?? (q.gstin ? q.organization : null),
       method: body.paymentMethod,
       userId: user.id,
@@ -485,6 +492,12 @@ export const b2bOpsHandlers = [
       if (!q.items.some((i) => i.id === line.itemId)) return err(400, "VALIDATION_ERROR", `Unknown item ${line.itemId}`);
     }
     if (q.items.some((i) => !body.items?.some((l) => l.itemId === i.id))) return err(422, "QUOTE_ITEMS_UNPRICED", "Every quote item must be priced");
+    for (const line of body.items) {
+      const item = q.items.find((i) => i.id === line.itemId)!;
+      const p = mockProducts.find((x) => x.id === item.productId);
+      if (line.variantId && !p?.variants.some((v) => v.id === line.variantId)) return err(422, "INVALID_VARIANT", "Variant does not belong to the product");
+      if (!item.variantId && !line.variantId) return err(422, "QUOTE_ITEMS_UNPRICED", "Every quote item needs a variant");
+    }
     q.items = q.items.map((i) => {
       const line = body.items.find((l) => l.itemId === i.id)!;
       const p = mockProducts.find((x) => x.id === i.productId);

@@ -498,7 +498,8 @@ export function placeMockOrder(input: {
   const number = `KTX-${++orderSeq}`;
   const createdAt = now();
   const method = input.method;
-  const reservedUntil = method === "RAZORPAY" ? new Date(Date.now() + 30 * 60_000).toISOString() : null;
+  // Razorpay holds stock 30 min; bank transfer BANK_TRANSFER_HOLD_DAYS (7) — shown as the pay-by date.
+  const reservedUntil = new Date(Date.now() + (method === "RAZORPAY" ? 30 * 60_000 : 7 * 86400_000)).toISOString();
   const hex = Array.from({ length: 14 }, () => Math.floor(Math.random() * 16).toString(16)).join("");
   const razorpayOrderId = method === "RAZORPAY" ? `order_fake_${hex}` : null;
   const shipping = { ...input.shippingAddress, line2: input.shippingAddress.line2 ?? null };

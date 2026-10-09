@@ -39,7 +39,7 @@ interface DialogProps {
 const rupeeString = (msg = "Enter an amount like 1299 or 1299.50") =>
   z.string().refine((s) => RUPEES_PATTERN.test(normaliseRupees(s)), msg);
 
-const FormDialog = ({
+export const FormDialog = ({
   open,
   onClose,
   title,
@@ -558,7 +558,7 @@ export function CancelDialog({ order, open, onClose }: DialogProps) {
 
 // ---------------------------------------------------------------------------------------------
 
-function CheckboxField<T extends FieldValues>({
+export function CheckboxField<T extends FieldValues>({
   control,
   name,
   id,

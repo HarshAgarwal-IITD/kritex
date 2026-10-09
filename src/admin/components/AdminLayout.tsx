@@ -1,5 +1,5 @@
 import { Link, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { BadgeCheck, Boxes, FolderTree, Inbox, LayoutDashboard, LogOut, Package, ShoppingBag, Store, TicketPercent, Users, type LucideIcon } from "lucide-react";
+import { BadgeCheck, Boxes, ClipboardList, FolderTree, Inbox, LayoutDashboard, LogOut, Package, ShoppingBag, Store, TicketPercent, Users, type LucideIcon } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -34,6 +34,7 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     label: "Sales",
     items: [
       { label: "Orders", to: adminPaths.orders, icon: ShoppingBag },
+      { label: "Quotes", to: adminPaths.quotes, icon: ClipboardList },
       { label: "Customers", to: adminPaths.customers, icon: Users },
       { label: "B2B approvals", to: adminPaths.b2bApprovals, icon: BadgeCheck },
       { label: "Coupons", to: adminPaths.coupons, icon: TicketPercent },

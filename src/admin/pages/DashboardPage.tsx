@@ -68,7 +68,7 @@ export default function DashboardPage() {
             />
             <Tile label="B2B applications" value={String(d.pendingBusinessProfiles)} hint="Waiting for review" to={adminPaths.b2bApprovals} />
             <Tile label="New enquiries" value={String(d.newEnquiries)} to={adminPaths.enquiries} />
-            <Tile label="Quote requests" value={String(d.pendingQuotes)} hint="Waiting for a response" />
+            <Tile label="Quote requests" value={String(d.pendingQuotes)} hint="Waiting for a response" to={adminPaths.quotes} />
           </div>
 
           <div className="grid gap-6 lg:grid-cols-2">

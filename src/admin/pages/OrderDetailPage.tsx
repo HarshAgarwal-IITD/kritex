@@ -3,7 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { ArrowLeft, Ban, Banknote, ExternalLink, Loader2, RefreshCcw, Undo2 } from "lucide-react";
+import { ArrowLeft, Ban, Banknote, ExternalLink, FileText, Loader2, PackageCheck, RefreshCcw, Truck, Undo2 } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -21,7 +21,9 @@ import { formatDateTime } from "../lib/format";
 import { adminPaths } from "../paths";
 import { ErrorState, PageHeader } from "../components/PageState";
 import { Section } from "../components/Section";
-import { OrderStatusBadge, PaymentStatusBadge } from "../components/Badges";
+import { OrderStatusBadge, PaymentStatusBadge, ShipmentStatusBadge } from "../components/Badges";
+import { activeShipment, canShip } from "../api/shipping";
+import { ManualShipDialog, ShiprocketDialog } from "../orders/ShippingDialogs";
 import {
   CancelDialog,
   MarkPaidDialog,
@@ -64,7 +66,7 @@ const BackLink = () => (
 );
 
 function OrderDetail({ order }: { order: AdminOrder }) {
-  const [dialog, setDialog] = useState<OrderDialog>(null);
+  const [dialog, setDialog] = useState<OrderDialog | "shiprocket" | "manual-ship">(null);
   const close = () => setDialog(null);
   const refundable = refundableAmount(order);
   const canChangeStatus = statusTargets(order).length > 0;
@@ -123,7 +125,9 @@ function OrderDetail({ order }: { order: AdminOrder }) {
         </div>
         <div className="space-y-6">
           <CustomerSection order={order} />
-          {order.shipments.length > 0 && <ShipmentsSection order={order} />}
+          {(order.shipments.length > 0 || canShip(order)) && (
+            <ShipmentsSection order={order} onShiprocket={() => setDialog("shiprocket")} onManual={() => setDialog("manual-ship")} />
+          )}
         </div>
       </div>
 
@@ -131,6 +135,8 @@ function OrderDetail({ order }: { order: AdminOrder }) {
       <MarkPaidDialog order={order} open={dialog === "mark-paid"} onClose={close} />
       <RefundDialog order={order} open={dialog === "refund"} onClose={close} />
       <CancelDialog order={order} open={dialog === "cancel"} onClose={close} />
+      <ShiprocketDialog order={order} open={dialog === "shiprocket"} onClose={close} />
+      <ManualShipDialog order={order} open={dialog === "manual-ship"} onClose={close} />
     </div>
   );
 }
@@ -414,22 +420,62 @@ function CustomerSection({ order }: { order: AdminOrder }) {
   );
 }
 
-function ShipmentsSection({ order }: { order: AdminOrder }) {
+function ShipmentsSection({ order, onShiprocket, onManual }: { order: AdminOrder; onShiprocket: () => void; onManual: () => void }) {
+  const shippable = canShip(order);
+  const open = activeShipment(order);
   return (
-    <Section title="Shipments">
+    <Section title="Shipping" description={shippable && !open ? "Ready to ship." : undefined}>
+      {shippable && (
+        <div className="flex flex-wrap gap-2">
+          {!open && (
+            <Button size="sm" className="font-display text-xs" onClick={onShiprocket}>
+              <Truck className="h-4 w-4" /> Ship via Shiprocket
+            </Button>
+          )}
+          <Button size="sm" variant="outline" className="font-display text-xs" onClick={onManual}>
+            <PackageCheck className="h-4 w-4" /> {open ? "Mark shipped" : "Ship manually"}
+          </Button>
+        </div>
+      )}
       {order.shipments.map((s) => (
-        <div key={s.id} className="space-y-1 text-sm">
-          <p>
-            {s.carrier ?? "Carrier pending"} {s.awb && <span className="tabular">· AWB {s.awb}</span>}
-          </p>
+        <div key={s.id} className="space-y-3 border-t border-border pt-4 first:border-t-0 first:pt-0" aria-label={`Shipment ${s.awb ?? s.id}`} role="group">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm">
+              {s.carrier ?? "Carrier pending"} {s.awb && <span className="tabular">· AWB {s.awb}</span>}
+            </p>
+            <ShipmentStatusBadge status={s.status} />
+          </div>
           <p className="text-xs text-muted-foreground">
-            {s.status.replace(/_/g, " ").toLowerCase()}
+            {s.manual ? "Manual shipment" : `Shiprocket${s.shiprocketOrderId ? ` order ${s.shiprocketOrderId}` : ""}`}
             {s.shippedAt ? ` · shipped ${formatDateTime(s.shippedAt)}` : ""}
+            {s.deliveredAt ? ` · delivered ${formatDateTime(s.deliveredAt)}` : ""}
           </p>
-          {s.trackingUrl && (
-            <a href={s.trackingUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
-              Track <ExternalLink className="h-3 w-3" />
-            </a>
+          <div className="flex flex-wrap gap-3">
+            {s.labelUrl && (
+              <a href={s.labelUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                <FileText className="h-3 w-3" /> Print label
+              </a>
+            )}
+            {s.trackingUrl && (
+              <a href={s.trackingUrl} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-primary hover:underline">
+                Track <ExternalLink className="h-3 w-3" />
+              </a>
+            )}
+          </div>
+          {s.events.length > 0 && (
+            <ol className="space-y-2 border-l border-border pl-3" aria-label="Tracking events">
+              {[...s.events]
+                .sort((a, b) => b.at.localeCompare(a.at))
+                .map((e, i) => (
+                  <li key={`${e.at}-${i}`} className="text-xs">
+                    <p className="text-foreground">{e.description ?? e.status}</p>
+                    <p className="text-muted-foreground">
+                      {formatDateTime(e.at)}
+                      {e.location ? ` · ${e.location}` : ""}
+                    </p>
+                  </li>
+                ))}
+            </ol>
           )}
         </div>
       ))}

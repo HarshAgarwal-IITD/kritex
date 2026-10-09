@@ -79,6 +79,12 @@ const OrderDetail = () => {
           {order.reservedUntil ? ` and will be cancelled automatically after ${formatDateTime(order.reservedUntil)}` : ""}.
         </FormError>
       )}
+      {order.status === "AWAITING_PAYMENT" && (
+        <FormError className="mb-6">
+          Awaiting your bank transfer (quote {order.number} as the reference)
+          {order.reservedUntil ? `. Pay by ${formatDateTime(order.reservedUntil)} or the order is cancelled automatically` : ""}.
+        </FormError>
+      )}
       {order.status === "PENDING_PAYMENT" && order.paymentMethod === "RAZORPAY" && (
         <div className="mb-6">
           <PayNowButton orderNumber={order.number} total={order.totals.total} />

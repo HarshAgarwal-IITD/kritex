@@ -11,6 +11,8 @@ import CustomerDetailPage from "./pages/CustomerDetailPage";
 import BusinessApprovalsPage from "./pages/BusinessApprovalsPage";
 import CouponsPage from "./pages/CouponsPage";
 import EnquiriesPage from "./pages/EnquiriesPage";
+import QuotesListPage from "./pages/QuotesListPage";
+import QuoteDetailPage from "./pages/QuoteDetailPage";
 import ProductsListPage from "./pages/ProductsListPage";
 import ProductEditorPage from "./pages/ProductEditorPage";
 import CategoriesPage from "./pages/CategoriesPage";
@@ -40,6 +42,8 @@ const AdminApp = () => (
         <Route path="b2b-approvals" element={<BusinessApprovalsPage />} />
         <Route path="coupons" element={<CouponsPage />} />
         <Route path="enquiries" element={<EnquiriesPage />} />
+        <Route path="quotes" element={<QuotesListPage />} />
+        <Route path="quotes/:id" element={<QuoteDetailPage />} />
         <Route path="products" element={<ProductsListPage />} />
         <Route path="products/new" element={<ProductEditorPage />} />
         <Route path="products/:id" element={<ProductEditorPage />} />

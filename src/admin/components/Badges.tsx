@@ -4,10 +4,14 @@ import {
   ENQUIRY_STATUS_LABELS,
   ORDER_STATUS_LABELS,
   PAYMENT_STATUS_LABELS,
+  QUOTE_STATUS_LABELS,
+  SHIPMENT_STATUS_LABELS,
   type BusinessStatus,
   type EnquiryStatus,
   type OrderStatus,
   type PaymentStatus,
+  type QuoteStatus,
+  type ShipmentStatus,
 } from "../api/types";
 
 type Variant = "default" | "secondary" | "outline" | "destructive";
@@ -59,5 +63,37 @@ export const BusinessStatusBadge = ({ status }: { status: BusinessStatus }) => (
 export const EnquiryStatusBadge = ({ status }: { status: EnquiryStatus }) => (
   <Badge variant={ENQUIRY_VARIANT[status]} className="font-normal">
     {ENQUIRY_STATUS_LABELS[status]}
+  </Badge>
+);
+
+const QUOTE_VARIANT: Record<QuoteStatus, Variant> = {
+  REQUESTED: "default",
+  QUOTED: "secondary",
+  ACCEPTED: "secondary",
+  CONVERTED: "outline",
+  EXPIRED: "outline",
+  REJECTED: "outline",
+};
+
+const SHIPMENT_VARIANT: Record<ShipmentStatus, Variant> = {
+  PENDING: "outline",
+  READY_TO_SHIP: "secondary",
+  SHIPPED: "default",
+  IN_TRANSIT: "default",
+  OUT_FOR_DELIVERY: "default",
+  DELIVERED: "secondary",
+  RTO: "destructive",
+  CANCELLED: "outline",
+};
+
+export const QuoteStatusBadge = ({ status }: { status: QuoteStatus }) => (
+  <Badge variant={QUOTE_VARIANT[status]} className="font-normal whitespace-nowrap">
+    {QUOTE_STATUS_LABELS[status]}
+  </Badge>
+);
+
+export const ShipmentStatusBadge = ({ status }: { status: ShipmentStatus }) => (
+  <Badge variant={SHIPMENT_VARIANT[status]} className="font-normal whitespace-nowrap">
+    {SHIPMENT_STATUS_LABELS[status]}
   </Badge>
 );

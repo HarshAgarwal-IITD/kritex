@@ -131,3 +131,36 @@ export const ENQUIRY_STATUS_LABELS: Record<EnquiryStatus, string> = {
   IN_PROGRESS: "In progress",
   RESOLVED: "Resolved",
 };
+
+// ---- Stage 4: quotes (B2B-5) + shipping (OPS-4) ----
+export type AdminQuoteList = S["AdminQuoteListDto_Output"];
+export type AdminQuoteListItem = AdminQuoteList["items"][number];
+export type AdminQuote = S["AdminQuoteDetailDto_Output"];
+export type AdminQuoteItem = AdminQuote["items"][number];
+export type QuoteStatus = AdminQuote["status"];
+export type RespondQuoteInput = S["RespondQuoteDto"];
+export type RejectQuoteInput = S["RejectQuoteDto"];
+export type AdminShipment = S["AdminShipmentDto_Output"];
+export type ShipmentStatus = AdminShipment["status"];
+export type ShipOrderInput = S["ShipOrderDto"];
+export type CreateShiprocketShipmentInput = S["CreateShiprocketShipmentDto"];
+
+export const QUOTE_STATUSES: QuoteStatus[] = ["REQUESTED", "QUOTED", "ACCEPTED", "CONVERTED", "EXPIRED", "REJECTED"];
+export const QUOTE_STATUS_LABELS: Record<QuoteStatus, string> = {
+  REQUESTED: "Requested",
+  QUOTED: "Quoted",
+  ACCEPTED: "Accepted",
+  CONVERTED: "Converted to order",
+  EXPIRED: "Expired",
+  REJECTED: "Declined",
+};
+export const SHIPMENT_STATUS_LABELS: Record<ShipmentStatus, string> = {
+  PENDING: "Pending",
+  READY_TO_SHIP: "Ready to ship",
+  SHIPPED: "Shipped",
+  IN_TRANSIT: "In transit",
+  OUT_FOR_DELIVERY: "Out for delivery",
+  DELIVERED: "Delivered",
+  RTO: "RTO",
+  CANCELLED: "Cancelled",
+};

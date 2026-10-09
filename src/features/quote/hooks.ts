@@ -90,6 +90,10 @@ export function quoteErrorMessage(err: ApiError): string {
   switch (err.code) {
     case "QUOTE_NOT_ACCEPTABLE":
       return "This quote can no longer be accepted (it may have expired). Contact us for a fresh quote.";
+    case "INVALID_GSTIN":
+      return "That GSTIN isn't valid. Check it, or leave it blank.";
+    case "GSTIN_STATE_MISMATCH":
+      return "The quote's GSTIN is registered in a different state from this address. Use an address in the GSTIN's state.";
     case "OUT_OF_STOCK":
       return "Some quoted items are out of stock right now. Contact us and we'll sort it out.";
     case "PAYMENT_METHOD_NOT_ALLOWED":
