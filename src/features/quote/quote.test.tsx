@@ -41,7 +41,19 @@ describe("quote cart store", () => {
 });
 
 describe("RFQ (B2B-2)", () => {
-  it("PDP → add to quote → /quote → send RFQ as a guest → confirmation", async () => {
+  it("guests are asked to log in; the quote cart is kept", async () => {
+    quoteCart.add({ productId: "prd_rapid-20-tactical-backpack", productSlug: "rapid-20-tactical-backpack", productName: "Rapid 20", image: null, quantity: 5 });
+    renderApp("/quote");
+    expect(await screen.findByRole("heading", { name: "Log in to send your request" })).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Log In/ })).toHaveAttribute("href", "/login?next=%2Fquote");
+    expect(screen.getByRole("link", { name: "Create an Account" })).toHaveAttribute("href", "/signup?next=%2Fquote");
+    expect(screen.queryByRole("button", { name: "Send Quote Request" })).toBeNull();
+    expect(screen.getByTestId("quote-line")).toBeInTheDocument();
+    expect(quoteCart.get()).toHaveLength(1);
+  });
+
+  it("PDP → add to quote → /quote → send RFQ signed in → confirmation", async () => {
+    resetMocks("customer@example.com");
     renderApp("/product/og-polo-tshirt");
     await screen.findByRole("heading", { name: "Tactical Combat OG Polo T-Shirt" });
     fireEvent.click(screen.getByRole("button", { name: "L" }));
@@ -61,6 +73,8 @@ describe("RFQ (B2B-2)", () => {
     fireEvent.blur(notes);
 
     // Client-side validation first.
+    await waitFor(() => expect(screen.getByLabelText("Your name")).toHaveValue("Chris Customer"));
+    type("Your name", "");
     type("GSTIN (optional)", "NOT-A-GSTIN");
     fireEvent.click(screen.getByRole("button", { name: "Send Quote Request" }));
     expect(await screen.findByText(/Enter your name/)).toBeInTheDocument();
@@ -68,21 +82,20 @@ describe("RFQ (B2B-2)", () => {
 
     type("Your name", "Priya Shah");
     type("Company / organisation", "Shah Security Pvt Ltd");
-    type("Email", "Priya@Shah.example");
     type("Mobile number", "98200 12345");
     type("GSTIN (optional)", "27aapfu0939f1zv");
     type("Notes (optional)", "Need by month end");
     fireEvent.click(screen.getByRole("button", { name: "Send Quote Request" }));
 
     expect(await screen.findByTestId("quote-number")).toHaveTextContent("KTQ-100005");
-    expect(screen.getByText("priya@shah.example")).toBeInTheDocument();
+    expect(screen.getByText("customer@example.com")).toBeInTheDocument();
     const sent = getB2bOpsMockDb().quotes[0];
     expect(sent).toMatchObject({
       number: "KTQ-100005",
       status: "REQUESTED",
-      userId: null,
+      userId: "usr_customer",
       contactName: "Priya Shah",
-      email: "priya@shah.example",
+      email: "customer@example.com",
       phone: "+919820012345",
       gstin: "27AAPFU0939F1ZV",
       notes: "Need by month end",
@@ -104,7 +117,7 @@ describe("RFQ (B2B-2)", () => {
     resetMocks("customer@example.com");
     quoteCart.add({ productId: "prd_rapid-20-tactical-backpack", productSlug: "rapid-20-tactical-backpack", productName: "Rapid 20", image: null, quantity: 5 });
     renderApp("/quote");
-    await waitFor(() => expect(screen.getByLabelText("Email")).toHaveValue("customer@example.com"));
+    expect(await screen.findByText("customer@example.com")).toBeInTheDocument();
     type("Company / organisation", "Chris Co");
     type("Mobile number", "9876543210");
     fireEvent.click(screen.getByRole("button", { name: "Send Quote Request" }));

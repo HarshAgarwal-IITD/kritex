@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import type { paths } from "@/lib/api/schema";
-import { adminHandlers } from "./admin-handlers";
+import { adminHandlers, getMockSessionUser } from "./admin-handlers";
 import { catalogHandlers } from "./catalog";
 import { addMockQuery, getMockQueries, resetMockQueries } from "./queries-store";
 import { commerceHandlers, resetCommerceMockDb } from "./commerce-handlers";
@@ -37,12 +37,23 @@ export const handlers = [
 
   http.get(apiPath("/api/v1/health"), () => HttpResponse.json<Health>({ status: "ok" })),
 
+  // Enquiries need a signed-in, verified account (ADR-018); replies go to the account email.
   http.post(apiPath("/api/v1/queries"), async ({ request }) => {
+    const user = getMockSessionUser();
+    if (!user) {
+      return HttpResponse.json({ error: { code: "UNAUTHORIZED", message: "Sign in required" } } satisfies ErrorResponse, { status: 401 });
+    }
+    if (!user.emailVerified) {
+      return HttpResponse.json(
+        { error: { code: "EMAIL_NOT_VERIFIED", message: "Verify your email address first" } } satisfies ErrorResponse,
+        { status: 403 },
+      );
+    }
     const body = (await request.json()) as Partial<CreateQueryRequest>;
-    if (!body?.name || !body?.email || !body?.requirements) {
+    if (!body?.name || !body?.requirements) {
       return HttpResponse.json(
         {
-          error: { code: "VALIDATION_ERROR", message: "name, email and requirements are required" },
+          error: { code: "VALIDATION_ERROR", message: "name and requirements are required" },
         } satisfies ErrorResponse,
         { status: 400 },
       );
@@ -51,7 +62,7 @@ export const handlers = [
       id: crypto.randomUUID(),
       name: body.name,
       organization: body.organization ?? null,
-      email: body.email,
+      email: user.email,
       requirements: body.requirements,
       status: "NEW",
       createdAt: new Date().toISOString(),

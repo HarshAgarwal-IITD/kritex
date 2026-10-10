@@ -139,8 +139,8 @@ test("UI: customer requests a quote, admin responds, customer accepts → paid o
   await page.goto("/quote");
   await page.getByLabel("Your name").fill("E2E Buyer");
   await page.getByLabel("Company / organisation").fill("E2E Security Pvt Ltd");
-  const emailField = page.getByLabel("Email");
-  if (await emailField.isEditable()) await emailField.fill(email);
+  // The quote goes to the account email (ADR-018); there is no email field.
+  await expect(page.getByText(email)).toBeVisible();
   await page.getByLabel("Mobile number").fill("98200 12345");
   await page.getByRole("button", { name: "Send Quote Request" }).click();
   const quoteNumber = (await page.getByTestId("quote-number").textContent())!.trim();

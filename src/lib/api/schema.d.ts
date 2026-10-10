@@ -1129,7 +1129,7 @@ export interface paths {
         /** List submitted inquiries, newest first (STAFF/ADMIN session; same as adminListQueries) */
         get: operations["listQueries"];
         put?: never;
-        /** Submit a contact / tender inquiry (public) */
+        /** Submit a contact / tender inquiry (signed in, verified email; replies go to the account email) */
         post: operations["createQuery"];
         delete?: never;
         options?: never;
@@ -1146,7 +1146,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Request for quote (guest or signed in; linked to the user when signed in) */
+        /** Request for quote (signed in, verified email); linked to the user, replies go to the account email */
         post: operations["createQuote"];
         delete?: never;
         options?: never;
@@ -2520,8 +2520,11 @@ export interface components {
             widthCm?: number | null;
         };
         CreateQueryDto: {
-            /** Format: email */
-            email: string;
+            /**
+             * Format: email
+             * @description Deprecated and ignored: replies go to the signed-in account's email
+             */
+            email?: string;
             name: string;
             organization?: string;
             requirements: string;
@@ -2533,8 +2536,11 @@ export interface components {
         };
         CreateQuoteDto: {
             contactName: string;
-            /** Format: email */
-            email: string;
+            /**
+             * Format: email
+             * @description Deprecated and ignored: the quote uses the signed-in account's email
+             */
+            email?: string;
             /** @example 27AAPFU0939F1ZV */
             gstin?: string;
             items: {
@@ -8160,6 +8166,24 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description EMAIL_NOT_VERIFIED: verify the account email first */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
             /** @description TOO_MANY_REQUESTS */
             429: {
                 headers: {
@@ -8195,6 +8219,24 @@ export interface operations {
             };
             /** @description VALIDATION_ERROR / BAD_REQUEST */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description EMAIL_NOT_VERIFIED: verify the account email first */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

@@ -10,7 +10,7 @@ export const quoteKeys = {
   tracking: (number: string, email: string) => ["tracking", number, email] as const,
 };
 
-/** Sends the RFQ (`POST /quotes`, public). */
+/** Sends the RFQ (`POST /quotes`; signed in with a verified email, ADR-018). */
 export function useCreateQuote() {
   const qc = useQueryClient();
   return useMutation<CreatedQuote, ApiError, CreateQuoteInput>({
@@ -102,6 +102,10 @@ export function quoteErrorMessage(err: ApiError): string {
       return "Bank transfer is only available to approved business accounts.";
     case "IDEMPOTENCY_KEY_REUSED":
       return "This attempt was already used. Please try again.";
+    case "UNAUTHORIZED":
+      return "Your session has ended. Log in again to send your request.";
+    case "EMAIL_NOT_VERIFIED":
+      return "Verify your email address first: use the link we emailed you, then try again.";
     case "TOO_MANY_REQUESTS":
       return "Too many attempts. Please wait a minute and try again.";
     case "NOT_FOUND":

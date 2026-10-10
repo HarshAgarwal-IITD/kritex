@@ -261,6 +261,14 @@ Done 2026-10-06: the untracked `server/` folder was moved to `../kritex-server` 
 - **Admin media URLs** must be `/path` or `https://` (swatches may be `#hex`) to close a stored-XSS path (SEC-2).
 - **Full-stack E2E** runs through `scripts/e2e-stack.mjs` (`npm run test:e2e`): builds kritex-server, migrates/seeds a local `kritex_e2e` DB, starts API :4007 (fake gateway) + Vite :8087. CI checks out kritex-server at `ecommerce`. Real Razorpay is opt-in (`E2E_RAZORPAY=1`).
 
+
+## ADR-018: Enquiries need a verified account; the storefront calls api.kritex.in
+**Status:** Accepted · 2026-10-10 (owner)
+
+- **Enquiries require sign-in with a verified email.** Both `POST /queries` (home-page contact / tender form) and `POST /quotes` (RFQ) use `@RequireVerifiedEmail()`: 401 `UNAUTHORIZED` without a session, 403 `EMAIL_NOT_VERIFIED` for an unverified account. The reply address is the account email; the body `email` field is now optional and ignored (kept for compatibility). Every RFQ is linked to its user, so guest RFQs no longer exist. **Why:** fewer spam / fake enquiries, a reply address that is known to work, and quotes can always be accepted by their sender. **Trade-off:** buyers who won't create an account must use email or phone (shown next to the form). This breaks `/api/v1`'s additive-only rule; accepted because v1 is not live yet (production still runs the prototype on `main`).
+- **RL-1 (SEC-1):** the storefront will call the API directly at `https://api.kritex.in` (Render custom domain, DNS-only CNAME) instead of through the Vercel `/api` rewrite, so rate limits see each client's IP. Session/cart cookies work because the API is a kritex.in subdomain (`AUTH_COOKIE_DOMAIN=.kritex.in`, `SameSite=Lax`); calling `*.onrender.com` directly would drop them. At release: `VITE_API_URL=https://api.kritex.in` on Vercel, remove the `/api` rewrite from `vercel.json`, `TRUST_PROXY=1` on Render (one hop).
+- **RL-2 (SEC-3), proposed, awaiting owner confirmation:** max 10 units per variant per order for guests and retail customers (bigger orders go through RFQ), at most 5 open unpaid orders per email and 10 per IP, hold time 15 min; approved B2B buyers exempt.
+
 ---
 
 ## Open questions

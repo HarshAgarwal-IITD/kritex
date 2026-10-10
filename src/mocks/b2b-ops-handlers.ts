@@ -299,15 +299,19 @@ export const b2bOpsHandlers = [
   }),
 
   // ---- B2B-2: RFQ ----
+  // RFQs need a signed-in, verified account (ADR-018); the quote uses the account email.
   http.post(apiPath("/api/v1/quotes"), async ({ request }) => {
+    const user = requireUser();
+    if (user instanceof Response) return user;
+    if (!user.emailVerified) return err(403, "EMAIL_NOT_VERIFIED", "Verify your email address first");
     const body = (await request.json()) as Partial<S["CreateQuoteDto"]>;
     if (body.website) {
       // Honeypot: pretend it worked.
       return HttpResponse.json<S["CreateQuoteResponseDto_Output"]>({ number: "KTQ-000000", status: "REQUESTED", createdAt: now() }, { status: 201 });
     }
-    const email = body.email?.trim().toLowerCase() ?? "";
-    if (!body.contactName?.trim() || !body.organization?.trim() || !email.includes("@") || !PHONE_RE.test(body.phone ?? "")) {
-      return err(400, "VALIDATION_ERROR", "contactName, organization, email and a valid phone are required");
+    const email = user.email.toLowerCase();
+    if (!body.contactName?.trim() || !body.organization?.trim() || !PHONE_RE.test(body.phone ?? "")) {
+      return err(400, "VALIDATION_ERROR", "contactName, organization and a valid phone are required");
     }
     if (body.gstin && !GSTIN_RE.test(body.gstin)) return err(422, "INVALID_GSTIN", "GSTIN is invalid");
     if (!body.items?.length || body.items.length > 50) return err(400, "VALIDATION_ERROR", "1–50 items required");
@@ -320,12 +324,11 @@ export const b2bOpsHandlers = [
       if (variantIndex === -1) return err(404, "NOT_FOUND", `Variant ${i.variantId} not found`);
       items.push(quoteItem(cuid(`qti_${n}_`), p, i.quantity, { variantIndex, notes: i.notes }));
     }
-    const user = getMockSessionUser();
     const quote: MockQuote = {
       id: cuid("qt_"),
       number: `KTQ-${++quoteSeq}`,
       status: "REQUESTED",
-      userId: user?.id ?? null,
+      userId: user.id,
       contactName: body.contactName.trim(),
       organization: body.organization.trim(),
       email,

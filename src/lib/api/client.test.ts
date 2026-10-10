@@ -2,6 +2,7 @@ import { describe, it, expect } from "vitest";
 import { http, HttpResponse } from "msw";
 import { server } from "@/mocks/server";
 import { apiPath } from "@/mocks/handlers";
+import { setMockSession } from "@/mocks/admin-handlers";
 import { api, ApiError, toApiError } from "./client";
 
 describe("toApiError", () => {
@@ -39,13 +40,17 @@ describe("api client (against MSW)", () => {
     expect(data).toEqual({ status: "ok" });
   });
 
-  it("POST /api/v1/queries returns 201 with id + createdAt", async () => {
+  it("POST /api/v1/queries needs a session: 401 for guests, 201 with id + createdAt when signed in", async () => {
+    const guest = await api.POST("/api/v1/queries", { body: { name: "A", requirements: "x" } });
+    expect(guest.response.status).toBe(401);
+    setMockSession("customer@example.com");
     const { data, response } = await api.POST("/api/v1/queries", {
       body: { name: "A", email: "a@b.in", requirements: "x" },
     });
     expect(response.status).toBe(201);
     expect(data?.id).toEqual(expect.any(String));
     expect(data?.createdAt).toEqual(expect.any(String));
+    setMockSession(null);
   });
 
   it("surfaces 429 errors through toApiError", async () => {

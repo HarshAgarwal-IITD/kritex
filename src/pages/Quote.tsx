@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CheckCircle2, Loader2, Send, X } from "lucide-react";
+import { CheckCircle2, Loader2, LogIn, Send, X } from "lucide-react";
 import ShopPage from "@/components/shop/ShopPage";
 import { Field, FormError } from "@/components/shop/Field";
 import { fieldClass, labelClass, panelClass, primaryButtonClass, secondaryButtonClass, sectionTitleClass } from "@/components/shop/styles";
@@ -19,7 +19,6 @@ const CRUMBS = [{ label: "Home", to: "/" }, { label: "Products", to: "/products"
 const rfqSchema = z.object({
   contactName: z.string().trim().min(2, "Enter your name").max(100),
   organization: z.string().trim().min(2, "Enter your company or organisation").max(200),
-  email: z.string().trim().toLowerCase().email("Enter a valid email"),
   phone: phoneSchema,
   gstin: z.union([z.literal(""), gstinSchema]),
   notes: z.string().trim().max(2000),
@@ -29,7 +28,7 @@ const rfqSchema = z.object({
 type RfqInput = z.input<typeof rfqSchema>;
 type RfqValues = z.output<typeof rfqSchema>;
 
-/** `/quote`: the quote cart + RFQ form → `POST /quotes` → confirmation. */
+/** `/quote`: the quote cart + RFQ form → `POST /quotes` → confirmation. Sending needs a signed-in account (ADR-018). */
 const QuotePage = () => {
   const lines = useQuoteCart();
   const [sent, setSent] = useState<{ quote: CreatedQuote; email: string } | null>(null);
@@ -59,7 +58,7 @@ const QuotePage = () => {
               Prices are quoted per unit, GST-inclusive. We usually reply within one working day.
             </p>
           </section>
-          <RfqForm lines={lines} onSent={(quote, email) => setSent({ quote, email })} />
+          <RfqPanel lines={lines} onSent={(quote, email) => setSent({ quote, email })} />
         </div>
       )}
     </ShopPage>
@@ -140,7 +139,40 @@ const QuoteLine = ({ line }: { line: QuoteCartLine }) => {
   );
 };
 
-const RfqForm = ({ lines, onSent }: { lines: QuoteCartLine[]; onSent: (quote: CreatedQuote, email: string) => void }) => {
+type RfqProps = { lines: QuoteCartLine[]; onSent: (quote: CreatedQuote, email: string) => void };
+
+/** Guests are asked to log in first; the quote cart is kept in localStorage, so nothing is lost. */
+const RfqPanel = (props: RfqProps) => {
+  const { user, isPending } = useCurrentUser();
+  if (isPending) {
+    return (
+      <div className={panelClass} aria-busy="true">
+        <p className="font-display text-xs text-muted-foreground">Loading…</p>
+      </div>
+    );
+  }
+  if (!user) {
+    return (
+      <div className={`${panelClass} space-y-4`} aria-label="Log in to request a quote">
+        <h2 className={sectionTitleClass}>Log in to send your request</h2>
+        <p className="font-body text-xs text-muted-foreground">
+          Quote requests need a Kritex account with a verified email. We send the quote there, and you can accept and pay for
+          it online. Your items stay saved while you log in.
+        </p>
+        <Link to="/login?next=%2Fquote" className={`${primaryButtonClass} w-full`}>
+          <LogIn size={14} />
+          Log In
+        </Link>
+        <Link to="/signup?next=%2Fquote" className={`${secondaryButtonClass} w-full`}>
+          Create an Account
+        </Link>
+      </div>
+    );
+  }
+  return <RfqForm {...props} email={user.email} />;
+};
+
+const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string }) => {
   const { user } = useCurrentUser();
   const create = useCreateQuote();
   const form = useForm<RfqInput, unknown, RfqValues>({
@@ -148,7 +180,6 @@ const RfqForm = ({ lines, onSent }: { lines: QuoteCartLine[]; onSent: (quote: Cr
     values: {
       contactName: user?.name ?? "",
       organization: user?.businessProfile?.legalName ?? "",
-      email: user?.email ?? "",
       phone: user?.phone ?? "",
       gstin: user?.businessProfile?.gstin ?? "",
       notes: "",
@@ -165,7 +196,6 @@ const RfqForm = ({ lines, onSent }: { lines: QuoteCartLine[]; onSent: (quote: Cr
     const body: CreateQuoteInput = {
       contactName: v.contactName,
       organization: v.organization,
-      email: v.email,
       phone: v.phone,
       ...(v.gstin ? { gstin: v.gstin } : {}),
       ...(v.notes ? { notes: v.notes } : {}),
@@ -180,7 +210,7 @@ const RfqForm = ({ lines, onSent }: { lines: QuoteCartLine[]; onSent: (quote: Cr
     create.mutate(body, {
       onSuccess: (quote) => {
         quoteCart.clear();
-        onSent(quote, v.email);
+        onSent(quote, email);
       },
     });
   };
@@ -188,29 +218,20 @@ const RfqForm = ({ lines, onSent }: { lines: QuoteCartLine[]; onSent: (quote: Cr
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} noValidate className={`${panelClass} relative space-y-5`} aria-label="Quote request">
       <h2 className={sectionTitleClass}>Your details</h2>
-      {!user && (
-        <p className="font-body text-xs text-muted-foreground -mt-2">
-          Have an account?{" "}
-          <Link to="/login?next=%2Fquote" className="text-primary hover:text-primary/80">
-            Log in
-          </Link>{" "}
-          to follow your quotes online.
-        </p>
-      )}
+      <p className="font-body text-xs text-muted-foreground -mt-2">
+        We'll send the quote to <span className="text-foreground">{email}</span>.
+      </p>
       <Field label="Your name" autoComplete="name" error={errors.contactName?.message} {...form.register("contactName")} />
       <Field label="Company / organisation" autoComplete="organization" error={errors.organization?.message} {...form.register("organization")} />
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <Field label="Email" type="email" autoComplete="email" error={errors.email?.message} {...form.register("email")} />
-        <Field
-          label="Mobile number"
-          type="tel"
-          inputMode="tel"
-          autoComplete="tel"
-          placeholder="98765 43210"
-          error={errors.phone?.message}
-          {...form.register("phone")}
-        />
-      </div>
+      <Field
+        label="Mobile number"
+        type="tel"
+        inputMode="tel"
+        autoComplete="tel"
+        placeholder="98765 43210"
+        error={errors.phone?.message}
+        {...form.register("phone")}
+      />
       <Field
         label="GSTIN (optional)"
         placeholder="27AAPFU0939F1ZV"
@@ -248,7 +269,6 @@ const RfqForm = ({ lines, onSent }: { lines: QuoteCartLine[]; onSent: (quote: Cr
 };
 
 const QuoteSent = ({ quote, email }: { quote: CreatedQuote; email: string }) => {
-  const { isSignedIn } = useCurrentUser();
   return (
     <ShopPage title="Quote request sent" crumbs={CRUMBS} hideHeading>
       <div className="max-w-2xl">
@@ -261,19 +281,11 @@ const QuoteSent = ({ quote, email }: { quote: CreatedQuote; email: string }) => 
           Your quote request <span className="font-display text-foreground" data-testid="quote-number">{quote.number}</span> is with our
           procurement team. We'll email the quote to <span className="text-foreground">{email}</span>, usually within one working day.
         </p>
-        {!isSignedIn && (
-          <p className="font-body text-sm text-muted-foreground mt-4">
-            To accept the quote and pay online, <Link to="/signup" className="text-primary">create an account</Link> or{" "}
-            <Link to="/login?next=%2Faccount%2Fquotes" className="text-primary">log in</Link> with this email.
-          </p>
-        )}
       </div>
       <div className="mt-10 flex flex-wrap gap-3">
-        {isSignedIn && (
-          <Link to={`/account/quotes/${encodeURIComponent(quote.number)}`} className={secondaryButtonClass}>
-            View Quote
-          </Link>
-        )}
+        <Link to={`/account/quotes/${encodeURIComponent(quote.number)}`} className={secondaryButtonClass}>
+          View Quote
+        </Link>
         <Link to="/products" className={primaryButtonClass}>
           Continue Browsing
         </Link>
