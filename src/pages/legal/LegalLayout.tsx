@@ -3,8 +3,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Seo from "@/components/Seo";
-import DraftBanner from "./DraftBanner";
-import { LEGAL_DRAFT, LEGAL_LAST_UPDATED, policyByPath } from "./policies";
+import { LEGAL_LAST_UPDATED, policyByPath } from "./policies";
 
 const formatDate = (iso: string) =>
   new Intl.DateTimeFormat("en-IN", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" }).format(
@@ -63,8 +62,6 @@ const LegalLayout = ({ path, title, description, hideLastUpdated, children }: Le
               </p>
             )}
           </header>
-
-          {LEGAL_DRAFT && <DraftBanner />}
 
           <article className={proseClasses}>{children}</article>
         </div>

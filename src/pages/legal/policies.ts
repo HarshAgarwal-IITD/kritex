@@ -3,11 +3,6 @@
 /** ISO date shown as "Last updated" on every policy page. Bump it whenever a policy changes. */
 export const LEGAL_LAST_UPDATED = "2026-10-11";
 
-/**
- * While true, every policy page shows the "Draft — pending legal review" banner.
- * Turned off by the owner on 2026-10-11 (published as final).
- */
-export const LEGAL_DRAFT = false;
 
 export interface PolicyMeta {
   path: string;
