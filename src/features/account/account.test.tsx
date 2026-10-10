@@ -62,6 +62,18 @@ describe("Continue with Google (ADR-019)", () => {
   });
 });
 
+describe("password fields", () => {
+  it("have a show / hide toggle", async () => {
+    renderApp("/login");
+    const input = await screen.findByLabelText("Password");
+    expect(input).toHaveAttribute("type", "password");
+    fireEvent.click(screen.getByRole("button", { name: "Show password" }));
+    expect(input).toHaveAttribute("type", "text");
+    fireEvent.click(screen.getByRole("button", { name: "Hide password" }));
+    expect(input).toHaveAttribute("type", "password");
+  });
+});
+
 describe("login", () => {
   it("signs in with a password, returns to next and refetches the (merged) cart", async () => {
     const { queryClient } = renderApp("/login?next=%2Fcart");

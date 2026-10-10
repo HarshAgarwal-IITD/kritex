@@ -64,7 +64,7 @@ const OrderDetail = () => {
             </button>
           )}
           {!["PENDING_PAYMENT", "AWAITING_PAYMENT", "CANCELLED"].includes(order.status) && (
-            <Link to={`/track/${encodeURIComponent(order.number)}`} state={{ email: order.email }} className={secondaryButtonClass}>
+            <Link to={`/track/${encodeURIComponent(order.number)}`} className={secondaryButtonClass}>
               <Truck size={14} />
               Track order
             </Link>

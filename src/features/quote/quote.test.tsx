@@ -234,16 +234,22 @@ describe("tier prices (B2B-3)", () => {
 });
 
 describe("order tracking (OPS-5)", () => {
-  it("looks up an order by number + email and shows shipments and scans", async () => {
+  it("is for signed-in customers only: guests go to log in first", async () => {
+    renderApp("/track");
+    await waitFor(() => expect(location()).toBe("/login?next=%2Ftrack"));
+  });
+
+  it("looks up one of the customer's orders by number and shows shipments and scans", async () => {
+    resetMocks("customer@example.com");
     renderApp("/track");
     await screen.findByLabelText("Order number");
-    type("Order number", "ktx-100001");
-    type("Email", "wrong@example.com");
+    expect(screen.queryByLabelText("Email")).toBeNull();
+    type("Order number", "ktx-999999");
     fireEvent.click(screen.getByRole("button", { name: "Track Order" }));
-    expect(await screen.findByText(/couldn't find an order with that number and email/)).toBeInTheDocument();
-    expect(location()).toBe("/track/KTX-100001");
+    expect(await screen.findByText(/couldn't find an order with that number on your account/)).toBeInTheDocument();
+    expect(location()).toBe("/track/KTX-999999");
 
-    type("Email", "Customer@Example.com");
+    type("Order number", "ktx-100001");
     fireEvent.click(screen.getByRole("button", { name: "Track Order" }));
     expect(await screen.findByRole("heading", { name: "Order KTX-100001" })).toBeInTheDocument();
     expect(screen.getByText("Delhivery · AWB 1234567890")).toBeInTheDocument();
@@ -254,7 +260,8 @@ describe("order tracking (OPS-5)", () => {
     expect(screen.getByRole("link", { name: /Track on Delhivery/ })).toHaveAttribute("href", "https://www.delhivery.com/track/package/1234567890");
   });
 
-  it("accepts ?email= (emailed links) and says when nothing has shipped", async () => {
+  it("older emailed links with ?email= still open, and say when nothing has shipped", async () => {
+    resetMocks("customer@example.com");
     renderApp("/track/KTX-100002?email=customer@example.com");
     expect(await screen.findByText(/hasn't shipped yet/)).toBeInTheDocument();
   });

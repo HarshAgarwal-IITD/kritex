@@ -40,14 +40,14 @@ test("sign up, verify, cart merge on login, orders list/detail, cancel", async (
   await page.getByLabel("Full name").fill("E2E Customer");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
-  await page.getByLabel("Confirm password").fill(password);
+  await page.getByLabel("Confirm password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Create Account" }).click();
   await expect(page.getByTestId("check-email")).toContainText(email);
 
   // Unverified login is refused.
   await page.goto("/login");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Log In" }).click();
   await expect(page.getByRole("button", { name: "Resend verification email" })).toBeVisible();
 
@@ -76,7 +76,7 @@ test("sign up, verify, cart merge on login, orders list/detail, cancel", async (
 
   await page.goto("/login?next=%2Fcart");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Log In" }).click();
   await expect(page).toHaveURL(/\/cart$/);
   await expect(page.getByTestId("cart-line")).toHaveCount(2);
@@ -121,7 +121,7 @@ test("a customer can't read another customer's order (IDOR)", async ({ page, bro
     await ctxPage.getByLabel("Full name").fill("E2E Idor");
     await ctxPage.getByLabel("Email").fill(email);
     await ctxPage.getByLabel("Password", { exact: true }).fill(password);
-    await ctxPage.getByLabel("Confirm password").fill(password);
+    await ctxPage.getByLabel("Confirm password", { exact: true }).fill(password);
     await ctxPage.getByRole("button", { name: "Create Account" }).click();
     await expect(ctxPage.getByTestId("check-email")).toBeVisible();
     await ctxPage.goto(firstLink(await readMail(email, "verify-email")));

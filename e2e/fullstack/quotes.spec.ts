@@ -128,7 +128,7 @@ test("UI: customer requests a quote, admin responds, customer accepts → paid o
   await customer.dispose();
   await page.goto("/login");
   await page.getByLabel("Email").fill(email);
-  await page.getByLabel("Password").fill(password);
+  await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Log In" }).click();
   await expect(page).not.toHaveURL(/\/login/);
 
@@ -150,7 +150,7 @@ test("UI: customer requests a quote, admin responds, customer accepts → paid o
   const staff = await browser.newPage();
   await staff.goto("/admin/login");
   await staff.getByLabel("Email").fill(ADMIN_EMAIL);
-  await staff.getByLabel("Password").fill(ADMIN_PASSWORD);
+  await staff.getByLabel("Password", { exact: true }).fill(ADMIN_PASSWORD);
   await staff.getByRole("button", { name: "Sign in" }).click();
   await expect(staff).not.toHaveURL(/\/admin\/login/);
   await staff.goto("/admin/quotes");

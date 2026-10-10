@@ -1092,7 +1092,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Public order tracking (order number + order email) */
+        /** Order tracking for the signed-in owner of the order (staff: any order). ADR-021 */
         get: operations["getOrderTracking"];
         put?: never;
         post?: never;
@@ -8031,9 +8031,9 @@ export interface operations {
     };
     getOrderTracking: {
         parameters: {
-            query: {
-                /** @description Email used on the order (prevents enumeration) */
-                email: string;
+            query?: {
+                /** @description Deprecated and ignored: tracking is for the order's signed-in owner */
+                email?: string;
             };
             header?: never;
             path: {
@@ -8061,7 +8061,25 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description NOT_FOUND: no order with this number and email */
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description EMAIL_NOT_VERIFIED: verify the account email first */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description NOT_FOUND: no such order on this account */
             404: {
                 headers: {
                     [name: string]: unknown;

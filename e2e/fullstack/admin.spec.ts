@@ -39,7 +39,7 @@ test.afterAll(async () => {
 async function adminLogin(page: Page) {
   await page.goto("/admin/login");
   await page.getByLabel("Email").fill(ADMIN_EMAIL);
-  await page.getByLabel("Password").fill(ADMIN_PASSWORD);
+  await page.getByLabel("Password", { exact: true }).fill(ADMIN_PASSWORD);
   await page.getByRole("button", { name: "Sign in" }).click();
   await expect(page).toHaveURL(/\/admin\/products$/);
 }
@@ -183,7 +183,7 @@ test("admin fulfils an order (manual ship → tracking page)", async ({ page }) 
   await dialog.getByRole("button", { name: "Mark shipped" }).click();
   await expect.poll(async () => (await adminOrderByNumber(admin, number)).status).toBe("SHIPPED");
 
-  // Public tracking (OPS-5) with the order email; the shipped email went out (OPS-1).
+  // Tracking for the signed-in buyer (ADR-021; an older ?email= link still opens); the shipped email went out (OPS-1).
   await page.goto(`/track/${number}?email=${encodeURIComponent(email)}`);
   await expect(page.getByText(/E2E123456/).first()).toBeVisible();
   expect(await readMail(email, "order-shipped")).toContain(number);

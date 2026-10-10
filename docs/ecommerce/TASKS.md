@@ -176,6 +176,8 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [x] ENQ-2 [W] Guests fill the enquiry first; it is sent automatically after log-in (ADR-019)
 - [x] AUTH-7 [both] Continue with Google + `GET /auth-options` (ADR-019). Owner: create the Google OAuth client, set `GOOGLE_CLIENT_ID/SECRET` on Render
 - [x] COM-17 [both] No guest orders: checkout needs a verified account (ADR-020, 2026-10-11)
+- [x] COM-18 [both] Tracking for signed-in owners only; failed payment start cancels the order (ADR-021, 2026-10-11)
+- [x] UI-2 [W] Shaped loaders; show/hide password toggle (2026-10-11)
 - [x] UI-1 [W] Navbar refresh: Timeline removed, account menu, Track Order, solid on scroll (ADR-019)
 
 ## Stage 5: Launch prep

@@ -77,8 +77,8 @@ export const AppRoutes = () => (
         <Route path="/account/quotes" element={guard(<AccountQuotes />)} />
         <Route path="/account/quotes/:number" element={guard(<AccountQuoteDetail />)} />
         <Route path="/quote" element={<QuotePage />} />
-        <Route path="/track" element={<TrackLookup />} />
-        <Route path="/track/:orderNumber" element={<TrackOrder />} />
+        <Route path="/track" element={guard(<TrackLookup />)} />
+        <Route path="/track/:orderNumber" element={guard(<TrackOrder />)} />
         <Route path="/legal" element={<LegalIndex />} />
         <Route path="/legal/terms" element={<Terms />} />
         <Route path="/legal/privacy" element={<Privacy />} />

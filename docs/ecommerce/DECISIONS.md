@@ -289,6 +289,15 @@ Done 2026-10-06: the untracked `server/` folder was moved to `../kritex-server` 
 - Supersedes the guest-checkout parts of ADR-016. The public `/track` lookup (order number + email) stays.
 - `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` are read only by `prisma db seed`, never by the API; they are not needed on Render.
 
+
+## ADR-021: Tracking is for signed-in owners; a failed payment start releases stock
+**Status:** Accepted · 2026-10-11 (owner)
+
+- **Order tracking** (`GET /orders/:number/tracking`) needs a verified session and returns only the caller's own order (staff/admin: any order); anyone else gets the same 404 as an unknown number. `?email=` is accepted and ignored (old emailed links). Storefront `/track` and `/track/:number` are behind `RequireAuth`; the lookup asks for the order number only.
+- **Payment start failure:** if Razorpay refuses to create its order during `POST /checkout`, the just-created order is cancelled (reservation and coupon use released, no customer email) before the 502 `PAYMENT_GATEWAY_ERROR` is returned. Before this, each retry left another PENDING order holding stock (seen in production 2026-10-11: KTX-100005/6 held the ₹1 test product). Quote acceptance still keeps its order (it is linked to the quote; the customer can retry payment from the order).
+- **Password fields** (storefront `Field type="password"`, admin login) have a show / hide toggle.
+- **Staff alert for new quote requests:** on `quote.requested` the API emails `STAFF_ALERT_EMAILS` (default `kritex.jdp@gmail.com`, comma-separated, empty = off) with the contact, lines and a link to `/admin/quotes/:id`; once per quote and recipient (Notification table). Contact-form enquiries have no alert yet.
+
 ---
 
 ## Open questions

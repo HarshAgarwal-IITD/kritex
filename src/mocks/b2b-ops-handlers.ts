@@ -4,7 +4,7 @@
  *   POST /quotes, GET /me/quotes, GET /me/quotes/:number, POST /me/quotes/:number/accept (Idempotency-Key)
  *   GET /admin/quotes, GET /admin/quotes/:id, POST /admin/quotes/:id/respond, POST /admin/quotes/:id/reject
  *   POST /admin/orders/:id/ship (manual), POST /admin/orders/:id/shiprocket
- *   GET /orders/:number/tracking?email= (public)
+ *   GET /orders/:number/tracking (the signed-in owner, or staff; ADR-021)
  *   GET /products/:slug for an approved B2B viewer: adds `priceTiers` and makes B2B_ONLY purchasable
  *     (everyone else falls through to catalog.ts).
  *
@@ -608,13 +608,16 @@ export const b2bOpsHandlers = [
   }),
 
   // ---- OPS-5: public tracking ----
-  http.get(apiPath("/api/v1/orders/:number/tracking"), ({ request, params }) => {
-    const email = new URL(request.url).searchParams.get("email")?.trim().toLowerCase();
-    if (!email) return err(400, "VALIDATION_ERROR", "email is required");
+  http.get(apiPath("/api/v1/orders/:number/tracking"), ({ params }) => {
+    const user = requireUser();
+    if (user instanceof Response) return user;
+    const staff = user.role === "STAFF" || user.role === "ADMIN";
+    // Owner match by account email (mock orders carry the order email).
+    const email = staff ? null : user.email.toLowerCase();
     const number = String(params.number).toUpperCase();
-    const storefront = getCommerceMockDb().orders.find((o) => o.number === number && o.email.toLowerCase() === email);
+    const storefront = getCommerceMockDb().orders.find((o) => o.number === number && (!email || o.email.toLowerCase() === email));
     if (storefront) return HttpResponse.json<Tracking>(toTracking({ ...storefront, timeline: storefront.timeline }));
-    const admin = getAdminCommerceDb().orders.find((o) => o.number === number && o.email.toLowerCase() === email);
+    const admin = getAdminCommerceDb().orders.find((o) => o.number === number && (!email || o.email.toLowerCase() === email));
     if (admin) {
       return HttpResponse.json<Tracking>(
         toTracking({

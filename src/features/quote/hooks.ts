@@ -7,7 +7,7 @@ export const quoteKeys = {
   mine: ["me", "quotes"] as const,
   list: (page: number, status?: QuoteStatus) => ["me", "quotes", "list", page, status ?? null] as const,
   detail: (number: string) => ["me", "quotes", "detail", number] as const,
-  tracking: (number: string, email: string) => ["tracking", number, email] as const,
+  tracking: (number: string) => ["me", "tracking", number] as const,
 };
 
 /** Sends the RFQ (`POST /quotes`; signed in with a verified email, ADR-018). */
@@ -72,14 +72,15 @@ export function useAcceptQuote(number: string) {
 }
 
 /** Public order tracking (`GET /orders/:number/tracking?email=`). Disabled until both are known. */
-export function useOrderTracking(number: string, email: string | null) {
+/** Tracking for one of the signed-in customer's orders (ADR-021). */
+export function useOrderTracking(number: string) {
   return useQuery<OrderTracking, ApiError>({
-    queryKey: quoteKeys.tracking(number, email ?? ""),
-    enabled: !!number && !!email,
+    queryKey: quoteKeys.tracking(number),
+    enabled: !!number,
     retry: (count, err) => err.status >= 500 && count < 2,
     queryFn: async ({ signal }) => {
       const { data, error, response } = await api.GET("/api/v1/orders/{number}/tracking", {
-        params: { path: { number }, query: { email: email! } },
+        params: { path: { number } },
         signal,
       });
       if (error || !data) throw toApiError(error, response);

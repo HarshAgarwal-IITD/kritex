@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -11,6 +12,7 @@ import { asset } from "@/lib/asset";
 import { isStaff, useMe, useSession, useSignIn } from "../api/auth";
 import { adminPaths } from "../paths";
 import { FullPageSpinner } from "../components/PageState";
+import { RevealToggle } from "@/components/shop/Field";
 
 const loginSchema = z.object({
   email: z.string().trim().email("Enter a valid email"),
@@ -80,7 +82,7 @@ export default function LoginPage() {
                 <FormItem>
                   <FormLabel>Password</FormLabel>
                   <FormControl>
-                    <Input type="password" autoComplete="current-password" {...field} />
+                    <PasswordInput autoComplete="current-password" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -98,6 +100,17 @@ export default function LoginPage() {
           </form>
         </Form>
       </div>
+    </div>
+  );
+}
+
+/** Admin password input (shadcn Input) with the storefront's show / hide toggle. */
+function PasswordInput(props: React.ComponentProps<typeof Input>) {
+  const [shown, setShown] = useState(false);
+  return (
+    <div className="relative">
+      <Input {...props} type={shown ? "text" : "password"} className="pr-11" />
+      <RevealToggle shown={shown} onToggle={() => setShown((v) => !v)} />
     </div>
   );
 }

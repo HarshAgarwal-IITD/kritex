@@ -1,4 +1,4 @@
-import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -14,18 +14,12 @@ import ShipmentCard from "@/features/quote/components/ShipmentCard";
 import { useOrderTracking } from "@/features/quote/hooks";
 import { ListSkeleton } from "@/components/shop/Loaders";
 
-/** Router state for links into the tracking page (keeps the email out of the URL). */
-export interface TrackState {
-  email?: string;
-}
-
 const lookupSchema = z.object({
   number: z
     .string()
     .trim()
     .toUpperCase()
     .regex(/^[A-Z0-9-]{3,32}$/, "Enter your order number, e.g. KTX-100001"),
-  email: z.string().trim().toLowerCase().email("Enter the email used for the order"),
 });
 type LookupInput = z.input<typeof lookupSchema>;
 type LookupValues = z.output<typeof lookupSchema>;
@@ -35,19 +29,15 @@ const crumbs = (last?: string) => [
   ...(last ? [{ label: "Track order", to: "/track" }, { label: last }] : [{ label: "Track order" }]),
 ];
 
-const LookupForm = ({ number = "", email = "", className }: { number?: string; email?: string; className?: string }) => {
+const LookupForm = ({ number = "", className }: { number?: string; className?: string }) => {
   const navigate = useNavigate();
-  const form = useForm<LookupInput, unknown, LookupValues>({ resolver: zodResolver(lookupSchema), defaultValues: { number, email } });
+  const form = useForm<LookupInput, unknown, LookupValues>({ resolver: zodResolver(lookupSchema), defaultValues: { number } });
   const { errors } = form.formState;
-  const onSubmit = (v: LookupValues) =>
-    navigate(`/track/${encodeURIComponent(v.number)}`, { state: { email: v.email } satisfies TrackState });
+  const onSubmit = (v: LookupValues) => navigate(`/track/${encodeURIComponent(v.number)}`);
 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} noValidate className={cn(panelClass, "max-w-xl space-y-5", className)} aria-label="Find your order">
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <Field label="Order number" placeholder="KTX-100001" autoComplete="off" error={errors.number?.message} {...form.register("number")} />
-        <Field label="Email" type="email" autoComplete="email" error={errors.email?.message} {...form.register("email")} />
-      </div>
+      <Field label="Order number" placeholder="KTX-100001" autoComplete="off" error={errors.number?.message} {...form.register("number")} />
       <button type="submit" className={primaryButtonClass}>
         <Search size={14} />
         Track Order
@@ -56,33 +46,25 @@ const LookupForm = ({ number = "", email = "", className }: { number?: string; e
   );
 };
 
-/** `/track`: order number + email lookup. */
+/** `/track`: order-number lookup for the signed-in customer (ADR-021; the route is behind RequireAuth). */
 export const TrackLookup = () => (
   <ShopPage title="Track your order" eyebrow="Order status" crumbs={crumbs()}>
     <p className="font-body text-sm text-muted-foreground max-w-xl mb-8">
-      Enter your order number (from the confirmation email) and the email you ordered with.
+      Enter your order number from the confirmation email, or see all your orders in{" "}
+      <Link to="/account/orders" className="text-primary">
+        My Account
+      </Link>
+      .
     </p>
     <LookupForm />
   </ShopPage>
 );
 
-/** `/track/:orderNumber`: public tracking. The email comes from router state, `?email=` (emailed links) or the form. */
+/** `/track/:orderNumber`: tracking for one of the signed-in customer's orders (older emailed `?email=` links still work). */
 export const TrackOrder = () => {
   const { orderNumber = "" } = useParams<{ orderNumber: string }>();
   const number = orderNumber.toUpperCase();
-  const [params] = useSearchParams();
-  const state = (useLocation().state ?? {}) as TrackState;
-  const email = state.email ?? params.get("email");
-  const tracking = useOrderTracking(number, email);
-
-  if (!email) {
-    return (
-      <ShopPage title={`Track ${number}`} eyebrow="Order status" crumbs={crumbs(number)}>
-        <p className="font-body text-sm text-muted-foreground max-w-xl mb-8">Confirm the email you ordered with to see this order's status.</p>
-        <LookupForm number={number} />
-      </ShopPage>
-    );
-  }
+  const tracking = useOrderTracking(number);
 
   if (tracking.isPending) {
     return (
@@ -98,8 +80,8 @@ export const TrackOrder = () => {
       <ShopPage title={`Track ${number}`} eyebrow="Order status" crumbs={crumbs(number)}>
         {notFound ? (
           <>
-            <FormError className="max-w-xl mb-6">We couldn't find an order with that number and email. Check both and try again.</FormError>
-            <LookupForm number={number} email={email} />
+            <FormError className="max-w-xl mb-6">We couldn't find an order with that number on your account. Check the number and try again.</FormError>
+            <LookupForm number={number} />
           </>
         ) : tracking.error.status === 429 ? (
           <FormError className="max-w-xl">Too many lookups. Please wait a minute and try again.</FormError>
