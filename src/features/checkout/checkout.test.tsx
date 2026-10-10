@@ -3,7 +3,7 @@ import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { http, HttpResponse } from "msw";
 import { server } from "@/mocks/server";
 import { apiPath } from "@/mocks/handlers";
-import { getCommerceMockDb, seedMockCart } from "@/mocks/commerce-handlers";
+import { clearMockAddresses, getCommerceMockDb, seedMockCart } from "@/mocks/commerce-handlers";
 import { renderApp, resetMocks, SHIRT_L, SHIRT_M } from "@/test/render-app";
 import { lookupPincode, normalizePhone } from "./india";
 
@@ -11,9 +11,9 @@ beforeEach(() => resetMocks());
 
 const type = (label: string | RegExp, value: string) => fireEvent.change(screen.getByLabelText(label), { target: { value } });
 
-async function fillContact(email = "guest@example.com", phone = "98765 43210") {
-  await screen.findByLabelText("Email");
-  type("Email", email);
+/** Signed in (no guest orders, ADR-020): the contact step only asks for a phone number. */
+async function fillContact(phone = "98765 43210") {
+  await screen.findByText("customer@example.com");
   type("Mobile number", phone);
   fireEvent.click(screen.getByRole("button", { name: "Continue to Address" }));
   await screen.findByLabelText("PIN code");
@@ -41,7 +41,21 @@ describe("india helpers", () => {
   });
 });
 
-describe("guest checkout (fake gateway)", () => {
+describe("checkout without saved addresses (fake gateway)", () => {
+  beforeEach(() => {
+    resetMocks("customer@example.com");
+    clearMockAddresses("usr_customer");
+  });
+
+  it("guests are sent to log in first, and come back to checkout", async () => {
+    resetMocks();
+    seedMockCart([{ variantId: SHIRT_M, quantity: 1 }]);
+    renderApp("/cart");
+    await screen.findAllByTestId("cart-line");
+    fireEvent.click(screen.getByRole("button", { name: /Log In to Checkout/ }));
+    await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent("/login?next=%2Fcheckout"));
+  });
+
   it("cart with 2 variants + coupon → contact → address → review (CGST/SGST) → simulate success → success page", async () => {
     seedMockCart([
       { variantId: SHIRT_M, quantity: 1 },
@@ -52,7 +66,7 @@ describe("guest checkout (fake gateway)", () => {
     type("Coupon code", "WELCOME10");
     fireEvent.click(screen.getByRole("button", { name: "Apply" }));
     await screen.findByTestId("applied-coupon");
-    fireEvent.click(screen.getByRole("button", { name: "Checkout" }));
+    fireEvent.click(screen.getByRole("button", { name: /^Checkout$/ }));
 
     await fillContact();
     // Invalid PIN → validation message; valid PIN autofills state + city.
@@ -78,7 +92,7 @@ describe("guest checkout (fake gateway)", () => {
     expect(screen.getByTestId("order-number")).toHaveTextContent("KTX-100003");
 
     const db = getCommerceMockDb();
-    expect(db.orders[0]).toMatchObject({ number: "KTX-100003", status: "PAID", email: "guest@example.com", couponCode: "WELCOME10" });
+    expect(db.orders[0]).toMatchObject({ number: "KTX-100003", status: "PAID", email: "customer@example.com", userId: "usr_customer", couponCode: "WELCOME10" });
     expect(db.orders[0].shippingAddress).toMatchObject({ stateCode: "27", state: "Maharashtra", city: "Mumbai", phone: "+919876543210" });
     // One Idempotency-Key (a UUID) for the attempt.
     expect([...db.idempotency.keys()]).toEqual([expect.stringMatching(/^[0-9a-f-]{36}$/)]);

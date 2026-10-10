@@ -10,6 +10,7 @@ import {
   createRetailProduct,
   expect,
   readMail,
+  signInBuyer,
   stamp,
   test,
 } from "./fixtures";
@@ -105,9 +106,10 @@ test("admin creates a product with variants in the admin UI and it sells on the 
   await expect(shop.getByRole("link", { name: `View details for ${name}` })).toBeVisible();
 
   // Buy one, so the admin has an order to work.
+  await signInBuyer(shop.request, `e2e-admin-flow-${stamp()}@example.com`);
   await addSizesToCart(shop, slug, ["M"]);
   await shop.goto("/checkout");
-  const number = await checkoutWithFakeGateway(shop, { guestEmail: "e2e-admin-flow@example.com" });
+  const number = await checkoutWithFakeGateway(shop);
   await shopper.close();
 
   // Stock decremented in the admin variants table.
@@ -166,10 +168,10 @@ test("non-staff users are kept out of /admin and the admin API", async ({ page }
 test("admin fulfils an order (manual ship → tracking page)", async ({ page }) => {
   const product = await createRetailProduct(admin, { name: "Ship Me", sizes: ["M"], stock: 2 });
   cleanup.push(product.id);
+  const email = await signInBuyer(page.request, `e2e-ship-${stamp()}@example.com`);
   await addSizesToCart(page, product.slug, ["M"]);
   await page.goto("/checkout");
-  const email = `e2e-ship-${stamp()}@example.com`;
-  const number = await checkoutWithFakeGateway(page, { guestEmail: email });
+  const number = await checkoutWithFakeGateway(page);
   const order = await adminOrderByNumber(admin, number);
 
   await adminLogin(page);

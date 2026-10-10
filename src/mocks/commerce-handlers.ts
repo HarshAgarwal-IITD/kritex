@@ -241,6 +241,11 @@ function seedOrders() {
   orders = [paid, delivered];
 }
 
+/** Test helper: forget a user's saved addresses (checkout then asks for one). */
+export function clearMockAddresses(userId: string) {
+  addresses.delete(userId);
+}
+
 export function resetCommerceMockDb() {
   cartLines = [];
   cartCoupon = null;
@@ -372,6 +377,13 @@ const ensureCart = () => {
 
 // ---------------------------------------------------------------------------------------------
 // Helpers for /me
+
+/** null when the session user may check out; else the 401/403 response. */
+function requireVerifiedBuyer(): Response | null {
+  const user = getMockSessionUser();
+  if (!user) return err(401, "UNAUTHORIZED", "Sign in required");
+  return user.emailVerified ? null : err(403, "EMAIL_NOT_VERIFIED", "Verify your email address first");
+}
 
 function requireUser(): Me | Response {
   const user = getMockSessionUser();
@@ -696,7 +708,10 @@ export const commerceHandlers = [
   }),
 
   // ---- Checkout ----
+  // No guest orders (ADR-020): quote and place need a signed-in, verified account.
   http.post(apiPath("/api/v1/checkout/quote"), async ({ request }) => {
+    const signedIn = requireVerifiedBuyer();
+    if (signedIn) return signedIn;
     const body = (await request.json()) as QuoteBody;
     const problem = checkoutChecks(body);
     if (problem) return problem;
@@ -704,6 +719,8 @@ export const commerceHandlers = [
   }),
 
   http.post(apiPath("/api/v1/checkout"), async ({ request }) => {
+    const signedIn = requireVerifiedBuyer();
+    if (signedIn) return signedIn;
     const key = request.headers.get("Idempotency-Key");
     if (!key || !/^[A-Za-z0-9_-]{8,128}$/.test(key)) return err(400, "IDEMPOTENCY_KEY_REQUIRED", "Idempotency-Key header is required");
     const raw = await request.text();

@@ -1,5 +1,5 @@
 import type { APIRequestContext } from "@playwright/test";
-import { apiContext, expect, test } from "./fixtures";
+import { apiContext, expect, signInBuyer, stamp, test } from "./fixtures";
 
 /**
  * Stage 3 gate, full stack: real kritex-server (fake payment gateway, i.e. no RAZORPAY_KEY_ID) behind the
@@ -66,7 +66,9 @@ test.afterAll(async () => {
   await admin.dispose();
 });
 
-test("guest buys 2 variants with a coupon, pays, and the order is PAID with stock decremented", async ({ page }) => {
+test("customer buys 2 variants with a coupon, pays, and the order is PAID with stock decremented", async ({ page }) => {
+  // Orders need an account (ADR-020).
+  await signInBuyer(page.request, `e2e-buyer-${stamp()}@example.com`);
   await page.goto(`${BASE}/product/${slug}`);
   for (const size of ["M", "L"]) {
     await page.getByRole("button", { name: size, exact: true }).click();
@@ -84,7 +86,6 @@ test("guest buys 2 variants with a coupon, pays, and the order is PAID with stoc
   await expect(page.getByTestId("applied-coupon")).toBeVisible();
   await page.getByRole("button", { name: "Checkout" }).click();
 
-  await page.getByLabel("Email").fill("e2e-guest@example.com");
   await page.getByLabel("Mobile number").fill("98765 43210");
   await page.getByRole("button", { name: "Continue to Address" }).click();
   await page.getByLabel("Full name").fill("E2E Guest");

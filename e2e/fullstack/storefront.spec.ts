@@ -1,5 +1,5 @@
 import type { APIRequestContext } from "@playwright/test";
-import { API, adminApi, adminOrderByNumber, checkoutWithFakeGateway, createRetailProduct, expect, test, type CreatedProduct } from "./fixtures";
+import { API, adminApi, adminOrderByNumber, checkoutWithFakeGateway, createRetailProduct, expect, signInBuyer, stamp, test, type CreatedProduct } from "./fixtures";
 
 /**
  * QA-2: browse → filter → PDP → cart → guest checkout → confirmation, against the real API.
@@ -18,7 +18,9 @@ test.afterAll(async () => {
   await admin?.dispose();
 });
 
-test("guest browses, filters, buys from the PDP and lands on the confirmation page", async ({ page }) => {
+test("customer browses, filters, buys from the PDP and lands on the confirmation page", async ({ page }) => {
+  // Orders need an account (ADR-020): sign in first; browsing itself works signed out.
+  await signInBuyer(page.request, `e2e-browse-${stamp()}@example.com`);
   // Browse: all products → Load Bearing department → our sub-category chip.
   await page.goto("/products");
   await page.getByRole("button", { name: /Load Bearing/ }).click();
@@ -57,11 +59,11 @@ test("guest browses, filters, buys from the PDP and lands on the confirmation pa
   await page.getByRole("button", { name: "Checkout" }).click();
 
   // Guest checkout → fake gateway → confirmation.
-  const number = await checkoutWithFakeGateway(page, { guestEmail: "e2e-browse@example.com" });
+  const number = await checkoutWithFakeGateway(page);
   await expect(page.getByRole("heading", { name: "Thank you for your order" })).toBeVisible();
   await expect(page.getByTestId("order-number")).toHaveText(number);
-  // Guests get no "View Order" link (no account to view it in).
-  await expect(page.getByRole("link", { name: "View Order" })).toHaveCount(0);
+  // Every order belongs to an account (ADR-020): the confirmation links to it.
+  await expect(page.getByRole("link", { name: "View Order" })).toHaveAttribute("href", `/account/orders/${number}`);
 
   const order = await adminOrderByNumber(admin, number);
   expect(order.status).toBe("PAID");
@@ -79,16 +81,16 @@ test("guest browses, filters, buys from the PDP and lands on the confirmation pa
  *   E2E_RAZORPAY=1 RAZORPAY_KEY_ID=rzp_test_… RAZORPAY_KEY_SECRET=… RAZORPAY_WEBHOOK_SECRET=… npm run test:e2e -- storefront.spec.ts
  * Razorpay's hosted UI changes without notice; the selectors below follow the 2026 standard checkout (card → OTP "Success").
  */
-test("guest pays through Razorpay test mode", async ({ page }) => {
+test("customer pays through Razorpay test mode", async ({ page }) => {
   test.skip(process.env.E2E_RAZORPAY !== "1", "set E2E_RAZORPAY=1 and Razorpay test keys to run against real Checkout.js");
   test.setTimeout(120_000);
+  await signInBuyer(page.request, `e2e-razorpay-${stamp()}@example.com`);
 
   await page.goto(`/product/${product.slug}`);
   await page.getByRole("button", { name: "S", exact: true }).click();
   await page.getByRole("button", { name: /Add to Cart/ }).click();
   await page.getByRole("dialog").getByRole("button", { name: "Checkout" }).click();
 
-  await page.getByLabel("Email").fill("e2e-razorpay@example.com");
   await page.getByLabel("Mobile number").fill("98765 43210");
   await page.getByRole("button", { name: "Continue to Address" }).click();
   await page.getByLabel("Full name").fill("E2E Razorpay");

@@ -6988,7 +6988,20 @@ export interface operations {
                     "application/json": components["schemas"]["ErrorResponseDto"];
                 };
             };
-            /** @description PAYMENT_METHOD_NOT_ALLOWED: BANK_TRANSFER needs an approved B2B account */
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /**
+             * @description PAYMENT_METHOD_NOT_ALLOWED: BANK_TRANSFER needs an approved B2B account
+             *
+             *     EMAIL_NOT_VERIFIED: verify the account email first
+             */
             403: {
                 headers: {
                     [name: string]: unknown;
@@ -7059,6 +7072,24 @@ export interface operations {
             };
             /** @description VALIDATION_ERROR / BAD_REQUEST */
             400: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description UNAUTHORIZED: no session */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+            /** @description EMAIL_NOT_VERIFIED: verify the account email first */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

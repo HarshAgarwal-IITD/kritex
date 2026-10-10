@@ -141,9 +141,20 @@ export async function addSizesToCart(page: Page, slug: string, sizes: string[]) 
   }
 }
 
-/** /checkout as a guest or a signed-in user (new address), through to the fake gateway's Success. Returns the order number. */
-export async function checkoutWithFakeGateway(page: Page, opts: { guestEmail?: string; outcome?: "Success" | "Fail" } = {}) {
-  if (opts.guestEmail) await page.getByLabel("Email").fill(opts.guestEmail);
+/**
+ * Signs up `email`, opens the emailed verification link (which signs in) with `ctx`. Pass
+ * `page.request` to sign a browser page in: it shares the page's cookies. Orders need an account
+ * (no guest checkout, ADR-020).
+ */
+export async function signInBuyer(ctx: APIRequestContext, email = `e2e-buyer-${stamp()}@example.com`) {
+  await json(await ctx.post(`${API}/auth/sign-up/email`, { data: { name: "E2E Buyer", email, password: "Sup3r-secret-pass" } }));
+  const verified = await ctx.get(firstLink(await readMail(email, "verify-email")));
+  expect(verified.ok()).toBe(true);
+  return email;
+}
+
+/** /checkout as a signed-in user (new address), through to the fake gateway's Success. Returns the order number. */
+export async function checkoutWithFakeGateway(page: Page, opts: { outcome?: "Success" | "Fail" } = {}) {
   await page.getByLabel("Mobile number").fill("98765 43210");
   await page.getByRole("button", { name: "Continue to Address" }).click();
   await page.getByLabel("Full name").fill("E2E Buyer");

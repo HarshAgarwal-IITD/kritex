@@ -6,6 +6,7 @@ import { primaryButtonClass, secondaryButtonClass } from "@/components/shop/styl
 import { formatPaise } from "@/features/catalog/format";
 import { CartDrawerContext, type CartDrawerState } from "../drawer-context";
 import { useCart } from "../hooks";
+import { useCurrentUser } from "@/features/account/hooks";
 import CartLines from "./CartLines";
 
 /** Slide-over cart, opened after "Add to cart". The full cart (coupon, totals) lives at /cart. */
@@ -21,6 +22,7 @@ const CartDrawer = ({ open, setOpen }: CartDrawerState) => (
 const DrawerBody = ({ close }: { close: () => void }) => {
   const { data: cart, isPending, isError, refetch } = useCart();
   const navigate = useNavigate();
+  const { isSignedIn } = useCurrentUser();
   const go = (to: string) => {
     close();
     navigate(to);
@@ -75,7 +77,7 @@ const DrawerBody = ({ close }: { close: () => void }) => {
                 View Cart
               </button>
               <button type="button" onClick={() => go("/checkout")} className={primaryButtonClass} disabled={cart.hasIssues}>
-                Checkout
+                {isSignedIn ? "Checkout" : "Log In to Checkout"}
               </button>
             </div>
           </div>

@@ -110,14 +110,14 @@ describe("/cart", () => {
     await lines();
     const issues = screen.getAllByTestId("line-issue").map((e) => e.textContent);
     expect(issues).toEqual([expect.stringMatching(/Out of stock/), expect.stringMatching(/No longer available/)]);
-    expect(screen.getByRole("button", { name: "Checkout" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /Checkout$/ })).toBeDisabled();
     // Issue lines are excluded from the totals.
     expect(screen.getByTestId("totals-subtotal")).toHaveTextContent("1,299.00");
 
     fireEvent.click(screen.getByRole("button", { name: /Remove Tactical Combat Full Sleeve T-Shirt \(XXL\)/ }));
     await waitFor(() => expect(screen.getAllByTestId("cart-line")).toHaveLength(2));
     fireEvent.click(screen.getByRole("button", { name: /Remove Unavailable item/ }));
-    await waitFor(() => expect(screen.getByRole("button", { name: "Checkout" })).not.toBeDisabled());
+    await waitFor(() => expect(screen.getByRole("button", { name: /Checkout$/ })).not.toBeDisabled());
   });
 
   it("flags insufficient stock on a line", async () => {

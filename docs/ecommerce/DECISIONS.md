@@ -278,6 +278,15 @@ Done 2026-10-06: the untracked `server/` folder was moved to `../kritex-server` 
 - **Email verification** stays required for email/password sign-ups; it needs a mail provider in production (`RESEND_API_KEY`, or SMTP).
 - **Navbar:** Timeline link removed; Products ▾ / Clients / Track Order; account menu (initials → account, orders, quotes, log out) or "Log In" for guests; solid background once scrolled; mobile menu gains account links.
 
+
+## ADR-020: No guest orders
+**Status:** Accepted · 2026-10-11 (owner)
+
+- `POST /checkout/quote` and `POST /checkout` use `@RequireVerifiedEmail()` (401 without a session, 403 `EMAIL_NOT_VERIFIED`); the guard now lets it override a class-level `@Public()`. `POST /checkout/verify` and the Razorpay webhook stay public (signature-checked). Guests can still browse and build a cart; it merges into the account on sign-in.
+- Storefront: `/checkout` is behind `RequireAuth` (guests → `/login?next=/checkout`); cart and drawer buttons read "Log In to Checkout" for guests. Order emails come from the account, so every order belongs to a customer and shows in `/account/orders`.
+- Supersedes the guest-checkout parts of ADR-016. The public `/track` lookup (order number + email) stays.
+- `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` are read only by `prisma db seed`, never by the API; they are not needed on Render.
+
 ---
 
 ## Open questions

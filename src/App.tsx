@@ -60,7 +60,7 @@ export const AppRoutes = () => (
         <Route path="/products/:categorySlug" element={<Category />} />
         <Route path="/product/:id" element={<ProductDetail />} />
         <Route path="/cart" element={<CartPage />} />
-        <Route path="/checkout" element={<Checkout />} />
+        <Route path="/checkout" element={guard(<Checkout />)} />
         <Route path="/checkout/success/:number" element={<CheckoutSuccess />} />
         <Route path="/checkout/failure/:number" element={<CheckoutFailure />} />
         <Route path="/checkout/pending/:number" element={<CheckoutPending />} />

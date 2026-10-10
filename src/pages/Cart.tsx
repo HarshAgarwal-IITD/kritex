@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useCurrentUser } from "@/features/account/hooks";
 import { Lock, ShoppingBag } from "lucide-react";
 import ShopPage from "@/components/shop/ShopPage";
 import { FormError } from "@/components/shop/Field";
@@ -13,6 +14,8 @@ import TotalsSummary from "@/features/cart/components/TotalsSummary";
 const CartPage = () => {
   const { data: cart, isPending, isError, refetch } = useCart();
   const navigate = useNavigate();
+  // Orders need an account (ADR-020): guests log in first; their cart merges into the account.
+  const { isSignedIn } = useCurrentUser();
 
   return (
     <ShopPage title="Your Cart" eyebrow="Cart">
@@ -55,7 +58,7 @@ const CartPage = () => {
               onClick={() => navigate("/checkout")}
             >
               <Lock size={14} />
-              Checkout
+              {isSignedIn ? "Checkout" : "Log In to Checkout"}
             </button>
           </aside>
         </div>

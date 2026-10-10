@@ -47,10 +47,12 @@ test.afterAll(async () => {
 // ---------------------------------------------------------------------------------------------- helpers
 
 /** Signs up, follows the emailed verification link (which signs in), returns the signed-in context. */
-async function newCustomer(email = `e2e-sec-${stamp()}@example.com`) {
+async function newCustomer(email = `e2e-sec-${stamp()}@example.com`, name = "Sec Customer") {
   const ctx = await apiContext();
-  await json(await ctx.post(`${API}/auth/sign-up/email`, { data: { name: "Sec Customer", email, password: PASSWORD } }));
-  const res = await ctx.get(firstLink(await readMail(email, "verify-email")));
+  await json(await ctx.post(`${API}/auth/sign-up/email`, { data: { name, email, password: PASSWORD } }));
+  // The name may itself contain a URL (SEC-CSV), so pick the verification link explicitly.
+  const mail = await readMail(email, "verify-email");
+  const res = await ctx.get(mail.match(/https?:\/\/\S*verify-email\S*/)?.[0] ?? firstLink(mail));
   expect(res.ok()).toBe(true);
   const me = await json<{ email: string; role: string }>(await ctx.get(`${API}/me`));
   expect(me).toMatchObject({ email, role: "CUSTOMER" });
@@ -82,11 +84,11 @@ const address = (name = "Sec Buyer") => ({
 
 type Placed = { orderNumber: string; totals: { total: number }; razorpay: { orderId: string; amount: number } | null };
 
-/** A guest cart with `quantity` of the probe product (+ optional coupon), then POST /checkout. */
+/** A new customer's cart with `quantity` of the probe product (+ optional coupon), then POST /checkout (no guest orders, ADR-020). */
 async function guestCheckout(
   opts: { email?: string; quantity?: number; coupon?: string; body?: Record<string, unknown>; name?: string } = {},
 ) {
-  const ctx = await apiContext();
+  const ctx = await newCustomer(opts.email, opts.name);
   await json(await ctx.post(`${API}/cart/items`, { data: { variantId, quantity: opts.quantity ?? 1 } }));
   if (opts.coupon) await json(await ctx.post(`${API}/cart/coupon`, { data: { code: opts.coupon } }));
   const res = await ctx.post(`${API}/checkout`, {
@@ -226,7 +228,7 @@ test("SEC-WEBHOOK: forged Razorpay webhooks and verify calls can't mark an order
 });
 
 test("SEC-PRICE: client-sent prices and totals are ignored; a stale expectedTotal gets 409 PRICE_CHANGED", async () => {
-  const ctx = await apiContext();
+  const ctx = await newCustomer();
   const cart = await json<{ items: { unitPrice: number; lineTotal: number }[] }>(
     await ctx.post(`${API}/cart/items`, { data: { variantId, quantity: 2, price: 1, unitPrice: 1, lineTotal: 2 } }),
   );
