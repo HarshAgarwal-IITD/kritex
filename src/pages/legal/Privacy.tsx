@@ -15,6 +15,8 @@ const Privacy = () => (
     <dl>
       <dt>Account data</dt>
       <dd>Your name, email address, mobile number (if given) and password. The password is stored only as a secure hash. For business accounts, we also collect your organisation name, legal name and GSTIN.</dd>
+      <dt>Google sign-in</dt>
+      <dd>If you choose "Continue with Google", Google shares your name, email address (and that Google has verified it), profile picture and a Google account identifier with us. We use them only to create and sign in to your Kritex account. We do not receive your Google password and we do not access your Gmail, contacts, Drive or any other Google data. You can remove Kritex's access at any time in your Google Account under Security → Third-party connections.</dd>
       <dt>Order data</dt>
       <dd>The products, sizes and quantities you order, the prices paid, tax invoices, payment status and references, shipment and tracking details, and records of cancellations, exchanges and refunds.</dd>
       <dt>Address data</dt>
@@ -53,6 +55,7 @@ const Privacy = () => (
     </p>
     <ul>
       <li><strong>Razorpay</strong> processes payments and refunds.</li>
+      <li><strong>Google</strong> verifies your identity when you choose "Continue with Google".</li>
       <li><strong>Shiprocket and its courier partners</strong> receive your name, delivery address, phone number and the parcel details needed to deliver and track your order.</li>
       <li><strong><Ph k="emailProvider" /></strong> delivers transactional emails such as order, dispatch and account messages.</li>
       <li><strong><Ph k="hostingProvider" /></strong> hosts the Site, our servers, database and backups.</li>

@@ -27,6 +27,7 @@ const Terms = () => (
         unauthorised use.
       </li>
       <li>The information you give us (name, contact details, delivery address and, for business accounts, GSTIN and legal name) must be accurate and kept up to date.</li>
+      <li>You can sign in with your email and password, a one-time code sent to your email, or your Google account. If you use Google, the Google account's email address is your Kritex account email. Orders, quote requests and enquiries need a signed-in account with a verified email address.</li>
       <li>We may suspend or close an account that breaches these Terms, is used fraudulently, or provides false information.</li>
     </ul>
 

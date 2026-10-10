@@ -1,7 +1,7 @@
 /** Shared metadata for the /legal/* policy pages (used by the index page, the footer and SEO). */
 
 /** ISO date shown as "Last updated" on every policy page. Bump it whenever a policy changes. */
-export const LEGAL_LAST_UPDATED = "2026-10-06";
+export const LEGAL_LAST_UPDATED = "2026-10-11";
 
 /**
  * While true, every policy page shows the "Draft — pending legal review" banner.

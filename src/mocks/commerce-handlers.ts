@@ -378,6 +378,9 @@ const ensureCart = () => {
 // ---------------------------------------------------------------------------------------------
 // Helpers for /me
 
+/** RL-2: retail customers may have at most 10 of an item; approved B2B buyers 999. */
+const lineMax = () => (getMockSessionUser()?.role === "B2B_CUSTOMER" ? 999 : 10);
+
 /** null when the session user may check out; else the 401/403 response. */
 function requireVerifiedBuyer(): Response | null {
   const user = getMockSessionUser();
@@ -652,7 +655,7 @@ export const commerceHandlers = [
     if (!purchasableNow(found.product)) return err(422, "NOT_PURCHASABLE", "This product can't be bought online");
     const existing = cartLines.find((l) => l.variantId === body.variantId);
     const next = (existing?.quantity ?? 0) + quantity;
-    if (next > 999) return err(422, "QUANTITY_LIMIT_EXCEEDED", "Max 999 per line");
+    if (next > lineMax()) return err(422, "QUANTITY_LIMIT_EXCEEDED", `At most ${lineMax()} per item`, { variantId: body.variantId, max: lineMax() });
     const available = stockOf(body.variantId);
     if (next > available) return err(409, "INSUFFICIENT_STOCK", "Not enough stock", { available, requested: next });
     ensureCart();
@@ -667,7 +670,7 @@ export const commerceHandlers = [
     if (!line) return err(404, "NOT_FOUND", "Line not found");
     const quantity = body.quantity ?? -1;
     if (!Number.isInteger(quantity) || quantity < 0) return err(400, "VALIDATION_ERROR", "quantity must be >= 0");
-    if (quantity > 999) return err(422, "QUANTITY_LIMIT_EXCEEDED", "Max 999 per line");
+    if (quantity > lineMax()) return err(422, "QUANTITY_LIMIT_EXCEEDED", `At most ${lineMax()} per item`, { variantId: params.variantId, max: lineMax() });
     if (quantity === 0) cartLines = cartLines.filter((l) => l !== line);
     else {
       // Lowering a quantity is always allowed; raising it is checked against stock.

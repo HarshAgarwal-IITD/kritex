@@ -13,6 +13,8 @@ export function issueMessage(line: Pick<CartLine, "issue">): string | null {
       return "No longer available. Remove it to continue.";
     case "NOT_PURCHASABLE":
       return "Can't be bought online. Remove it and send us an enquiry instead.";
+    case "QUANTITY_LIMIT":
+      return 'Over the per-item limit. Reduce the quantity, or use "Add to Quote" for larger orders.';
     default:
       return null;
   }
@@ -61,8 +63,10 @@ export function cartMutationMessage(err: unknown): string {
           : "This option is out of stock."
         : "Not enough stock for that quantity.";
     }
-    case "QUANTITY_LIMIT_EXCEEDED":
-      return "You can order up to 999 of an item online. Send an enquiry for larger quantities.";
+    case "QUANTITY_LIMIT_EXCEEDED": {
+      const max = (err.details as { max?: unknown } | undefined)?.max;
+      return `You can buy up to ${typeof max === "number" ? max : 10} of an item online. For more, use "Add to Quote".`;
+    }
     case "OUT_OF_STOCK":
       return "This option is out of stock.";
     case "NOT_PURCHASABLE":

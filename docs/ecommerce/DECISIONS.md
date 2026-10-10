@@ -298,6 +298,15 @@ Done 2026-10-06: the untracked `server/` folder was moved to `../kritex-server` 
 - **Password fields** (storefront `Field type="password"`, admin login) have a show / hide toggle.
 - **Staff alert for new quote requests:** on `quote.requested` the API emails `STAFF_ALERT_EMAILS` (default `kritex.jdp@gmail.com`, comma-separated, empty = off) with the contact, lines and a link to `/admin/quotes/:id`; once per quote and recipient (Notification table). Contact-form enquiries have no alert yet.
 
+
+## ADR-022: RL-2 stock-hold limits; enquiry alerts; legal pages updated
+**Status:** Accepted · 2026-10-11 (owner: "4–5 unpaid orders is good", then "do your part")
+
+- **RL-2 (SEC-3) limits**, all env-configurable: `RETAIL_MAX_LINE_QUANTITY` = 10 per variant for retail customers (cart add/update → 422 `QUANTITY_LIMIT_EXCEEDED { max }`; an existing line above it is a `QUANTITY_LIMIT` cart issue that blocks checkout); approved B2B keep 999. `MAX_UNPAID_ORDERS` = 5 open `PENDING_PAYMENT` orders per retail account → 429 `TOO_MANY_UNPAID_ORDERS`. `ORDER_PAYMENT_TIMEOUT_MINUTES` default 15 (was 30). There is no per-IP cap: guest orders no longer exist (ADR-020), so the per-account cap covers it.
+- **Contact enquiries** emit `query.created`; NotificationsService emails `STAFF_ALERT_EMAILS` with **Reply-To = the customer** (`MailMessage.replyTo`, Resend `reply_to`).
+- **Vercel:** the `/api` rewrite is removed (the storefront calls `api.kritex.in`).
+- **Legal pages:** privacy policy covers Google sign-in (name, email, picture, Google ID; no other Google data) and lists Google as a processor; terms describe the sign-in methods and that orders/enquiries need a verified account. Known placeholders filled: email provider Resend, hosting Render/Neon/Vercel/Cloudflare, shipping ₹99 (free from ₹999). Still a draft pending legal review. URLs for the Google consent screen: `https://www.kritex.in/legal/privacy`, `https://www.kritex.in/legal/terms`.
+
 ---
 
 ## Open questions

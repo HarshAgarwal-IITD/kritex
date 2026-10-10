@@ -15,13 +15,13 @@ export const PLACEHOLDERS = {
   grievanceOfficerEmail: "[GRIEVANCE OFFICER EMAIL]",
   grievanceOfficerPhone: "[GRIEVANCE OFFICER PHONE]",
   returnsAddress: "[RETURNS / WAREHOUSE ADDRESS]",
-  flatShippingFee: "[₹Y]",
-  freeShippingThreshold: "[₹X]",
+  flatShippingFee: "₹99",
+  freeShippingThreshold: "₹999",
   dispatchTime: "[N] business days",
   deliveryTime: "[N–M] business days",
   exchangeShippingPayer: "[WHO PAYS RETURN SHIPPING FOR SIZE EXCHANGES]",
-  emailProvider: "[EMAIL PROVIDER]",
-  hostingProvider: "[HOSTING / CLOUD PROVIDER]",
+  emailProvider: "Resend",
+  hostingProvider: "Render, Neon, Vercel and Cloudflare",
 } as const;
 
 export type PlaceholderKey = keyof typeof PLACEHOLDERS;

@@ -2119,10 +2119,10 @@ export interface components {
                 } | null;
                 inStock: boolean;
                 /**
-                 * @description OUT_OF_STOCK: nothing available · INSUFFICIENT_STOCK: fewer available than requested · UNAVAILABLE: variant/product inactive or archived · NOT_PURCHASABLE: sale channel does not allow this viewer to buy
+                 * @description OUT_OF_STOCK: nothing available · INSUFFICIENT_STOCK: fewer available than requested · UNAVAILABLE: variant/product inactive or archived · NOT_PURCHASABLE: sale channel does not allow this viewer to buy · QUANTITY_LIMIT: more than the per-item limit for retail customers (RL-2; request a quote for more)
                  * @enum {string|null}
                  */
-                issue: "OUT_OF_STOCK" | "INSUFFICIENT_STOCK" | "UNAVAILABLE" | "NOT_PURCHASABLE" | null;
+                issue: "OUT_OF_STOCK" | "INSUFFICIENT_STOCK" | "UNAVAILABLE" | "NOT_PURCHASABLE" | "QUANTITY_LIMIT" | null;
                 /**
                  * @description Integer paise (₹1 = 100)
                  * @example 129900

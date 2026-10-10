@@ -51,7 +51,7 @@ describe("legal pages", () => {
 
   it("policy pages show the last-updated date", () => {
     renderAt("/legal/terms");
-    expect(screen.getByText("6 October 2026").closest("time")).toHaveAttribute("dateTime", "2026-10-06");
+    expect(screen.getByText("11 October 2026").closest("time")).toHaveAttribute("dateTime", "2026-10-11");
   });
 
   it("the index lists every policy", () => {

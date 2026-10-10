@@ -54,6 +54,8 @@ export function checkoutErrorMessage(err: ApiError): string {
       return "Some items in your cart are no longer available in the quantity you chose. Review your cart to continue.";
     case "OUT_OF_STOCK":
       return "Sorry, an item just went out of stock. Review your cart to continue.";
+    case "TOO_MANY_UNPAID_ORDERS":
+      return "You have several unpaid orders. Pay or cancel one in My Account → Orders (or wait 15 minutes for them to expire), then try again.";
     case "PRICE_CHANGED":
       return "Prices changed since you reviewed your order. Check the new total and place the order again.";
     case "INVALID_GSTIN":

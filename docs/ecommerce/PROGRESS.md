@@ -322,7 +322,7 @@ Final checks: **server** lint, typecheck, build, `openapi:check` OK; **364 unit 
 | 8 | **Catalogue data:** prices, HSN, GST, stock, weights in `kritex-server/prisma/seed/product-data-template.csv`; which products are RETAIL / B2B-only / enquiry-only (Q1) | The live catalogue is enquiry-only with no prices |
 | 9 | **Seller + legal:** `SELLER_LEGAL_NAME`, `SELLER_GSTIN`, `SELLER_ADDRESS`, `BUSINESS_STATE_CODE` on Render; fill `src/pages/legal/placeholders.ts`; legal review of `/legal/*` | Printed on GST invoices; needed for KYC |
 | 10 | **CA review** of GST rules and the invoice format (questions a–f in ADR-015 / earlier list) | Tax correctness |
-| 11 | Confirm **RL-2** limits (10/variant, 5 unpaid orders per email, 10 per IP, 15-min hold, B2B exempt) | Stops stock hoarding |
+| 11 | ~~Confirm RL-2 limits~~ ✅ built 2026-10-11 (ADR-022); adjust via Render env if needed | — |
 | 12 | Small: field duty jacket size "XX" (typo, correct size?); which categories are "coming soon" (Base Layers) | Catalogue copy |
 | 13 | Optional: Render Auto-Deploy → "After CI Checks Pass"; UptimeRobot on `https://api.kritex.in/api/v1/health` | Safer deploys; free-tier sleep |
 

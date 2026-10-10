@@ -165,3 +165,12 @@ describe("/cart", () => {
     expect(screen.getByTestId("totals-total")).toHaveTextContent(new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR" }).format((SHIRT_PRICE) / 100));
   });
 });
+
+describe("RL-2 messages", () => {
+  it("explains the per-item limit and the over-limit cart line", async () => {
+    const { cartMutationMessage, issueMessage } = await import("./messages");
+    const { ApiError } = await import("@/lib/api/client");
+    expect(cartMutationMessage(new ApiError("QUANTITY_LIMIT_EXCEEDED", "x", 422, { max: 10 }))).toContain("up to 10 of an item");
+    expect(issueMessage({ issue: "QUANTITY_LIMIT" })).toContain("per-item limit");
+  });
+});
