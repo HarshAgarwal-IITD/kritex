@@ -15,6 +15,7 @@ import { CancelOrderDialog, ReturnRequestDialog } from "@/features/account/compo
 import PayNowButton from "@/features/account/components/PayNowButton";
 import { useInvoiceLink, useMyOrder } from "@/features/account/hooks";
 import { formatDate, formatDateTime } from "@/features/account/orders";
+import { DetailSkeleton } from "@/components/shop/Loaders";
 
 /** `/account/orders/:number` — items, totals, addresses, timeline, shipments, invoice, cancel / return. */
 const OrderDetail = () => {
@@ -32,7 +33,7 @@ const OrderDetail = () => {
     return (
       <AccountLayout title={`Order ${number}`} crumbs={crumbs}>
         {isPending ? (
-          <div className="h-64 animate-pulse bg-muted/40" data-skeleton aria-label="Loading order" />
+          <DetailSkeleton label="Loading order" />
         ) : error.status === 404 ? (
           <QueryError message="Order not found." />
         ) : (

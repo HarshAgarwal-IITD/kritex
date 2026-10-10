@@ -53,7 +53,7 @@ describe("ContactSection", () => {
   it("lets guests fill the form; Submit saves it and goes to log in (sent after sign-in)", async () => {
     resetMocks(null);
     renderSection();
-    const button = await screen.findByRole("button", { name: "Log In & Submit" });
+    const button = await screen.findByRole("button", { name: "Submit Inquiry" });
     fillForm({ organization: "Army HQ" });
     fireEvent.click(button);
 

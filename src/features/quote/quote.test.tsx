@@ -44,13 +44,14 @@ describe("RFQ (B2B-2)", () => {
   it("a guest fills the RFQ, logs in, and it is sent automatically", async () => {
     quoteCart.add({ productId: "prd_rapid-20-tactical-backpack", productSlug: "rapid-20-tactical-backpack", productName: "Rapid 20", image: null, quantity: 5 });
     renderApp("/quote");
-    const send = await screen.findByRole("button", { name: "Log In & Send Request" });
+    const send = await screen.findByRole("button", { name: "Send Quote Request" });
     type("Your name", "Gita Guest");
     type("Company / organisation", "Guest Traders");
     type("Mobile number", "9876543210");
     fireEvent.click(send);
 
-    await waitFor(() => expect(location()).toBe("/login?next=%2Faccount%2Fquotes"));
+    // Same button as for signed-in users; guests go to log in and come back to /quote.
+    await waitFor(() => expect(location()).toBe("/login?next=%2Fquote"));
     expect(getB2bOpsMockDb().quotes.find((q) => q.contactName === "Gita Guest")).toBeUndefined();
 
     await screen.findByRole("heading", { name: "Log In" });
@@ -64,7 +65,8 @@ describe("RFQ (B2B-2)", () => {
       email: "customer@example.com",
       organization: "Guest Traders",
     });
-    await waitFor(() => expect(location()).toBe("/account/quotes"));
+    // Sent automatically after sign-in, then the customer lands on the new quote.
+    await waitFor(() => expect(location()).toMatch(/^\/account\/quotes\/KTQ-\d+$/));
     expect(quoteCart.get()).toEqual([]);
     expect(localStorage.getItem("kritex_pending_enquiry")).toBeNull();
   });

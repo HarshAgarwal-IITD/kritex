@@ -22,6 +22,7 @@ import GstInvoiceSection, { type GstDetails } from "@/features/checkout/componen
 import OrderSummary, { type SummaryLine } from "@/features/checkout/components/OrderSummary";
 import FakePaymentDialog from "@/features/checkout/components/FakePaymentDialog";
 import { cn } from "@/lib/utils";
+import { DetailSkeleton } from "@/components/shop/Loaders";
 
 type Step = "contact" | "address" | "review";
 
@@ -74,9 +75,7 @@ const Checkout = () => {
   if (cart.isPending || account.isPending) {
     return (
       <ShopPage title="Checkout" eyebrow="Secure checkout" crumbs={CRUMBS}>
-        <p className="font-display text-xs text-muted-foreground" data-skeleton>
-          Loading…
-        </p>
+        <DetailSkeleton label="Loading checkout" rows={2} />
       </ShopPage>
     );
   }

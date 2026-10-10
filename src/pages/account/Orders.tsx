@@ -9,6 +9,7 @@ import AccountLayout from "@/features/account/components/AccountLayout";
 import StatusBadge from "@/features/account/components/StatusBadge";
 import { ORDERS_PAGE_SIZE, useMyOrders } from "@/features/account/hooks";
 import { formatDate } from "@/features/account/orders";
+import { ListSkeleton } from "@/components/shop/Loaders";
 
 /** `/account/orders` */
 const Orders = () => {
@@ -19,11 +20,7 @@ const Orders = () => {
   return (
     <AccountLayout title="Orders">
       {isPending ? (
-        <div className="space-y-3" data-skeleton aria-label="Loading orders">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="h-20 animate-pulse bg-muted/40" />
-          ))}
-        </div>
+        <ListSkeleton label="Loading orders" thumbnail={false} />
       ) : isError ? (
         <QueryError message="Couldn't load your orders." onRetry={() => refetch()} />
       ) : data.items.length === 0 ? (

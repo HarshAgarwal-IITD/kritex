@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { CheckCircle2, Loader2, LogIn, Send, X } from "lucide-react";
+import { CheckCircle2, Loader2, Send, X } from "lucide-react";
 import ShopPage from "@/components/shop/ShopPage";
 import { Field, FormError } from "@/components/shop/Field";
 import { fieldClass, labelClass, panelClass, primaryButtonClass, secondaryButtonClass, sectionTitleClass } from "@/components/shop/styles";
@@ -14,6 +14,7 @@ import { lineKey, MAX_QUOTE_QUANTITY, quoteCart, useQuoteCart } from "@/features
 import { quoteErrorMessage, useCreateQuote } from "@/features/quote/hooks";
 import { savePendingEnquiry } from "@/features/enquiry/pending";
 import type { CreatedQuote, CreateQuoteInput, QuoteCartLine } from "@/features/quote/types";
+import { FormSkeleton } from "@/components/shop/Loaders";
 
 const CRUMBS = [{ label: "Home", to: "/" }, { label: "Products", to: "/products" }, { label: "Request a Quote" }];
 
@@ -147,8 +148,8 @@ const RfqPanel = (props: RfqProps) => {
   const { user, isPending } = useCurrentUser();
   if (isPending) {
     return (
-      <div className={panelClass} aria-busy="true">
-        <p className="font-display text-xs text-muted-foreground">Loading…</p>
+      <div className={panelClass}>
+        <FormSkeleton label="Loading quote form" fields={5} />
       </div>
     );
   }
@@ -197,7 +198,7 @@ const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string | null }) 
     };
     if (!email) {
       savePendingEnquiry({ kind: "quote", body });
-      navigate(`/login?next=${encodeURIComponent("/account/quotes")}`);
+      navigate(`/login?next=${encodeURIComponent("/quote")}`);
       return;
     }
     create.mutate(body, {
@@ -211,15 +212,11 @@ const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string | null }) 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} noValidate className={`${panelClass} relative space-y-5`} aria-label="Quote request">
       <h2 className={sectionTitleClass}>Your details</h2>
-      <p className="font-body text-xs text-muted-foreground -mt-2">
-        {email ? (
-          <>
-            We'll send the quote to <span className="text-foreground">{email}</span>.
-          </>
-        ) : (
-          "You'll log in or create an account next. Your request is sent as soon as you're signed in, and the quote goes to your account email."
-        )}
-      </p>
+      {email && (
+        <p className="font-body text-xs text-muted-foreground -mt-2">
+          We'll send the quote to <span className="text-foreground">{email}</span>.
+        </p>
+      )}
       <Field label="Your name" autoComplete="name" error={errors.contactName?.message} {...form.register("contactName")} />
       <Field label="Company / organisation" autoComplete="organization" error={errors.organization?.message} {...form.register("organization")} />
       <Field
@@ -260,8 +257,8 @@ const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string | null }) 
       </div>
       {create.isError && <FormError>{quoteErrorMessage(create.error)}</FormError>}
       <button type="submit" className={`${primaryButtonClass} w-full`} disabled={create.isPending}>
-        {create.isPending ? <Loader2 size={14} className="animate-spin" /> : email ? <Send size={14} /> : <LogIn size={14} />}
-        {email ? "Send Quote Request" : "Log In & Send Request"}
+        {create.isPending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
+        Send Quote Request
       </button>
     </form>
   );

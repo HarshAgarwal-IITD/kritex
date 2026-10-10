@@ -6,8 +6,8 @@ import { primaryButtonClass, secondaryButtonClass } from "@/components/shop/styl
 import { formatPaise } from "@/features/catalog/format";
 import { CartDrawerContext, type CartDrawerState } from "../drawer-context";
 import { useCart } from "../hooks";
-import { useCurrentUser } from "@/features/account/hooks";
 import CartLines from "./CartLines";
+import { ListSkeleton } from "@/components/shop/Loaders";
 
 /** Slide-over cart, opened after "Add to cart". The full cart (coupon, totals) lives at /cart. */
 const CartDrawer = ({ open, setOpen }: CartDrawerState) => (
@@ -22,7 +22,6 @@ const CartDrawer = ({ open, setOpen }: CartDrawerState) => (
 const DrawerBody = ({ close }: { close: () => void }) => {
   const { data: cart, isPending, isError, refetch } = useCart();
   const navigate = useNavigate();
-  const { isSignedIn } = useCurrentUser();
   const go = (to: string) => {
     close();
     navigate(to);
@@ -39,7 +38,7 @@ const DrawerBody = ({ close }: { close: () => void }) => {
 
         <div className="flex-1 overflow-y-auto px-6">
           {isPending ? (
-            <p className="py-10 font-display text-xs text-muted-foreground">Loading…</p>
+            <ListSkeleton label="Loading cart" rows={2} className="mt-4" />
           ) : isError ? (
             <div className="py-10">
               <p className="font-display text-xs text-muted-foreground">Couldn't load your cart.</p>
@@ -77,7 +76,7 @@ const DrawerBody = ({ close }: { close: () => void }) => {
                 View Cart
               </button>
               <button type="button" onClick={() => go("/checkout")} className={primaryButtonClass} disabled={cart.hasIssues}>
-                {isSignedIn ? "Checkout" : "Log In to Checkout"}
+                Checkout
               </button>
             </div>
           </div>

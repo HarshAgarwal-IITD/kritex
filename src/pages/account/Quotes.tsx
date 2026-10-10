@@ -8,6 +8,7 @@ import AccountLayout from "@/features/account/components/AccountLayout";
 import { formatDate } from "@/features/account/orders";
 import QuoteStatusBadge from "@/features/quote/components/QuoteStatusBadge";
 import { useMyQuotes } from "@/features/quote/hooks";
+import { ListSkeleton } from "@/components/shop/Loaders";
 
 const PAGE_SIZE = 20;
 
@@ -20,11 +21,7 @@ const Quotes = () => {
   return (
     <AccountLayout title="Quotes">
       {isPending ? (
-        <div className="space-y-3" data-skeleton aria-label="Loading quotes">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="h-20 animate-pulse bg-muted/40" />
-          ))}
-        </div>
+        <ListSkeleton label="Loading quotes" thumbnail={false} />
       ) : isError ? (
         <QueryError message="Couldn't load your quotes." onRetry={() => refetch()} />
       ) : data.items.length === 0 ? (

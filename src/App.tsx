@@ -22,6 +22,7 @@ import CartPage from "./pages/Cart.tsx";
 import { CartDrawerProvider } from "./features/cart/components/CartDrawer";
 import PendingEnquirySender from "./features/enquiry/PendingEnquirySender";
 import RequireAuth from "./features/account/components/RequireAuth";
+import { PageLoader } from "@/components/shop/Loaders";
 
 // Checkout, auth and account pages are split out of the main bundle.
 const Checkout = lazy(() => import("./pages/Checkout.tsx"));
@@ -46,7 +47,7 @@ const TrackOrder = lazy(() => import("./pages/Track.tsx").then((m) => ({ default
 const guard = (el: JSX.Element) => <RequireAuth>{el}</RequireAuth>;
 
 /** Blank page-height placeholder while a lazy route loads (keeps the dark background, no layout jump). */
-const RouteFallback = () => <div className="min-h-screen bg-background" />;
+const RouteFallback = PageLoader;
 
 /** Every route plus the cart drawer. Exported so tests can mount it inside a MemoryRouter. */
 export const AppRoutes = () => (

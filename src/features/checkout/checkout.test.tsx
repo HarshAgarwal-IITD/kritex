@@ -52,7 +52,7 @@ describe("checkout without saved addresses (fake gateway)", () => {
     seedMockCart([{ variantId: SHIRT_M, quantity: 1 }]);
     renderApp("/cart");
     await screen.findAllByTestId("cart-line");
-    fireEvent.click(screen.getByRole("button", { name: /Log In to Checkout/ }));
+    fireEvent.click(screen.getByRole("button", { name: /^Checkout$/ }));
     await waitFor(() => expect(screen.getByTestId("location")).toHaveTextContent("/login?next=%2Fcheckout"));
   });
 

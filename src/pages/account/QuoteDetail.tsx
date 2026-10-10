@@ -19,6 +19,7 @@ import QuoteStatusBadge from "@/features/quote/components/QuoteStatusBadge";
 import { newIdempotencyKey, quoteErrorMessage, useAcceptQuote, useMyQuote } from "@/features/quote/hooks";
 import { isQuoteExpired } from "@/features/quote/status";
 import type { AcceptQuoteInput, QuoteDetail as QuoteDetailDto } from "@/features/quote/types";
+import { DetailSkeleton } from "@/components/shop/Loaders";
 
 const PAYMENT_LABELS: Record<PaymentMethod, { title: string; detail: string }> = {
   RAZORPAY: { title: "Pay online", detail: "UPI, cards, net banking and wallets via Razorpay." },
@@ -40,7 +41,7 @@ const QuoteDetail = () => {
     return (
       <AccountLayout title={`Quote ${number}`} crumbs={crumbs}>
         {isPending ? (
-          <div className="h-64 animate-pulse bg-muted/40" data-skeleton aria-label="Loading quote" />
+          <DetailSkeleton label="Loading quote" />
         ) : error.status === 404 ? (
           <QueryError message="Quote not found." />
         ) : (

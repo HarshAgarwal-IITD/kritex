@@ -1,5 +1,4 @@
 import { Link, useNavigate } from "react-router-dom";
-import { useCurrentUser } from "@/features/account/hooks";
 import { Lock, ShoppingBag } from "lucide-react";
 import ShopPage from "@/components/shop/ShopPage";
 import { FormError } from "@/components/shop/Field";
@@ -10,21 +9,17 @@ import { appliedCoupon } from "@/features/cart/types";
 import CartLines from "@/features/cart/components/CartLines";
 import CouponForm from "@/features/cart/components/CouponForm";
 import TotalsSummary from "@/features/cart/components/TotalsSummary";
+import { DetailSkeleton } from "@/components/shop/Loaders";
 
 const CartPage = () => {
   const { data: cart, isPending, isError, refetch } = useCart();
   const navigate = useNavigate();
-  // Orders need an account (ADR-020): guests log in first; their cart merges into the account.
-  const { isSignedIn } = useCurrentUser();
+
 
   return (
     <ShopPage title="Your Cart" eyebrow="Cart">
       {isPending ? (
-        <div className="space-y-4" data-skeleton aria-label="Loading cart">
-          {[0, 1].map((i) => (
-            <div key={i} className="h-24 animate-pulse bg-muted/40" />
-          ))}
-        </div>
+        <DetailSkeleton label="Loading cart" rows={2} />
       ) : isError ? (
         <QueryError message="Couldn't load your cart." onRetry={() => refetch()} />
       ) : cart.items.length === 0 ? (
@@ -58,7 +53,7 @@ const CartPage = () => {
               onClick={() => navigate("/checkout")}
             >
               <Lock size={14} />
-              {isSignedIn ? "Checkout" : "Log In to Checkout"}
+              Checkout
             </button>
           </aside>
         </div>

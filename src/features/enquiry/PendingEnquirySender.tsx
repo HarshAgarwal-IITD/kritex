@@ -40,9 +40,8 @@ const PendingEnquirySender = () => {
         if (enquiry.kind === "quote") {
           quoteCart.clear();
           void qc.invalidateQueries({ queryKey: quoteKeys.mine });
-          toast.success(`Quote request ${quoteNumber} sent. We'll email the quote to ${user.email}.`, {
-            action: { label: "View", onClick: () => navigate(`/account/quotes/${encodeURIComponent(quoteNumber!)}`) },
-          });
+          toast.success(`Quote request ${quoteNumber} sent. We'll email the quote to ${user.email}.`);
+          navigate(`/account/quotes/${encodeURIComponent(quoteNumber!)}`, { replace: true });
         } else {
           toast.success(`Your enquiry has been sent. Our team will reply to ${user.email}.`);
         }

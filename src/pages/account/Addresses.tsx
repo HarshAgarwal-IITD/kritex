@@ -11,6 +11,7 @@ import type { SavedAddress } from "@/features/account/types";
 import AddressForm from "@/features/checkout/components/AddressForm";
 import { addressLines, toAddressInput, toFormDefaults } from "@/features/checkout/address";
 import { formatPhone } from "@/features/checkout/india";
+import { ListSkeleton } from "@/components/shop/Loaders";
 
 type Editing = { mode: "new" } | { mode: "edit"; address: SavedAddress } | null;
 
@@ -90,7 +91,7 @@ const Addresses = () => {
         </button>
       </div>
       {isPending ? (
-        <div className="h-32 animate-pulse bg-muted/40" data-skeleton aria-label="Loading addresses" />
+        <ListSkeleton label="Loading addresses" rows={2} thumbnail={false} />
       ) : isError ? (
         <QueryError message="Couldn't load your addresses." onRetry={() => refetch()} />
       ) : data.length === 0 ? (

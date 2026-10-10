@@ -124,15 +124,11 @@ const ContactSection = () => {
                   />
                 </div>
               </div>
-              <p className="font-body text-xs text-muted-foreground">
-                {user ? (
-                  <>
-                    We'll reply to <span className="text-foreground">{user.email}</span>.
-                  </>
-                ) : (
-                  "You'll log in or create an account next. Your inquiry is sent as soon as you're signed in, and we reply to your account email."
-                )}
-              </p>
+              {user && (
+                <p className="font-body text-xs text-muted-foreground">
+                  We'll reply to <span className="text-foreground">{user.email}</span>.
+                </p>
+              )}
               <div>
                 <label className="font-display text-[10px] text-muted-foreground block mb-2">Requirements</label>
                 <textarea
@@ -145,7 +141,7 @@ const ContactSection = () => {
                 />
               </div>
               <button type="submit" disabled={isSubmitting || isPending} className={buttonClass}>
-                {isSubmitting ? "Submitting..." : user || isPending ? "Submit Inquiry" : "Log In & Submit"}
+                {isSubmitting ? "Submitting..." : "Submit Inquiry"}
               </button>
             </form>
           </motion.div>

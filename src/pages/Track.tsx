@@ -12,6 +12,7 @@ import { formatDate, formatDateTime } from "@/features/account/orders";
 import QueryError from "@/features/catalog/components/QueryError";
 import ShipmentCard from "@/features/quote/components/ShipmentCard";
 import { useOrderTracking } from "@/features/quote/hooks";
+import { ListSkeleton } from "@/components/shop/Loaders";
 
 /** Router state for links into the tracking page (keeps the email out of the URL). */
 export interface TrackState {
@@ -86,7 +87,7 @@ export const TrackOrder = () => {
   if (tracking.isPending) {
     return (
       <ShopPage title={`Track ${number}`} eyebrow="Order status" crumbs={crumbs(number)}>
-        <div className="h-64 animate-pulse bg-muted/40" data-skeleton aria-label="Loading tracking" />
+        <ListSkeleton label="Loading tracking" rows={4} thumbnail={false} />
       </ShopPage>
     );
   }

@@ -73,6 +73,11 @@ export default {
         sm: "calc(var(--radius) - 1px)",
       },
       keyframes: {
+        // Indeterminate bar under the page loader (src/components/shop/Loaders.tsx).
+        "loader-slide": {
+          "0%": { transform: "translateX(-100%)" },
+          "100%": { transform: "translateX(300%)" },
+        },
         "accordion-down": {
           from: { height: "0" },
           to: { height: "var(--radix-accordion-content-height)" },

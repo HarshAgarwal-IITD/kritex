@@ -3,6 +3,7 @@ import { Navigate, useLocation } from "react-router-dom";
 import ShopPage from "@/components/shop/ShopPage";
 import QueryError from "@/features/catalog/components/QueryError";
 import { useCurrentUser } from "../hooks";
+import { ListSkeleton } from "@/components/shop/Loaders";
 
 /** Signed-in customers only; guests go to `/login?next=<here>`. */
 const RequireAuth = ({ children }: { children: ReactNode }) => {
@@ -12,9 +13,7 @@ const RequireAuth = ({ children }: { children: ReactNode }) => {
   if (isPending) {
     return (
       <ShopPage title="Your Account" eyebrow="Account">
-        <p className="font-display text-xs text-muted-foreground" data-skeleton aria-label="Loading account">
-          Loading…
-        </p>
+        <ListSkeleton label="Loading account" thumbnail={false} />
       </ShopPage>
     );
   }
