@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ClipboardList, LogOut, Menu, Package, ShoppingBag, User, X } from "lucide-react";
+import { ChevronDown, ClipboardList, LayoutDashboard, LogOut, Menu, Package, ShoppingBag, User, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import {
   DropdownMenu,
@@ -27,6 +27,9 @@ const countBadge =
   "absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-display text-[9px] text-primary-foreground tabular";
 const iconLink = "relative text-muted-foreground hover:text-primary transition-colors duration-300";
 const navText = "font-display text-xs transition-colors duration-300";
+
+/** Staff and admins get a link into the admin app from the storefront. */
+const isStaff = (role: string | undefined) => role === "STAFF" || role === "ADMIN";
 
 const initials = (name: string) =>
   name
@@ -69,6 +72,16 @@ const AccountMenu = () => {
           <p className="truncate text-xs text-muted-foreground">{user.email}</p>
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
+        {isStaff(user.role) && (
+          <>
+            <DropdownMenuItem asChild className="font-display text-xs text-primary">
+              <Link to="/admin">
+                <LayoutDashboard size={14} /> Admin Dashboard
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+          </>
+        )}
         <DropdownMenuItem asChild className="font-display text-xs">
           <Link to="/account">
             <User size={14} /> My Account
@@ -360,6 +373,11 @@ const Navbar = () => {
                       <p className="text-sm text-foreground">{user.name}</p>
                       <p className="text-xs text-muted-foreground">{user.email}</p>
                     </div>
+                    {isStaff(user.role) && (
+                      <Link to="/admin" onClick={() => setOpen(false)} className="font-display text-sm text-primary">
+                        Admin Dashboard
+                      </Link>
+                    )}
                     <Link to="/account" onClick={() => setOpen(false)} className="font-display text-sm text-muted-foreground hover:text-primary">
                       My Account
                     </Link>

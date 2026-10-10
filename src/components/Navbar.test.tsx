@@ -27,6 +27,14 @@ describe("Navbar", () => {
     expect(await screen.findByRole("menuitem", { name: /Orders/ })).toHaveAttribute("href", "/account/orders");
     expect(screen.getByRole("menuitem", { name: /Quotes/ })).toHaveAttribute("href", "/account/quotes");
     expect(screen.getByRole("menuitem", { name: /Log Out/ })).toBeInTheDocument();
+    expect(screen.queryByRole("menuitem", { name: /Admin Dashboard/ })).toBeNull();
+  });
+
+  it("links admins and staff to the admin dashboard", async () => {
+    resetMocks("admin@kritex.in");
+    renderRoute(<Navbar />);
+    fireEvent.keyDown(await screen.findByRole("button", { name: "Account menu" }), { key: "Enter" });
+    expect(await screen.findByRole("menuitem", { name: /Admin Dashboard/ })).toHaveAttribute("href", "/admin");
   });
 
   it("lists API categories in the mobile products menu, marking empty ones as coming soon", async () => {
