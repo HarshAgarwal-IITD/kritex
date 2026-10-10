@@ -314,9 +314,9 @@ Final checks: **server** lint, typecheck, build, `openapi:check` OK; **364 unit 
 |---|---|---|
 | 1 | **Razorpay test keys:** regenerate in the Dashboard (Test mode → API Keys), set `RAZORPAY_KEY_ID/SECRET` on Render, send them to be checked; then do the ₹1 test payment (log in first: no guest orders) | The keys from 2026-10-10 fail with "Authentication failed", so checkout can't start a payment |
 | 2 | Razorpay **webhook** → `https://api.kritex.in/api/v1/webhooks/razorpay` with secret = Render's `RAZORPAY_WEBHOOK_SECRET` (events: payment.captured, payment.failed, refund.processed, refund.failed); start **live KYC** | Payments that finish after the tab closes; live payments |
-| 3 | **Resend:** verify the kritex.in domain (DNS records in Cloudflare, DNS-only), `MAIL_FROM=Kritex <no-reply@kritex.in>`; test a sign-up | Sign-up verification and order emails |
-| 4 | **Google OAuth consent screen → Publish app** ("In production") | In "Testing" only listed test users can sign in with Google |
-| 5 | After the test payment, set `rapid-20-tactical-backpack` back to `ENQUIRY_ONLY` (admin → Products) | It is buyable at ₹1 |
+| 3 | ~~**Resend**~~ ✅ sign-up verification emails work (owner, 2026-10-11) | — |
+| 4 | Google sign-in works (2026-10-11). Check the OAuth consent screen is **Published** ("In production") so any Google account can sign in, not only test users | Public sign-in |
+| 5 | `rapid-20-tactical-backpack` is RETAIL at ₹1,099 with 20 in stock for test purchases (2026-10-11); decide its real price/channel after testing | Test product |
 | 6 | Security housekeeping: change the admin password; delete `SEED_ADMIN_*` and `ADMIN_API_KEY` on Render; reset the Neon password (shared in chat) and update Render; rotate the Cloudflare R2 token/keys pasted into `kritex-website/.env` and move them to the server | Credentials were exposed |
 | 7 | **Storage:** on Render set `STORAGE_DRIVER=r2` + `R2_ACCOUNT_ID/ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET/PUBLIC_URL` | Render's disk is wiped on deploy (uploads, invoice PDFs) |
 | 8 | **Catalogue data:** prices, HSN, GST, stock, weights in `kritex-server/prisma/seed/product-data-template.csv`; which products are RETAIL / B2B-only / enquiry-only (Q1) | The live catalogue is enquiry-only with no prices |
