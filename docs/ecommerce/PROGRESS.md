@@ -3,7 +3,7 @@
 This is the running record of what has been built, where it lives, how to run it, and what's still open.
 Add a new section at the end of each stage.
 
-**Status as of 2026-10-11:** Stages 0–4 are complete and **live** (released 2026-10-10: `api.kritex.in` + `www.kritex.in`). Since the release: enquiries need a verified login (ADR-018), Google sign-in + fill-then-log-in enquiries + navbar refresh (ADR-019), no guest orders (ADR-020). RL-1 is resolved in production; RL-2 (stock-hold limits) awaits the owner's OK. **Next:** owner to-dos below (Razorpay keys, catalogue data, legal/CA), then Stage 5.
+**Status as of 2026-10-11 (end of session):** Stages 0–4 are complete and **live** (released 2026-10-10: `api.kritex.in` + `www.kritex.in`). Since the release: enquiries need a verified login (ADR-018), Google sign-in + fill-then-log-in enquiries + navbar refresh (ADR-019), no guest orders (ADR-020). RL-1 and RL-2 are resolved in production (ADR-022). Owner has done: test purchase + manual ship, Razorpay webhook + KYC started, Resend, Google sign-in, security clean-up. **Next:** owner to-dos below (Razorpay keys, catalogue data, legal/CA), then Stage 5.
 
 | Stage | Status | Integration commit |
 |---|---|---|
