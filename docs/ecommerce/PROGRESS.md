@@ -272,6 +272,14 @@ Started and finished 2026-10-09 with 4 agents (worktrees `../kritex-server-wt/s4
 
 Final checks: **server** lint, typecheck, build, `openapi:check` OK; **364 unit + 374 e2e** tests pass. **Web** 0 lint errors, typecheck OK, **153 tests**, build OK, visual 22/22, full-stack e2e 24/24 (+1 opt-in).
 
+## Release (2026-10-10)
+
+`ecommerce` was fast-forwarded into `main` in both repos (server `f879f7d`, web `b326f3f`) so the owner can run a Razorpay test payment on the live site.
+- **API** on Render at `https://api.kritex.in` (Cloudflare DNS-only CNAME → `kritex-server.onrender.com`). The service is Render's **native Node runtime**, not Docker/`render.yaml`: build `npm ci --include=dev && npx prisma generate && npm run build`, start `npx prisma migrate deploy && node dist/main`, health check `/api/v1/health`, Node pinned to `22.x` in `package.json`. All 7 migrations applied to production Neon.
+- **Storefront** on Vercel at `https://www.kritex.in` (kritex.in redirects there) with `VITE_API_URL=https://api.kritex.in`; cookies use `AUTH_COOKIE_DOMAIN=.kritex.in`. RL-1 is resolved in production; the `vercel.json` `/api` rewrite is now unused and can be removed.
+- **Data:** production seeded once (26 products, all `ENQUIRY_ONLY`, no prices) + the owner's admin account. **Temporary test product:** `rapid-20-tactical-backpack` is `RETAIL` at ₹1 with 5 units (checkout total ₹100 incl. ₹99 shipping). Set it back to `ENQUIRY_ONLY` after the Razorpay test.
+- **Not configured yet:** `RESEND_API_KEY` (sign-up verification emails only reach the Render log, so customers cannot verify accounts, and enquiries need a verified account), seller/GSTIN details, R2 storage (Render's disk is ephemeral), the Razorpay dashboard webhook.
+
 ## Deployment (as of 2026-10-09)
 
 - **Live:** the API runs on **Render** (`https://kritex-server.onrender.com`) with Postgres on **Neon** (Singapore). The website on Vercel proxies `/api/*` to it (`vercel.json`).
