@@ -170,7 +170,7 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 ---
 
 ### Release blockers (from the Stage 4 security review)
-- [ ] RL-1 SEC-1: behind the Vercel `/api` rewrite all clients share one rate-limit bucket. **Decided 2026-10-10 (ADR-018): call `api.kritex.in` directly.** To do: owner adds the DNS CNAME + Render custom domain; at release set `VITE_API_URL`, drop the `vercel.json` `/api` rewrite, confirm `req.ip` is the client IP (TD-10)
+- [x] RL-1 SEC-1 (resolved in production 2026-10-10: the storefront calls `https://api.kritex.in` directly; `vercel.json` `/api` rewrite now unused, remove it): behind the Vercel `/api` rewrite all clients share one rate-limit bucket. **Decided 2026-10-10 (ADR-018): call `api.kritex.in` directly.** To do: owner adds the DNS CNAME + Render custom domain; at release set `VITE_API_URL`, drop the `vercel.json` `/api` rewrite, confirm `req.ip` is the client IP (TD-10)
 - [ ] RL-2 SEC-3: unpaid orders can hoard stock (999/line for 30 min). Proposed limits (ADR-018, awaiting owner OK): 10/variant, 5 unpaid orders per email, 10 per IP, 15-min hold, B2B exempt
 - [x] ENQ-1 [both] Enquiries (contact form + RFQ) require a signed-in, verified account (ADR-018, 2026-10-10)
 - [x] ENQ-2 [W] Guests fill the enquiry first; it is sent automatically after log-in (ADR-019)

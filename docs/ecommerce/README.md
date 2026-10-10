@@ -15,11 +15,12 @@ into a full ecommerce platform. Update these files as decisions are made and wor
 
 **Repos:** `kritex-website` (this repo: storefront, admin, planning hub; github.com/HarshAgarwal-IITD/kritex) · `../kritex-server` (NestJS API; github.com/HarshAgarwal-IITD/kritex-server). See ADR-013.
 
-## Current status (2026-10-09)
+## Current status (2026-10-11)
 
-- **Stage:** ✅ Stages 0–4 complete (Stage 4 gate passed 2026-10-09; two security findings carried to release as RL-1/RL-2). **Next: Stage 5 (Launch prep).** Production still runs `main` (the prototype); `ecommerce` ships by merging into `main`.
-- **Decisions:** all ADRs Accepted (latest ADR-018: enquiries need a verified account; storefront calls `api.kritex.in`). Open questions run on defaults (owner, 2026-10-06). Q1/Q2 real data is still needed before launch.
-- **Human checkpoint (Stage 4):** CA approves the GST invoice format (seller details are placeholders); staff walk through fulfilment (`/admin/orders` → Ship manually / Shiprocket) and quotes (`/admin/quotes`); decide the launch catalog (which products are `RETAIL`); make one real Razorpay test payment by hand (card 4111 1111 1111 1111, any future expiry, any CVV).
+- **Live:** stages 0–4 are in production since 2026-10-10: API `https://api.kritex.in` (Render, Neon), storefront `https://www.kritex.in` (Vercel). `main` = `ecommerce` in both repos; both hosts auto-deploy `main`.
+- **Since the release:** verified-login enquiries (ADR-018), Google sign-in + fill-then-log-in enquiries + navbar (ADR-019), no guest orders (ADR-020).
+- **Blocking a real payment:** new Razorpay test keys (the 2026-10-10 pair fails authentication).
+- **Owner to-dos:** [PROGRESS.md → What's needed from the owner](PROGRESS.md#whats-needed-from-the-owner-updated-2026-10-11). Next engineering stage: Stage 5 (Launch prep).
 - **Run locally:** `cd ../kritex-server && docker compose up -d && npm run start:dev` (API :4000, docs at /api/docs), then `npm run dev` here (:8080, proxies /api).
 
 ## Where we're starting from

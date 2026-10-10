@@ -3,7 +3,7 @@
 This is the running record of what has been built, where it lives, how to run it, and what's still open.
 Add a new section at the end of each stage.
 
-**Status as of 2026-10-09:** Stages 0–4 are complete. Stage 4's gate passed; two security findings (SEC-1, SEC-3) are carried to release as RL-1/RL-2. **Next: Stage 5 (Launch prep).**
+**Status as of 2026-10-11:** Stages 0–4 are complete and **live** (released 2026-10-10: `api.kritex.in` + `www.kritex.in`). Since the release: enquiries need a verified login (ADR-018), Google sign-in + fill-then-log-in enquiries + navbar refresh (ADR-019), no guest orders (ADR-020). RL-1 is resolved in production; RL-2 (stock-hold limits) awaits the owner's OK. **Next:** owner to-dos below (Razorpay keys, catalogue data, legal/CA), then Stage 5.
 
 | Stage | Status | Integration commit |
 |---|---|---|
@@ -13,6 +13,7 @@ Add a new section at the end of each stage.
 | 2 Catalog + Identity | ✅ gate passed | server `9a4aa64` · web `6520bbf` |
 | 3 Commerce core | ✅ gate passed (fake gateway; real Razorpay check pending keys) | server `7f8882f` · web `f7b4f93` |
 | 4 Fulfilment + B2B + QA | ✅ gate passed (RL-1/RL-2 open for release) | server `52b4c7a` · web `f650d61` |
+| Release to production | ✅ live 2026-10-10 | server `8628c81` · web `0b07dda` (2026-10-11) |
 | 5 Launch prep | next | — |
 | 6 | not started | — |
 
@@ -280,6 +281,18 @@ Final checks: **server** lint, typecheck, build, `openapi:check` OK; **364 unit 
 - **Data:** production seeded once (26 products, all `ENQUIRY_ONLY`, no prices) + the owner's admin account. **Temporary test product:** `rapid-20-tactical-backpack` is `RETAIL` at ₹1 with 5 units (checkout total ₹100 incl. ₹99 shipping). Set it back to `ENQUIRY_ONLY` after the Razorpay test.
 - **Not configured yet:** `RESEND_API_KEY` (sign-up verification emails only reach the Render log, so customers cannot verify accounts, and enquiries need a verified account), seller/GSTIN details, R2 storage (Render's disk is ephemeral), the Razorpay dashboard webhook.
 
+## After the release (2026-10-10 → 11)
+
+- **Enquiries need a verified account** (ADR-018): `POST /queries` and `POST /quotes` use `@RequireVerifiedEmail()`; replies go to the account email.
+- **Fill first, log in on submit** (ADR-019): guests fill the contact form / RFQ; it is saved in `localStorage` and `PendingEnquirySender` sends it after sign-in.
+- **Continue with Google** (ADR-019): Better Auth Google provider, account linking for Google, `GET /auth-options`. Production OAuth client configured by the owner; `GOOGLE_CLIENT_ID/SECRET` on Render.
+- **Email:** owner added `RESEND_API_KEY` on Render (2026-10-11). Verification, order and quote emails go through Resend once the kritex.in domain is verified there.
+- **No guest orders** (ADR-020): checkout quote/place need a verified account; `/checkout` is behind `RequireAuth`; carts still work for guests and merge on sign-in.
+- **Navbar:** Timeline removed; Products / Clients / Track Order; account menu; solid on scroll.
+- **Home images:** `src/assets/*` (category tiles, hero) converted to WebP and uploaded to `kritex-assets/assets/` (served from `assets.kritex.in`).
+- **Ops notes:** Render auto-deploys `main` (native Node runtime, see "Release"); Vercel auto-deploys `main`. Admin login: the seed-created account `harshagarwal91016@gmail.com` (password generated at seed time, given to the owner); `SEED_ADMIN_*` on Render are unused. Razorpay test keys pasted on 2026-10-10 failed authentication at Razorpay; new keys needed.
+- **Tests (2026-10-11):** server 365 unit + 384 e2e; web 159 unit, 22/22 visual, full-stack 24/24 (+1 opt-in).
+
 ## Deployment (as of 2026-10-09)
 
 - **Live:** the API runs on **Render** (`https://kritex-server.onrender.com`) with Postgres on **Neon** (Singapore). The website on Vercel proxies `/api/*` to it (`vercel.json`).
@@ -295,22 +308,23 @@ Final checks: **server** lint, typecheck, build, `openapi:check` OK; **364 unit 
 
 ---
 
-## What's needed from the owner
+## What's needed from the owner (updated 2026-10-11)
 
-| # | Item | Needed by |
+| # | Item | Why |
 |---|---|---|
-| 1 | ~~Create the GitHub repo for `kritex-server` and push~~ ✅ done 2026-10-06. Check that the CI runs are green on GitHub | — |
-| 2 | Start **Razorpay KYC** (needs live policy pages + domain) and the Shiprocket signup | Stage 3–5 (long lead time) |
-| 3 | Prices, HSN, GST rates, stock, weights: fill `kritex-server/prisma/seed/product-data-template.csv` | Stage 5 |
-| 4 | Which products are RETAIL vs B2B-only vs enquiry-only (Q1) | Stage 5 |
-| 5 | Legal review of `/legal/*`; fill `src/pages/legal/placeholders.ts` (entity name, address, GSTIN, grievance officer, shipping fee/threshold, dispatch times…) | Stage 5 |
-| 6 | CA review of the GST rules (ADR-006, ADR-015) and placeholder HSN/GST values. Specific questions: (a) seller state code (placeholder 27, Maharashtra); (b) apparel/footwear slab ₹2,500 / 5% / 18% and HSN chapters 61–64; (c) slab judged on the post-discount per-unit value (inclusive prices ₹2,625–₹2,950 are borderline); (d) GST on shipping at the highest line rate; (e) per-line rounding, odd paisa to CGST; (f) place of supply = shipping state, also for B2B with GSTIN | Stage 3–4 |
-| 8 | Stage 4 checkpoint: CA approves the invoice format; staff walk-through of fulfilment and quotes; decide the launch catalog (RETAIL products); one manual Razorpay test payment. (Stage 3: place test orders yourself and review checkout + the admin order screen.) (Stage 2: click through the storefront and `/admin` product editor.) Copy the dev admin password from `kritex-server/.env` (`SEED_ADMIN_PASSWORD`) | Before Stage 4 |
-| 10 | Razorpay test keys are in `kritex-server/.env` (2026-10-09). Still to do: create the dashboard webhook (gives the real webhook secret) and set all three on Render before the release (TD-23). Needed for the real-payment part of the Stage 3 gate, and before the staging API can boot | Now |
-| 11 | ~~Fix `DATABASE_URL` in `kritex-server/.env`~~ ✅ fixed by the owner 2026-10-10 | — |
-| 9 | Decide which categories are "coming soon" (Base Layers) and confirm category page copy (TD-13, TD-14) | Stage 3 |
-| 7 | Field duty jacket size "XX": owner confirmed 2026-10-10 it is a typo; correct size still to confirm | Any time |
-| 8 | **Hosting (ADR-008, free tier):** (a) Neon: create project `kritex` in AWS Singapore and copy the connection string. (b) Render: New → Blueprint → `kritex-server`, then enter `DATABASE_URL` and `CORS_ORIGIN`. (c) If the service URL is not `kritex-server.onrender.com`, update `vercel.json`. (d) Seed: `DATABASE_URL=<neon> npm run import:products` in kritex-server. (e) UptimeRobot on `https://kritex.in/api/v1/health` every 10 min. Full steps: kritex-server README → Deploy | Now (staging) |
+| 1 | **Razorpay test keys:** regenerate in the Dashboard (Test mode → API Keys), set `RAZORPAY_KEY_ID/SECRET` on Render, send them to be checked; then do the ₹1 test payment (log in first: no guest orders) | The keys from 2026-10-10 fail with "Authentication failed", so checkout can't start a payment |
+| 2 | Razorpay **webhook** → `https://api.kritex.in/api/v1/webhooks/razorpay` with secret = Render's `RAZORPAY_WEBHOOK_SECRET` (events: payment.captured, payment.failed, refund.processed, refund.failed); start **live KYC** | Payments that finish after the tab closes; live payments |
+| 3 | **Resend:** verify the kritex.in domain (DNS records in Cloudflare, DNS-only), `MAIL_FROM=Kritex <no-reply@kritex.in>`; test a sign-up | Sign-up verification and order emails |
+| 4 | **Google OAuth consent screen → Publish app** ("In production") | In "Testing" only listed test users can sign in with Google |
+| 5 | After the test payment, set `rapid-20-tactical-backpack` back to `ENQUIRY_ONLY` (admin → Products) | It is buyable at ₹1 |
+| 6 | Security housekeeping: change the admin password; delete `SEED_ADMIN_*` and `ADMIN_API_KEY` on Render; reset the Neon password (shared in chat) and update Render; rotate the Cloudflare R2 token/keys pasted into `kritex-website/.env` and move them to the server | Credentials were exposed |
+| 7 | **Storage:** on Render set `STORAGE_DRIVER=r2` + `R2_ACCOUNT_ID/ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET/PUBLIC_URL` | Render's disk is wiped on deploy (uploads, invoice PDFs) |
+| 8 | **Catalogue data:** prices, HSN, GST, stock, weights in `kritex-server/prisma/seed/product-data-template.csv`; which products are RETAIL / B2B-only / enquiry-only (Q1) | The live catalogue is enquiry-only with no prices |
+| 9 | **Seller + legal:** `SELLER_LEGAL_NAME`, `SELLER_GSTIN`, `SELLER_ADDRESS`, `BUSINESS_STATE_CODE` on Render; fill `src/pages/legal/placeholders.ts`; legal review of `/legal/*` | Printed on GST invoices; needed for KYC |
+| 10 | **CA review** of GST rules and the invoice format (questions a–f in ADR-015 / earlier list) | Tax correctness |
+| 11 | Confirm **RL-2** limits (10/variant, 5 unpaid orders per email, 10 per IP, 15-min hold, B2B exempt) | Stops stock hoarding |
+| 12 | Small: field duty jacket size "XX" (typo, correct size?); which categories are "coming soon" (Base Layers) | Catalogue copy |
+| 13 | Optional: Render Auto-Deploy → "After CI Checks Pass"; UptimeRobot on `https://api.kritex.in/api/v1/health` | Safer deploys; free-tier sleep |
 
 ## Hosting (2026-10-07)
 Render (free, Singapore, Docker) + Neon (free, Singapore) + Vercel for the site. Details in ADR-008.
