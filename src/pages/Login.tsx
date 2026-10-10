@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { Field, FormError, FormNotice } from "@/components/shop/Field";
 import { linkButtonClass, primaryButtonClass } from "@/components/shop/styles";
 import AuthShell from "@/features/account/components/AuthShell";
+import GoogleSignIn from "@/features/account/components/GoogleSignIn";
 import { authErrorMessage, safeNext } from "@/features/account/auth-messages";
 import { useCurrentUser, useLogin, useOtpLogin, useResendVerification, useSendLoginOtp } from "@/features/account/hooks";
 
@@ -166,6 +167,12 @@ const Login = () => {
         </>
       }
     >
+      {params.get("error") && (
+        <div className="mb-6">
+          <FormError>Google sign-in didn't complete. Please try again, or log in with your email.</FormError>
+        </div>
+      )}
+      <GoogleSignIn next={next} />
       <div className="mb-6 flex gap-4" role="tablist" aria-label="Sign-in method">
         <button type="button" role="tab" aria-selected={mode === "password"} className={tabClass(mode === "password")} onClick={() => setMode("password")}>
           Password

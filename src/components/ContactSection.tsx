@@ -1,16 +1,22 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { api, toApiError } from "@/lib/api/client";
 import { useCurrentUser } from "@/features/account/hooks";
+import { savePendingEnquiry } from "@/features/enquiry/pending";
 
 const buttonClass =
   "inline-block font-display text-xs bg-primary text-primary-foreground px-8 py-3 hover:bg-primary/90 transition-colors duration-300 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none";
 
-/** Inquiries need a signed-in account with a verified email (ADR-018); replies go to the account email. */
+/**
+ * Inquiries need a signed-in account with a verified email (ADR-018); replies go to the account email.
+ * Guests fill the form first: Submit saves it and sends them to log in, and PendingEnquirySender
+ * sends it as soon as they're signed in.
+ */
 const ContactSection = () => {
   const { user, isPending } = useCurrentUser();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
     organization: "",
@@ -25,18 +31,23 @@ const ContactSection = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    const { organization, ...rest } = formData;
+    const body = { ...rest, ...(organization.trim() ? { organization } : {}) };
 
+    if (!user) {
+      savePendingEnquiry({ kind: "contact", body });
+      navigate(`/login?next=${encodeURIComponent("/#contact")}`);
+      return;
+    }
+
+    setIsSubmitting(true);
     try {
-      const { organization, ...rest } = formData;
-      const { error, response } = await api.POST("/api/v1/queries", {
-        body: { ...rest, ...(organization.trim() ? { organization } : {}) },
-      });
+      const { error, response } = await api.POST("/api/v1/queries", { body });
 
       if (error || !response.ok) throw toApiError(error, response);
 
       toast.success("Inquiry submitted. Our team will be in touch shortly.");
-      setFormData({ name: user?.name ?? "", organization: "", requirements: "" });
+      setFormData({ name: user.name ?? "", organization: "", requirements: "" });
     } catch {
       toast.error("Couldn't submit your inquiry. Please try again or email procurement@kritex.in directly.");
     } finally {
@@ -89,70 +100,54 @@ const ContactSection = () => {
             transition={{ duration: 0.5, delay: 0.1, ease: [0.19, 1, 0.22, 1] }}
             className="md:col-span-7"
           >
-            {isPending ? (
-              <p className="font-display text-xs text-muted-foreground" aria-busy="true">Loading…</p>
-            ) : !user ? (
-              <div className="border border-border bg-secondary p-8 space-y-4" aria-label="Log in to send an inquiry">
-                <p className="font-display text-xs text-primary">Account required</p>
-                <p className="font-body text-sm text-muted-foreground leading-relaxed max-w-md">
-                  Log in with a verified email to send a tender or procurement inquiry. Our team replies to your account email.
-                </p>
-                <div className="flex flex-wrap gap-3 pt-2">
-                  <Link to="/login?next=%2F%23contact" className={buttonClass}>
-                    Log In
-                  </Link>
-                  <Link
-                    to="/signup?next=%2F%23contact"
-                    className="inline-block font-display text-xs border border-border text-foreground px-8 py-3 hover:border-primary transition-colors duration-300"
-                  >
-                    Create an Account
-                  </Link>
-                </div>
-              </div>
-            ) : (
-              <form className="space-y-6" onSubmit={handleSubmit}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div>
-                    <label className="font-display text-[10px] text-muted-foreground block mb-2">Name</label>
-                    <input
-                      type="text"
-                      required
-                      value={formData.name}
-                      onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                      className="w-full bg-secondary border border-border px-4 py-3 text-sm text-foreground font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-                      placeholder="Full Name"
-                    />
-                  </div>
-                  <div>
-                    <label className="font-display text-[10px] text-muted-foreground block mb-2">Organization</label>
-                    <input
-                      type="text"
-                      value={formData.organization}
-                      onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
-                      className="w-full bg-secondary border border-border px-4 py-3 text-sm text-foreground font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
-                      placeholder="Ministry / Unit"
-                    />
-                  </div>
-                </div>
-                <p className="font-body text-xs text-muted-foreground">
-                  We'll reply to <span className="text-foreground">{user.email}</span>.
-                </p>
+            <form className="space-y-6" onSubmit={handleSubmit}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="font-display text-[10px] text-muted-foreground block mb-2">Requirements</label>
-                  <textarea
-                    rows={4}
+                  <label className="font-display text-[10px] text-muted-foreground block mb-2">Name</label>
+                  <input
+                    type="text"
                     required
-                    value={formData.requirements}
-                    onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
-                    className="w-full bg-secondary border border-border px-4 py-3 text-sm text-foreground font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none"
-                    placeholder="Describe your procurement requirements, quantities, and timeline..."
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className="w-full bg-secondary border border-border px-4 py-3 text-sm text-foreground font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                    placeholder="Full Name"
                   />
                 </div>
-                <button type="submit" disabled={isSubmitting} className={buttonClass}>
-                  {isSubmitting ? "Submitting..." : "Submit Inquiry"}
-                </button>
-              </form>
-            )}
+                <div>
+                  <label className="font-display text-[10px] text-muted-foreground block mb-2">Organization</label>
+                  <input
+                    type="text"
+                    value={formData.organization}
+                    onChange={(e) => setFormData({ ...formData, organization: e.target.value })}
+                    className="w-full bg-secondary border border-border px-4 py-3 text-sm text-foreground font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors"
+                    placeholder="Ministry / Unit"
+                  />
+                </div>
+              </div>
+              <p className="font-body text-xs text-muted-foreground">
+                {user ? (
+                  <>
+                    We'll reply to <span className="text-foreground">{user.email}</span>.
+                  </>
+                ) : (
+                  "You'll log in or create an account next. Your inquiry is sent as soon as you're signed in, and we reply to your account email."
+                )}
+              </p>
+              <div>
+                <label className="font-display text-[10px] text-muted-foreground block mb-2">Requirements</label>
+                <textarea
+                  rows={4}
+                  required
+                  value={formData.requirements}
+                  onChange={(e) => setFormData({ ...formData, requirements: e.target.value })}
+                  className="w-full bg-secondary border border-border px-4 py-3 text-sm text-foreground font-body placeholder:text-muted-foreground focus:outline-none focus:border-primary transition-colors resize-none"
+                  placeholder="Describe your procurement requirements, quantities, and timeline..."
+                />
+              </div>
+              <button type="submit" disabled={isSubmitting || isPending} className={buttonClass}>
+                {isSubmitting ? "Submitting..." : user || isPending ? "Submit Inquiry" : "Log In & Submit"}
+              </button>
+            </form>
           </motion.div>
         </div>
       </div>

@@ -37,6 +37,12 @@ export const handlers = [
 
   http.get(apiPath("/api/v1/health"), () => HttpResponse.json<Health>({ status: "ok" })),
 
+  // "Continue with Google" (ADR-019): the mock hands back a fake consent URL.
+  http.get(apiPath("/api/v1/auth-options"), () => HttpResponse.json({ google: true })),
+  http.post(apiPath("/api/v1/auth/sign-in/social"), () =>
+    HttpResponse.json({ url: "https://accounts.google.com/o/oauth2/v2/auth?client_id=mock", redirect: true }),
+  ),
+
   // Enquiries need a signed-in, verified account (ADR-018); replies go to the account email.
   http.post(apiPath("/api/v1/queries"), async ({ request }) => {
     const user = getMockSessionUser();

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -12,6 +12,7 @@ import { useCurrentUser } from "@/features/account/hooks";
 import { gstinSchema, phoneSchema } from "@/features/checkout/address";
 import { lineKey, MAX_QUOTE_QUANTITY, quoteCart, useQuoteCart } from "@/features/quote/store";
 import { quoteErrorMessage, useCreateQuote } from "@/features/quote/hooks";
+import { savePendingEnquiry } from "@/features/enquiry/pending";
 import type { CreatedQuote, CreateQuoteInput, QuoteCartLine } from "@/features/quote/types";
 
 const CRUMBS = [{ label: "Home", to: "/" }, { label: "Products", to: "/products" }, { label: "Request a Quote" }];
@@ -141,7 +142,7 @@ const QuoteLine = ({ line }: { line: QuoteCartLine }) => {
 
 type RfqProps = { lines: QuoteCartLine[]; onSent: (quote: CreatedQuote, email: string) => void };
 
-/** Guests are asked to log in first; the quote cart is kept in localStorage, so nothing is lost. */
+/** Waits for the session check, then shows the form (guests fill it in and log in on submit). */
 const RfqPanel = (props: RfqProps) => {
   const { user, isPending } = useCurrentUser();
   if (isPending) {
@@ -151,29 +152,16 @@ const RfqPanel = (props: RfqProps) => {
       </div>
     );
   }
-  if (!user) {
-    return (
-      <div className={`${panelClass} space-y-4`} aria-label="Log in to request a quote">
-        <h2 className={sectionTitleClass}>Log in to send your request</h2>
-        <p className="font-body text-xs text-muted-foreground">
-          Quote requests need a Kritex account with a verified email. We send the quote there, and you can accept and pay for
-          it online. Your items stay saved while you log in.
-        </p>
-        <Link to="/login?next=%2Fquote" className={`${primaryButtonClass} w-full`}>
-          <LogIn size={14} />
-          Log In
-        </Link>
-        <Link to="/signup?next=%2Fquote" className={`${secondaryButtonClass} w-full`}>
-          Create an Account
-        </Link>
-      </div>
-    );
-  }
-  return <RfqForm {...props} email={user.email} />;
+  return <RfqForm {...props} email={user?.email ?? null} />;
 };
 
-const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string }) => {
+/**
+ * Signed in: sends straight away. Guest: saves the request and goes to log in; PendingEnquirySender
+ * sends it once they're signed in (ADR-018) and they land on their quotes.
+ */
+const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string | null }) => {
   const { user } = useCurrentUser();
+  const navigate = useNavigate();
   const create = useCreateQuote();
   const form = useForm<RfqInput, unknown, RfqValues>({
     resolver: zodResolver(rfqSchema),
@@ -207,6 +195,11 @@ const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string }) => {
         ...(l.notes ? { notes: l.notes } : {}),
       })),
     };
+    if (!email) {
+      savePendingEnquiry({ kind: "quote", body });
+      navigate(`/login?next=${encodeURIComponent("/account/quotes")}`);
+      return;
+    }
     create.mutate(body, {
       onSuccess: (quote) => {
         quoteCart.clear();
@@ -219,7 +212,13 @@ const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string }) => {
     <form onSubmit={form.handleSubmit(onSubmit)} noValidate className={`${panelClass} relative space-y-5`} aria-label="Quote request">
       <h2 className={sectionTitleClass}>Your details</h2>
       <p className="font-body text-xs text-muted-foreground -mt-2">
-        We'll send the quote to <span className="text-foreground">{email}</span>.
+        {email ? (
+          <>
+            We'll send the quote to <span className="text-foreground">{email}</span>.
+          </>
+        ) : (
+          "You'll log in or create an account next. Your request is sent as soon as you're signed in, and the quote goes to your account email."
+        )}
       </p>
       <Field label="Your name" autoComplete="name" error={errors.contactName?.message} {...form.register("contactName")} />
       <Field label="Company / organisation" autoComplete="organization" error={errors.organization?.message} {...form.register("organization")} />
@@ -261,8 +260,8 @@ const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string }) => {
       </div>
       {create.isError && <FormError>{quoteErrorMessage(create.error)}</FormError>}
       <button type="submit" className={`${primaryButtonClass} w-full`} disabled={create.isPending}>
-        {create.isPending ? <Loader2 size={14} className="animate-spin" /> : <Send size={14} />}
-        Send Quote Request
+        {create.isPending ? <Loader2 size={14} className="animate-spin" /> : email ? <Send size={14} /> : <LogIn size={14} />}
+        {email ? "Send Quote Request" : "Log In & Send Request"}
       </button>
     </form>
   );

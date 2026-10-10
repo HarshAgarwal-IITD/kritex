@@ -173,6 +173,9 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [ ] RL-1 SEC-1: behind the Vercel `/api` rewrite all clients share one rate-limit bucket. **Decided 2026-10-10 (ADR-018): call `api.kritex.in` directly.** To do: owner adds the DNS CNAME + Render custom domain; at release set `VITE_API_URL`, drop the `vercel.json` `/api` rewrite, confirm `req.ip` is the client IP (TD-10)
 - [ ] RL-2 SEC-3: unpaid orders can hoard stock (999/line for 30 min). Proposed limits (ADR-018, awaiting owner OK): 10/variant, 5 unpaid orders per email, 10 per IP, 15-min hold, B2B exempt
 - [x] ENQ-1 [both] Enquiries (contact form + RFQ) require a signed-in, verified account (ADR-018, 2026-10-10)
+- [x] ENQ-2 [W] Guests fill the enquiry first; it is sent automatically after log-in (ADR-019)
+- [x] AUTH-7 [both] Continue with Google + `GET /auth-options` (ADR-019). Owner: create the Google OAuth client, set `GOOGLE_CLIENT_ID/SECRET` on Render
+- [x] UI-1 [W] Navbar refresh: Timeline removed, account menu, Track Order, solid on scroll (ADR-019)
 
 ## Stage 5: Launch prep
 
@@ -235,7 +238,7 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [ ] TD-34 [W] Real Razorpay Checkout asked for the mobile number although `prefill.contact` (`+91…`) is sent; check on a manual test payment and send the 10-digit form if needed. The opt-in e2e (`E2E_RAZORPAY=1`) stops at that step
 - [ ] TD-35 [S] ENQUIRY_ONLY items often have no stock, so accepting a quote for them fails with OUT_OF_STOCK until staff set stock; consider "made to order" quotes. No `quote.rejected` email yet
 - [ ] TD-36 [W] Admin: no route to regenerate a Shiprocket label / request pickup after creation in the UI flow beyond the new endpoints; quote variant picker uses the public product endpoint (hidden for inactive variants)
-- [ ] TD-37 [S] `test/shipping.e2e-spec.ts` "creates a shipment … webhook DELIVERED" fails since 2026-10-10: its webhook fixture timestamps (2026-10-10/11) now sort before the AWB/pickup events created at `now`. Make the fixture times relative to now
+- [x] TD-37 [S] (fixed 2026-10-10: fixture dated 2099) `test/shipping.e2e-spec.ts` "creates a shipment … webhook DELIVERED" fails since 2026-10-10: its webhook fixture timestamps (2026-10-10/11) now sort before the AWB/pickup events created at `now`. Make the fixture times relative to now
 - [ ] TD-5 [W] Rename package.json `name` from `vite_react_shadcn_ts` to `kritex-website`
 
 ## Stage 6: Go-live (see EXECUTION.md)

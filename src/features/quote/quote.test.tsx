@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
-import { setMockSession } from "@/mocks/admin-handlers";
+import { MOCK_PASSWORD, setMockSession } from "@/mocks/admin-handlers";
 import { getCommerceMockDb, seedMockCart } from "@/mocks/commerce-handlers";
 import { ensureMockB2BUser, getB2bOpsMockDb, MOCK_B2B_EMAIL } from "@/mocks/b2b-ops-handlers";
 import { renderApp, resetMocks, SHIRT_M } from "@/test/render-app";
@@ -41,15 +41,32 @@ describe("quote cart store", () => {
 });
 
 describe("RFQ (B2B-2)", () => {
-  it("guests are asked to log in; the quote cart is kept", async () => {
+  it("a guest fills the RFQ, logs in, and it is sent automatically", async () => {
     quoteCart.add({ productId: "prd_rapid-20-tactical-backpack", productSlug: "rapid-20-tactical-backpack", productName: "Rapid 20", image: null, quantity: 5 });
     renderApp("/quote");
-    expect(await screen.findByRole("heading", { name: "Log in to send your request" })).toBeInTheDocument();
-    expect(screen.getByRole("link", { name: /Log In/ })).toHaveAttribute("href", "/login?next=%2Fquote");
-    expect(screen.getByRole("link", { name: "Create an Account" })).toHaveAttribute("href", "/signup?next=%2Fquote");
-    expect(screen.queryByRole("button", { name: "Send Quote Request" })).toBeNull();
-    expect(screen.getByTestId("quote-line")).toBeInTheDocument();
-    expect(quoteCart.get()).toHaveLength(1);
+    const send = await screen.findByRole("button", { name: "Log In & Send Request" });
+    type("Your name", "Gita Guest");
+    type("Company / organisation", "Guest Traders");
+    type("Mobile number", "9876543210");
+    fireEvent.click(send);
+
+    await waitFor(() => expect(location()).toBe("/login?next=%2Faccount%2Fquotes"));
+    expect(getB2bOpsMockDb().quotes.find((q) => q.contactName === "Gita Guest")).toBeUndefined();
+
+    await screen.findByRole("heading", { name: "Log In" });
+    type("Email", "customer@example.com");
+    type("Password", MOCK_PASSWORD);
+    fireEvent.click(screen.getByRole("button", { name: "Log In" }));
+
+    await waitFor(() => expect(getB2bOpsMockDb().quotes.find((q) => q.contactName === "Gita Guest")).toBeDefined());
+    expect(getB2bOpsMockDb().quotes.find((q) => q.contactName === "Gita Guest")).toMatchObject({
+      userId: "usr_customer",
+      email: "customer@example.com",
+      organization: "Guest Traders",
+    });
+    await waitFor(() => expect(location()).toBe("/account/quotes"));
+    expect(quoteCart.get()).toEqual([]);
+    expect(localStorage.getItem("kritex_pending_enquiry")).toBeNull();
   });
 
   it("PDP → add to quote → /quote → send RFQ signed in → confirmation", async () => {

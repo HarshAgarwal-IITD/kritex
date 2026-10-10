@@ -4,6 +4,9 @@ import { getAdminMockDb, MOCK_PASSWORD } from "@/mocks/admin-handlers";
 import { getCommerceMockDb, MOCK_OTP, MOCK_RESET_TOKEN, seedMockCart } from "@/mocks/commerce-handlers";
 import { renderApp, resetMocks, SHIRT_M } from "@/test/render-app";
 import { safeNext } from "./auth-messages";
+import { http, HttpResponse } from "msw";
+import { server } from "@/mocks/server";
+import { apiPath } from "@/mocks/handlers";
 
 beforeEach(() => resetMocks());
 
@@ -25,6 +28,37 @@ describe("account guard", () => {
     renderApp("/account/orders");
     await waitFor(() => expect(location()).toHaveTextContent("/login?next=%2Faccount%2Forders"));
     expect(await screen.findByRole("heading", { name: "Log In" })).toBeInTheDocument();
+  });
+});
+
+describe("Continue with Google (ADR-019)", () => {
+  it("shows the Google button when the server offers it and starts sign-in with the right return URLs", async () => {
+    let body: Record<string, string> | null = null;
+    server.use(
+      http.post(apiPath("/api/v1/auth/sign-in/social"), async ({ request }) => {
+        body = (await request.json()) as Record<string, string>;
+        return HttpResponse.json({ url: "https://accounts.google.com/o/oauth2/v2/auth?client_id=mock", redirect: true });
+      }),
+    );
+    const assign = vi.fn();
+    vi.stubGlobal("location", { ...window.location, assign, origin: window.location.origin });
+    renderApp("/login?next=%2Fcart");
+    fireEvent.click(await screen.findByRole("button", { name: /Continue with Google/ }));
+    await waitFor(() => expect(assign).toHaveBeenCalledWith("https://accounts.google.com/o/oauth2/v2/auth?client_id=mock"));
+    expect(body).toEqual({
+      provider: "google",
+      callbackURL: `${window.location.origin}/cart`,
+      errorCallbackURL: `${window.location.origin}/login?next=%2Fcart`,
+    });
+    vi.unstubAllGlobals();
+  });
+
+  it("hides the Google button when it isn't configured, and explains a failed Google sign-in", async () => {
+    server.use(http.get(apiPath("/api/v1/auth-options"), () => HttpResponse.json({ google: false })));
+    renderApp("/login?error=access_denied");
+    expect(await screen.findByText(/Google sign-in didn't complete/)).toBeInTheDocument();
+    await screen.findByRole("heading", { name: "Log In" });
+    expect(screen.queryByRole("button", { name: /Continue with Google/ })).toBeNull();
   });
 });
 

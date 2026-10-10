@@ -43,3 +43,31 @@ Object.defineProperty(window, "matchMedia", {
     dispatchEvent: () => {},
   }),
 });
+
+// Node 22+ ships a file-less `localStorage` global without methods, which shadows jsdom's.
+// Give tests a working in-memory Storage, emptied after each test.
+class MemoryStorage implements Storage {
+  private map = new Map<string, string>();
+  get length() {
+    return this.map.size;
+  }
+  clear() {
+    this.map.clear();
+  }
+  getItem(key: string) {
+    return this.map.get(key) ?? null;
+  }
+  key(index: number) {
+    return [...this.map.keys()][index] ?? null;
+  }
+  removeItem(key: string) {
+    this.map.delete(key);
+  }
+  setItem(key: string, value: string) {
+    this.map.set(key, String(value));
+  }
+}
+const memoryStorage = new MemoryStorage();
+Object.defineProperty(window, "localStorage", { configurable: true, writable: true, value: memoryStorage });
+Object.defineProperty(globalThis, "localStorage", { configurable: true, writable: true, value: memoryStorage });
+afterEach(() => memoryStorage.clear());

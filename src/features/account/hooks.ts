@@ -118,6 +118,34 @@ export function useLogout() {
 /** Where the emailed links land. Absolute URLs on this site. */
 export const siteUrl = (path: string) => `${window.location.origin}${path}`;
 
+/** Sign-in methods the server offers (`GET /auth-options`); Google is hidden until it's configured. */
+export function useAuthOptions() {
+  return useQuery<{ google: boolean }, ApiError>({
+    queryKey: ["auth-options"],
+    staleTime: 10 * 60_000,
+    retry: false,
+    queryFn: async ({ signal }) => {
+      const { data, error, response } = await api.GET("/api/v1/auth-options", { signal });
+      if (error || !data) throw toApiError(error, response);
+      return data;
+    },
+  });
+}
+
+/** "Continue with Google": leaves the site for Google's consent screen, then lands on `next`. */
+export function useGoogleSignIn() {
+  return useMutation<void, ApiError, { next: string }>({
+    mutationFn: async ({ next }) => {
+      const { url } = await authClient.signInSocial({
+        provider: "google",
+        callbackURL: siteUrl(next),
+        errorCallbackURL: siteUrl(`/login?next=${encodeURIComponent(next)}`),
+      });
+      window.location.assign(url);
+    },
+  });
+}
+
 export function useSignup() {
   return useMutation<unknown, ApiError, Omit<SignUpEmailInput, "callbackURL">>({
     mutationFn: (input) => authClient.signUpEmail({ ...input, callbackURL: siteUrl("/account") }),

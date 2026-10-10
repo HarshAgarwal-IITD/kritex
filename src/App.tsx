@@ -20,6 +20,7 @@ import LegalContact from "./pages/legal/Contact.tsx";
 import { AdminRoute } from "./admin/route";
 import CartPage from "./pages/Cart.tsx";
 import { CartDrawerProvider } from "./features/cart/components/CartDrawer";
+import PendingEnquirySender from "./features/enquiry/PendingEnquirySender";
 import RequireAuth from "./features/account/components/RequireAuth";
 
 // Checkout, auth and account pages are split out of the main bundle.
@@ -50,6 +51,7 @@ const RouteFallback = () => <div className="min-h-screen bg-background" />;
 /** Every route plus the cart drawer. Exported so tests can mount it inside a MemoryRouter. */
 export const AppRoutes = () => (
   <CartDrawerProvider>
+    <PendingEnquirySender />
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<Index />} />

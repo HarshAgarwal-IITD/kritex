@@ -7,6 +7,7 @@ import { Loader2, MailCheck } from "lucide-react";
 import { Field, FormError, FormNotice } from "@/components/shop/Field";
 import { linkButtonClass, primaryButtonClass } from "@/components/shop/styles";
 import AuthShell from "@/features/account/components/AuthShell";
+import GoogleSignIn from "@/features/account/components/GoogleSignIn";
 import { authErrorMessage, passwordRules, safeNext } from "@/features/account/auth-messages";
 import { useCurrentUser, useResendVerification, useSignup } from "@/features/account/hooks";
 
@@ -76,6 +77,7 @@ const Signup = () => {
         </>
       }
     >
+      <GoogleSignIn next={next} />
       <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="space-y-5">
         <Field label="Full name" autoComplete="name" error={errors.name?.message} {...form.register("name")} />
         <Field label="Email" type="email" autoComplete="email" error={errors.email?.message} {...form.register("email")} />

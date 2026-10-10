@@ -663,6 +663,23 @@ export interface paths {
         patch: operations["adminAdjustStock"];
         trace?: never;
     };
+    "/api/v1/auth-options": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Sign-in methods offered (public) */
+        get: operations["getAuthOptions"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/cart": {
         parameters: {
             query?: never;
@@ -2054,6 +2071,10 @@ export interface components {
         };
         ApplyCouponDto: {
             code: string;
+        };
+        AuthOptionsDto_Output: {
+            /** @description true when "Continue with Google" is configured */
+            google: boolean;
         };
         BusinessProfileDto_Output: {
             /** Format: date-time */
@@ -6600,6 +6621,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponseDto"];
+                };
+            };
+        };
+    };
+    getAuthOptions: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Enabled sign-in methods */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AuthOptionsDto_Output"];
                 };
             };
         };

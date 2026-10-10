@@ -269,6 +269,15 @@ Done 2026-10-06: the untracked `server/` folder was moved to `../kritex-server` 
 - **RL-1 (SEC-1):** the storefront will call the API directly at `https://api.kritex.in` (Render custom domain, DNS-only CNAME) instead of through the Vercel `/api` rewrite, so rate limits see each client's IP. Session/cart cookies work because the API is a kritex.in subdomain (`AUTH_COOKIE_DOMAIN=.kritex.in`, `SameSite=Lax`); calling `*.onrender.com` directly would drop them. At release: `VITE_API_URL=https://api.kritex.in` on Vercel, remove the `/api` rewrite from `vercel.json`, `TRUST_PROXY=1` on Render (one hop).
 - **RL-2 (SEC-3), proposed, awaiting owner confirmation:** max 10 units per variant per order for guests and retail customers (bigger orders go through RFQ), at most 5 open unpaid orders per email and 10 per IP, hold time 15 min; approved B2B buyers exempt.
 
+
+## ADR-019: Google sign-in; guests fill enquiries first and log in to send
+**Status:** Accepted · 2026-10-10 (owner)
+
+- **"Continue with Google"** via Better Auth's Google provider, enabled when `GOOGLE_CLIENT_ID` + `GOOGLE_CLIENT_SECRET` are set on the API (both or neither). Redirect URI: `<BETTER_AUTH_URL>/api/v1/auth/callback/google` (production `https://api.kritex.in/api/v1/auth/callback/google`). Google accounts arrive with a verified email; **account linking** is on for Google only, so a Google sign-in with the same address as an existing email/password account signs into that account. New `GET /auth-options` (`{ google }`) lets the storefront hide the button until it is configured. On failure Google returns to `/login?error=…`.
+- **Enquiries (amends ADR-018):** guests see and fill the contact form and the RFQ form. Submitting as a guest saves the enquiry in `localStorage` (`kritex_pending_enquiry`, max 24 h) and goes to `/login?next=…` (contact → `/#contact`, RFQ → `/account/quotes`). `PendingEnquirySender` (mounted once in `AppRoutes`) sends it as soon as a verified session exists (password, email code, Google, or sign-up + verification in the same browser), clears the quote cart for RFQs and shows a toast. The server rule is unchanged: both endpoints still require a verified account.
+- **Email verification** stays required for email/password sign-ups; it needs a mail provider in production (`RESEND_API_KEY`, or SMTP).
+- **Navbar:** Timeline link removed; Products ▾ / Clients / Track Order; account menu (initials → account, orders, quotes, log out) or "Log In" for guests; solid background once scrolled; mobile menu gains account links.
+
 ---
 
 ## Open questions

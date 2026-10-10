@@ -1,25 +1,32 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, useLocation } from "react-router-dom";
 import { http, HttpResponse } from "msw";
 import { server } from "@/mocks/server";
 import { apiPath, getMockQueries } from "@/mocks/handlers";
 import { newQueryClient } from "@/features/catalog/test-utils";
+import { loadPendingEnquiry, clearPendingEnquiry } from "@/features/enquiry/pending";
 import { resetMocks } from "@/test/render-app";
 import ContactSection from "./ContactSection";
+
+const toastMock = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }));
+vi.mock("sonner", () => ({ toast: toastMock }));
+
+const LocationProbe = () => {
+  const loc = useLocation();
+  return <div data-testid="location">{`${loc.pathname}${loc.search}`}</div>;
+};
 
 const renderSection = () =>
   render(
     <QueryClientProvider client={newQueryClient()}>
       <MemoryRouter>
         <ContactSection />
+        <LocationProbe />
       </MemoryRouter>
     </QueryClientProvider>,
   );
-
-const toastMock = vi.hoisted(() => ({ success: vi.fn(), error: vi.fn() }));
-vi.mock("sonner", () => ({ toast: toastMock }));
 
 /** The mock inbox is seeded (admin tests); find the one this test sent. */
 const sentQuery = () => getMockQueries().find((q) => q.requirements === "500 combat shirts");
@@ -32,24 +39,35 @@ function fillForm({ organization = "" }: { organization?: string } = {}) {
   });
 }
 
+/** Signed in: wait until the account has loaded (the name is prefilled). */
+const waitForAccount = () => waitFor(() => expect(screen.getByPlaceholderText("Full Name")).toHaveValue("Chris Customer"));
+
 describe("ContactSection", () => {
   beforeEach(() => {
     toastMock.success.mockReset();
     toastMock.error.mockReset();
+    clearPendingEnquiry();
     resetMocks("customer@example.com");
   });
 
-  it("asks guests to log in instead of showing the form", async () => {
+  it("lets guests fill the form; Submit saves it and goes to log in (sent after sign-in)", async () => {
     resetMocks(null);
     renderSection();
-    expect(await screen.findByRole("link", { name: "Log In" })).toHaveAttribute("href", "/login?next=%2F%23contact");
-    expect(screen.getByRole("link", { name: "Create an Account" })).toHaveAttribute("href", "/signup?next=%2F%23contact");
-    expect(screen.queryByRole("button", { name: "Submit Inquiry" })).toBeNull();
+    const button = await screen.findByRole("button", { name: "Log In & Submit" });
+    fillForm({ organization: "Army HQ" });
+    fireEvent.click(button);
+
+    expect(screen.getByTestId("location")).toHaveTextContent("/login?next=%2F%23contact");
+    expect(loadPendingEnquiry()).toMatchObject({
+      kind: "contact",
+      body: { name: "Asha Rao", organization: "Army HQ", requirements: "500 combat shirts" },
+    });
+    expect(sentQuery()).toBeUndefined();
   });
 
   it("submits the inquiry to the API with the account email, shows a success toast and resets the form", async () => {
     renderSection();
-    expect(await screen.findByPlaceholderText("Full Name")).toHaveValue("Chris Customer");
+    await waitForAccount();
     expect(screen.getByText("customer@example.com")).toBeInTheDocument();
     fillForm({ organization: "Army HQ" });
 
@@ -61,8 +79,7 @@ describe("ContactSection", () => {
     await waitFor(() => expect(toastMock.success).toHaveBeenCalledTimes(1));
     expect(toastMock.error).not.toHaveBeenCalled();
 
-    const saved = sentQuery();
-    expect(saved).toMatchObject({
+    expect(sentQuery()).toMatchObject({
       name: "Asha Rao",
       organization: "Army HQ",
       email: "customer@example.com",
@@ -77,7 +94,7 @@ describe("ContactSection", () => {
 
   it("omits an empty organization from the request body", async () => {
     renderSection();
-    await screen.findByPlaceholderText("Full Name");
+    await waitForAccount();
     fillForm();
     fireEvent.click(screen.getByRole("button", { name: "Submit Inquiry" }));
 
@@ -92,7 +109,7 @@ describe("ContactSection", () => {
       ),
     );
     renderSection();
-    await screen.findByPlaceholderText("Full Name");
+    await waitForAccount();
     fillForm();
     fireEvent.click(screen.getByRole("button", { name: "Submit Inquiry" }));
 

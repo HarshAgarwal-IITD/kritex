@@ -116,4 +116,12 @@ export const authClient = {
   signInEmailOtp(input: { email: string; otp: string }) {
     return request<SignInEmailResult>("/sign-in/email-otp", { method: "POST", body: JSON.stringify(input) });
   },
+  /**
+   * Starts "Continue with Google" (ADR-019): returns Google's consent URL. After consent Google
+   * returns to the API, which sets the session cookie and redirects to `callbackURL`
+   * (or `errorCallbackURL?error=...`).
+   */
+  signInSocial(input: { provider: "google"; callbackURL: string; errorCallbackURL: string; newUserCallbackURL?: string }) {
+    return request<{ url: string; redirect: boolean }>("/sign-in/social", { method: "POST", body: JSON.stringify(input) });
+  },
 };
