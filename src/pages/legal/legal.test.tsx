@@ -41,10 +41,10 @@ const renderAt = (path: string) =>
   );
 
 describe("legal pages", () => {
-  it.each(routes)("$path renders its heading, the draft banner and SEO title", async ({ path, heading }) => {
+  it.each(routes)("$path renders its heading and SEO title, without a draft banner", async ({ path, heading }) => {
     renderAt(path);
     expect(screen.getByRole("heading", { level: 1, name: heading })).toBeInTheDocument();
-    expect(screen.getByTestId("legal-draft-banner")).toHaveTextContent("Draft — pending legal review");
+    expect(screen.queryByTestId("legal-draft-banner")).toBeNull();
     await waitFor(() => expect(document.title).toBe(`${heading} | Kritex`));
     expect(document.head.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe(`https://kritex.in${path}`);
   });

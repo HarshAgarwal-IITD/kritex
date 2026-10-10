@@ -306,6 +306,7 @@ Done 2026-10-06: the untracked `server/` folder was moved to `../kritex-server` 
 - **Contact enquiries** emit `query.created`; NotificationsService emails `STAFF_ALERT_EMAILS` with **Reply-To = the customer** (`MailMessage.replyTo`, Resend `reply_to`).
 - **Vercel:** the `/api` rewrite is removed (the storefront calls `api.kritex.in`).
 - **Legal pages:** privacy policy covers Google sign-in (name, email, picture, Google ID; no other Google data) and lists Google as a processor; terms describe the sign-in methods and that orders/enquiries need a verified account. Known placeholders filled: email provider Resend, hosting Render/Neon/Vercel/Cloudflare, shipping ₹99 (free from ₹999). Still a draft pending legal review. URLs for the Google consent screen: `https://www.kritex.in/legal/privacy`, `https://www.kritex.in/legal/terms`.
+- **Seller = M/s Janki International** (owner, 2026-10-11), GSTIN 19EBNPA4275F1ZI, Binnaguri, West Bengal: kept as code config in `kritex-server/src/config/seller.ts` (defaults for `SELLER_*` and `BUSINESS_STATE_CODE` = 19; env vars still override). Tests pin `BUSINESS_STATE_CODE=27` because the tax fixtures assume a Maharashtra seller. Legal pages carry the same details; the draft banner is off (`LEGAL_DRAFT = false`) at the owner's request.
 
 ---
 

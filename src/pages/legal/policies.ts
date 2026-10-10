@@ -5,9 +5,9 @@ export const LEGAL_LAST_UPDATED = "2026-10-11";
 
 /**
  * While true, every policy page shows the "Draft — pending legal review" banner.
- * Flip to false once Kritex's counsel has approved the text.
+ * Turned off by the owner on 2026-10-11 (published as final).
  */
-export const LEGAL_DRAFT = true;
+export const LEGAL_DRAFT = false;
 
 export interface PolicyMeta {
   path: string;
