@@ -105,7 +105,12 @@ const OtpLogin = ({ onDone }: { onDone: () => void }) => {
       className="space-y-5"
     >
       <FormNotice>
-        We sent a 6-digit code to <span className="font-display">{email}</span>. It expires in 5 minutes.
+        If there's a Kritex account for <span className="font-display">{email}</span>, we've sent it a 6-digit code. It
+        expires in 5 minutes. No account yet?{" "}
+        <Link to="/signup" className="underline">
+          Create one
+        </Link>
+        .
       </FormNotice>
       <Field
         label="Code"

@@ -632,12 +632,9 @@ export const commerceHandlers = [
     const email = body.email?.trim().toLowerCase() ?? "";
     if (body.otp !== MOCK_OTP) return HttpResponse.json({ code: "INVALID_OTP", message: "Invalid OTP" }, { status: 400 });
     const db = getAdminMockDb();
-    let user = db.users.find((u) => u.email === email);
-    if (!user) {
-      // Better Auth's email-OTP sign-in creates the account on first use.
-      user = { id: id("usr_"), email, name: email.split("@")[0], role: "CUSTOMER", emailVerified: true, phone: null, businessProfile: null, createdAt: now() };
-      db.users.push(user);
-    }
+    const user = db.users.find((u) => u.email === email);
+    // Codes sign in existing accounts only (server: emailOTP disableSignUp).
+    if (!user) return HttpResponse.json({ code: "INVALID_OTP", message: "Invalid OTP" }, { status: 400 });
     user.emailVerified = true;
     setMockSession(user.email);
     return HttpResponse.json({ token: `tok_${user.id}`, user: { id: user.id, email: user.email, name: user.name, emailVerified: true } });
