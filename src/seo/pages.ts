@@ -3,6 +3,7 @@ import type { Category, ProductDetail } from "@/features/catalog/types";
 import { productJsonLd } from "@/features/catalog/seo";
 import { assetUrl, galleryImages } from "@/features/catalog/view";
 import { policies, policyByPath } from "@/pages/legal/policies";
+import { descriptionSummary } from "@/features/catalog/description";
 
 /**
  * SEO props for every indexable page. The pages render them with <Seo>, and the build-time prerender
@@ -48,7 +49,7 @@ export const productSeo = (product: ProductDetail): SeoProps => {
   const images = galleryImages(product);
   return {
     title: product.seo.title ?? product.name,
-    description: product.seo.description ?? metaDescription(product.description ?? ""),
+    description: product.seo.description ?? metaDescription(descriptionSummary(product.description ?? "")),
     path: `/product/${product.slug}`,
     image: images[0],
     type: "product",

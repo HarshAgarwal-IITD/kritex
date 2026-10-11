@@ -1,4 +1,5 @@
 import { SITE_URL } from "@/components/Seo";
+import { descriptionSummary } from "./description";
 import type { ProductDetail } from "./types";
 
 const absoluteUrl = (src: string) => (/^https?:\/\//i.test(src) ? src : `${SITE_URL}${src}`);
@@ -9,7 +10,7 @@ export function productJsonLd(product: ProductDetail, images: string[]): Record<
     "@context": "https://schema.org",
     "@type": "Product",
     name: product.name,
-    description: product.description ?? undefined,
+    description: product.description ? descriptionSummary(product.description) : undefined,
     image: images.map(absoluteUrl),
     category: [product.category.name, product.subCategory].filter(Boolean).join(" > "),
     brand: { "@type": "Brand", name: "Kritex" },

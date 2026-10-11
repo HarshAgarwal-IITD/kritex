@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { m } from "framer-motion";
-import { ChevronLeft, ChevronRight, FileText, Maximize2 } from "lucide-react";
+import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -25,6 +25,8 @@ import { PriceBlock, PurchaseCta, StockState } from "@/features/catalog/componen
 import { productSeo } from "@/seo/pages";
 import { ProductDetailSkeleton } from "@/features/catalog/components/Skeletons";
 import QueryError from "@/features/catalog/components/QueryError";
+import { DescriptionBody } from "@/features/catalog/components/DescriptionBody";
+import { splitDescription } from "@/features/catalog/description";
 
 const ProductDetail = () => {
   const { id = "" } = useParams<{ id: string }>();
@@ -79,7 +81,8 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
   const kind = ctaKind(product);
   const sellable = product.saleChannel !== "ENQUIRY_ONLY";
   const pick = (name: string, value: string) => setSelection((s) => ({ ...s, [name]: value }));
-  const description = product.description ?? "";
+  const { intro, body: descriptionBody } = splitDescription(product.description ?? "");
+  const sheets = product.specSheets ?? [];
 
   const displayImages = galleryImages(product);
   const currentImage =
@@ -180,9 +183,9 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
               </p>
               <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4">{product.name}</h1>
               <PriceBlock product={product} variant={variant} />
-              <p className="font-body text-muted-foreground text-sm leading-relaxed max-w-lg mb-8">
-                {description}
-              </p>
+              {intro && (
+                <p className="font-body text-muted-foreground text-sm leading-relaxed max-w-lg mb-8">{intro}</p>
+              )}
 
               {/* Color variants */}
               {colorVariants.length > 0 && (
@@ -275,55 +278,67 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
             </div>
           </m.div>
 
-          {/* Official spec sheets — full catalogue pages, as published */}
-          {product.specSheets && product.specSheets.length > 0 && (
-            <m.div
+          {/* Product details — long-form description and the catalogue's detail imagery */}
+          {(descriptionBody.length > 0 || sheets.length > 0) && (
+            <m.section
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
               transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
               className="mt-24"
+              aria-labelledby="product-details-heading"
             >
-              <div className="flex items-center gap-4 mb-3">
+              <div className="flex items-center gap-4 mb-12">
                 <span className="h-px flex-1 bg-border" />
-                <div className="flex items-center gap-2 text-primary">
-                  <FileText size={14} />
-                  <p className="font-display text-xs uppercase tracking-wider">Official Product Data Sheet</p>
-                </div>
+                <h2 id="product-details-heading" className="font-display text-xs uppercase tracking-wider text-primary">
+                  Product Details
+                </h2>
                 <span className="h-px flex-1 bg-border" />
               </div>
-              <p className="font-body text-xs text-muted-foreground text-center mb-10">
-                Direct from the Kritex catalogue — full specifications, features and available colourways.
-              </p>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {product.specSheets.map((sheet) => (
-                  <a
-                    key={sheet.id}
-                    href={assetUrl(sheet.url)}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="group relative block border border-border bg-neutral-100 overflow-hidden hover:border-primary/50 transition-colors duration-300 shadow-sm hover:shadow-lg"
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
+                {descriptionBody.length > 0 && (
+                  <DescriptionBody
+                    blocks={descriptionBody}
+                    className={sheets.length > 0 ? "lg:col-span-5" : "lg:col-span-8 lg:col-start-3"}
+                  />
+                )}
+
+                {sheets.length > 0 && (
+                  <div
+                    className={cn(
+                      "grid grid-cols-1 sm:grid-cols-2 gap-6 content-start",
+                      descriptionBody.length > 0 ? "lg:col-span-7" : "lg:col-span-12 md:grid-cols-2 lg:grid-cols-3",
+                    )}
                   >
-                    <div className="absolute inset-0 flex items-center justify-center bg-background/0 group-hover:bg-background/40 transition-colors duration-300 z-10 pointer-events-none">
-                      <span className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2 font-display text-xs uppercase tracking-wider text-foreground bg-background/90 px-4 py-2 border border-border">
-                        <Maximize2 size={12} />
-                        View Full Size
-                      </span>
-                    </div>
-                    <img
-                      src={assetUrl(sheet.url)}
-                      alt={sheet.title}
-                      className="w-full h-auto transition-transform duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-[1.02]"
-                      loading="lazy"
-                    />
-                    <div className="p-4 border-t border-border bg-card">
-                      <p className="font-display text-[11px] uppercase tracking-wider text-foreground">{sheet.title}</p>
-                    </div>
-                  </a>
-                ))}
+                    {sheets.map((sheet) => (
+                      <a
+                        key={sheet.id}
+                        href={assetUrl(sheet.url)}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="group relative block border border-border bg-neutral-100 overflow-hidden hover:border-primary/50 transition-colors duration-300"
+                      >
+                        <div className="relative aspect-[4/3] p-4">
+                          <img
+                            src={assetUrl(sheet.url)}
+                            alt={`${product.name} — ${sheet.title}`}
+                            className="w-full h-full object-contain transition-transform duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-[1.03]"
+                            loading="lazy"
+                          />
+                          <span className="absolute right-3 top-3 flex h-8 w-8 items-center justify-center rounded-full bg-background/80 text-foreground opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                            <Maximize2 size={12} />
+                          </span>
+                        </div>
+                        <div className="px-4 py-3 border-t border-border bg-card">
+                          <p className="font-display text-[11px] uppercase tracking-wider text-foreground">{sheet.title}</p>
+                        </div>
+                      </a>
+                    ))}
+                  </div>
+                )}
               </div>
-            </m.div>
+            </m.section>
           )}
         </div>
       </main>
