@@ -18,7 +18,9 @@ export default defineConfig({
   reporter: [["list"], ["html", { outputFolder: "./.report", open: "never" }]],
   outputDir: "./.results",
   expect: {
-    toHaveScreenshot: { maxDiffPixels: 50, animations: "disabled", caret: "hide" },
+    // Pages run to ~4,700px tall; text anti-aliasing varies by up to ~150px between runs. Real layout changes
+    // differ by thousands of pixels.
+    toHaveScreenshot: { maxDiffPixels: 250, animations: "disabled", caret: "hide" },
   },
   use: {
     baseURL: `http://localhost:${PORT}`,
