@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { toast } from "sonner";
 import { api, toApiError } from "@/lib/api/client";
 import { useCurrentUser } from "@/features/account/hooks";
@@ -62,7 +62,7 @@ const ContactSection = () => {
     <section id="contact" className="py-20 md:py-32 border-t border-border">
       <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -94,9 +94,9 @@ const ContactSection = () => {
                 <p className="font-display text-sm text-foreground">India · Bhutan</p>
               </div>
             </div>
-          </motion.div>
+          </m.div>
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -152,7 +152,7 @@ const ContactSection = () => {
                 {isSubmitting ? "Submitting..." : "Submit Inquiry"}
               </button>
             </form>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>

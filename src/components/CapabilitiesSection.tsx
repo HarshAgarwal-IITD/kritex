@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Shirt, Footprints, Backpack, HardHat, ShieldCheck, Award, Crosshair, Package } from "lucide-react";
 
 const capabilities = [
@@ -16,7 +16,7 @@ const CapabilitiesSection = () => {
   return (
     <section id="capabilities" className="py-20 md:py-32 border-t border-border">
       <div className="container">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -30,13 +30,13 @@ const CapabilitiesSection = () => {
           <p className="font-body text-muted-foreground text-sm max-w-lg">
             From base layers to field equipment — everything a force needs, engineered to endure.
           </p>
-        </motion.div>
+        </m.div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-border">
           {capabilities.map((cap, i) => {
             const Icon = cap.icon;
             return (
-              <motion.div
+              <m.div
                 key={cap.title}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -47,7 +47,7 @@ const CapabilitiesSection = () => {
                 <Icon size={20} className="text-muted-foreground group-hover:text-primary transition-colors duration-500 mb-4" />
                 <h3 className="font-display text-xs text-foreground mb-2">{cap.title}</h3>
                 <p className="font-body text-xs text-muted-foreground leading-relaxed">{cap.desc}</p>
-              </motion.div>
+              </m.div>
             );
           })}
         </div>

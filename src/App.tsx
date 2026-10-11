@@ -2,28 +2,30 @@ import { lazy, Suspense } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
+import { LazyMotion } from "framer-motion";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import Index from "./pages/Index.tsx";
-import NotFound from "./pages/NotFound.tsx";
-import Products from "./pages/Products.tsx";
-import Category from "./pages/Category.tsx";
-import ProductDetail from "./pages/ProductDetail.tsx";
-import LegalIndex from "./pages/legal/LegalIndex.tsx";
-import Terms from "./pages/legal/Terms.tsx";
-import Privacy from "./pages/legal/Privacy.tsx";
-import Returns from "./pages/legal/Returns.tsx";
-import Shipping from "./pages/legal/Shipping.tsx";
-import Cancellation from "./pages/legal/Cancellation.tsx";
-import LegalContact from "./pages/legal/Contact.tsx";
 import { AdminRoute } from "./admin/route";
-import CartPage from "./pages/Cart.tsx";
 import { CartDrawerProvider } from "./features/cart/components/CartDrawer";
 import RequireAuth from "./features/account/components/RequireAuth";
 import { PageLoader } from "@/components/shop/Loaders";
 
 // Checkout, auth and account pages are split out of the main bundle.
+// Only the home page is in the entry bundle; every other route loads on first visit.
+const NotFound = lazy(() => import("./pages/NotFound.tsx"));
+const Products = lazy(() => import("./pages/Products.tsx"));
+const Category = lazy(() => import("./pages/Category.tsx"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
+const LegalIndex = lazy(() => import("./pages/legal/LegalIndex.tsx"));
+const Terms = lazy(() => import("./pages/legal/Terms.tsx"));
+const Privacy = lazy(() => import("./pages/legal/Privacy.tsx"));
+const Returns = lazy(() => import("./pages/legal/Returns.tsx"));
+const Shipping = lazy(() => import("./pages/legal/Shipping.tsx"));
+const Cancellation = lazy(() => import("./pages/legal/Cancellation.tsx"));
+const LegalContact = lazy(() => import("./pages/legal/Contact.tsx"));
+const CartPage = lazy(() => import("./pages/Cart.tsx"));
 const Checkout = lazy(() => import("./pages/Checkout.tsx"));
 const CheckoutSuccess = lazy(() => import("./pages/CheckoutResult.tsx").then((m) => ({ default: m.CheckoutSuccess })));
 const CheckoutFailure = lazy(() => import("./pages/CheckoutResult.tsx").then((m) => ({ default: m.CheckoutFailure })));
@@ -94,16 +96,21 @@ export const AppRoutes = () => (
 
 const queryClient = new QueryClient();
 
+/** framer-motion's animation features, fetched after the first render (components use `m`, not `motion`). */
+const motionFeatures = () => import("@/lib/motion-features").then((mod) => mod.default);
+
 const App = () => (
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <AppRoutes />
-        </BrowserRouter>
-      </TooltipProvider>
+      <LazyMotion features={motionFeatures} strict>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <AppRoutes />
+          </BrowserRouter>
+        </TooltipProvider>
+      </LazyMotion>
     </QueryClientProvider>
   </HelmetProvider>
 );

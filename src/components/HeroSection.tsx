@@ -1,6 +1,14 @@
-import { motion } from "framer-motion";
-import heroImg from "@/assets/hero-textile.jpg";
-import { asset } from "@/lib/asset";
+import { m } from "framer-motion";
+import heroImg from "@/assets/hero-textile.webp";
+// 556px, 20 KB: drawn as a faint silhouette, and the home page LCP element.
+import watermarkImg from "@/assets/logo-watermark.webp";
+
+/**
+ * The watermark is the home page's LCP element, so it gets the bandwidth first (the hero image would
+ * otherwise compete with it). Lowercase attribute: React 18 doesn't know `fetchPriority`. The
+ * prerendered home page also preloads it (scripts/prerender.mjs).
+ */
+const HIGH_PRIORITY = { fetchpriority: "high" } as const;
 
 const HeroSection = () => {
   return (
@@ -19,24 +27,25 @@ const HeroSection = () => {
       {/* Watermark */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none select-none">
         <img
-          src={asset("/brand/logo_flower.png")}
+          src={watermarkImg}
           alt=""
           className="w-[60vw] max-w-[600px] opacity-[0.05] invert brightness-0"
+          {...HIGH_PRIORITY}
         />
       </div>
 
       {/* Content */}
       <div className="relative container pb-20 md:pb-32">
         <div className="max-w-3xl">
-          <motion.p
+          <m.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
             className="font-display text-xs text-primary mb-4 tabular"
           >
             Trusted by Forces Since 1976
-          </motion.p>
-          <motion.h1
+          </m.p>
+          <m.h1
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.19, 1, 0.22, 1] }}
@@ -47,16 +56,16 @@ const HeroSection = () => {
             Crafted for
             <br />
             Endurance.
-          </motion.h1>
-          <motion.p
+          </m.h1>
+          <m.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.19, 1, 0.22, 1] }}
             className="font-body text-muted-foreground max-w-lg mb-8 text-sm md:text-base"
           >
             Engineering defense-grade apparel and tactical hardware for the armed forces of India and Bhutan since 1976.
-          </motion.p>
-          <motion.div
+          </m.p>
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3, ease: [0.19, 1, 0.22, 1] }}
@@ -74,7 +83,7 @@ const HeroSection = () => {
             >
               Tender Inquiry
             </a>
-          </motion.div>
+          </m.div>
         </div>
       </div>
 

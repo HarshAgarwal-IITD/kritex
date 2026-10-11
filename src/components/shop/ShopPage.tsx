@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { useLocation } from "react-router-dom";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
@@ -31,7 +31,7 @@ const ShopPage = ({ title, eyebrow, description, crumbs, hideHeading, className,
         <div className={cn("container", className)}>
           <Breadcrumbs items={crumbs ?? [{ label: "Home", to: "/" }, { label: title }]} />
           {!hideHeading && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
@@ -39,7 +39,7 @@ const ShopPage = ({ title, eyebrow, description, crumbs, hideHeading, className,
             >
               {eyebrow && <p className={eyebrowClass}>{eyebrow}</p>}
               <h1 className="text-3xl md:text-5xl font-bold text-foreground">{title}</h1>
-            </motion.div>
+            </m.div>
           )}
           {children}
         </div>

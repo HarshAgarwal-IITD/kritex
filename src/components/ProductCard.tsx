@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -86,7 +86,7 @@ const ProductCard = ({
   };
 
   return (
-    <motion.article
+    <m.article
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
@@ -210,7 +210,7 @@ const ProductCard = ({
           aria-label={`View details for ${name}`}
         />
       )}
-    </motion.article>
+    </m.article>
   );
 };
 

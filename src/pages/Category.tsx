@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
@@ -50,7 +50,7 @@ const CategoryPage = ({ categorySlug }: { categorySlug: string }) => {
             ]}
           />
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
@@ -63,7 +63,7 @@ const CategoryPage = ({ categorySlug }: { categorySlug: string }) => {
             <p className="font-body text-muted-foreground text-sm max-w-lg">
               {category ? category.description : <TextSkeleton className="h-4 w-full max-w-lg" />}
             </p>
-          </motion.div>
+          </m.div>
 
           {products && types.length > 1 && (
             <div className="flex gap-2 flex-wrap mb-10">

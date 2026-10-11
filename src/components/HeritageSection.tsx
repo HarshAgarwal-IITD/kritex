@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 const HeritageSection = () => {
   return (
@@ -6,7 +6,7 @@ const HeritageSection = () => {
       <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-8">
           {/* Left */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -25,10 +25,10 @@ const HeritageSection = () => {
               been forged across three generations into a highly specialized manufacturing 
               and procurement operation, dedicated to outfitting the modern soldier without compromise.
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Right - supply details */}
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -53,7 +53,7 @@ const HeritageSection = () => {
                   status: "Bulk Capacity",
                 },
               ].map((item, i) => (
-                <motion.div
+                <m.div
                   key={item.title}
                   initial={{ opacity: 0, y: 15 }}
                   whileInView={{ opacity: 1, y: 0 }}
@@ -66,10 +66,10 @@ const HeritageSection = () => {
                     <span className="font-display text-[10px] text-primary tabular">{item.status}</span>
                   </div>
                   <p className="font-body text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
-                </motion.div>
+                </m.div>
               ))}
             </div>
-          </motion.div>
+          </m.div>
         </div>
       </div>
     </section>

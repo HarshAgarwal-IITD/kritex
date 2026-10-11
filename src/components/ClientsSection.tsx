@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Shield, ChevronRight } from "lucide-react";
 import {
   Accordion,
@@ -71,7 +71,7 @@ const ClientsSection = () => {
   return (
     <section id="clients" className="py-20 md:py-32 border-t border-border">
       <div className="container">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -86,12 +86,12 @@ const ClientsSection = () => {
             Proud supplier to India and Bhutan's premier defence, paramilitary,
             and industrial organizations.
           </p>
-        </motion.div>
+        </m.div>
 
         {/* Primary Clients */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border mb-8">
           {primaryClients.map((client, i) => (
-            <motion.div
+            <m.div
               key={client.abbr}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -116,12 +116,12 @@ const ClientsSection = () => {
               </div>
               <p className="font-display text-sm md:text-base text-foreground mb-1 group-hover:text-primary transition-colors">{client.abbr}</p>
               <p className="font-display text-[9px] md:text-[10px] text-muted-foreground">{client.name}</p>
-            </motion.div>
+            </m.div>
           ))}
         </div>
 
         {/* Other Clients Dropdown */}
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -139,7 +139,7 @@ const ClientsSection = () => {
                     const needsFillers = secondaryClients.length % 4 === 2;
 
                     const clientNode = (
-                      <motion.div
+                      <m.div
                         key={client.name}
                         initial={{ opacity: 0, y: 20 }}
                         whileInView={{ opacity: 1, y: 0 }}
@@ -164,7 +164,7 @@ const ClientsSection = () => {
                         </div>
                         <p className="font-display text-sm md:text-base text-foreground mb-1 group-hover:text-primary transition-colors">{client.abbr}</p>
                         <p className="font-display text-[9px] md:text-[10px] text-muted-foreground">{client.name}</p>
-                      </motion.div>
+                      </m.div>
                     );
 
                     const result = [];
@@ -188,7 +188,7 @@ const ClientsSection = () => {
 
             </AccordionItem>
           </Accordion>
-        </motion.div>
+        </m.div>
 
       </div>
     </section>

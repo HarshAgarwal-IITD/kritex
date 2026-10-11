@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { CheckCircle2 } from "lucide-react";
 
 const commitments = [
@@ -25,7 +25,7 @@ const CommitmentSection = () => {
     <section className="py-20 md:py-32 border-t border-border bg-secondary/30">
       <div className="container">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-12">
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -43,11 +43,11 @@ const CommitmentSection = () => {
               every buckle, every sole is engineered to perform under extreme operational stress — 
               from the glaciers of Siachen to the jungles of the Northeast.
             </p>
-          </motion.div>
+          </m.div>
 
           <div className="md:col-span-7 space-y-px">
             {commitments.map((item, i) => (
-              <motion.div
+              <m.div
                 key={item.title}
                 initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
@@ -60,7 +60,7 @@ const CommitmentSection = () => {
                   <h3 className="font-display text-xs text-foreground mb-1">{item.title}</h3>
                   <p className="font-body text-xs text-muted-foreground leading-relaxed">{item.desc}</p>
                 </div>
-              </motion.div>
+              </m.div>
             ))}
           </div>
         </div>

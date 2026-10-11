@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 const milestones = [
   { year: "1976", event: "Founded by Mr. Puranmal Agarwal as a dedicated supply store, outfitting local cantonments and regiments with essential gear." },
@@ -11,7 +11,7 @@ const TimelineSection = () => {
   return (
     <section id="timeline" className="py-20 md:py-32 border-t border-border">
       <div className="container">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -22,18 +22,18 @@ const TimelineSection = () => {
           <h2 className="text-3xl md:text-4xl font-bold text-foreground">
             Operational Timeline
           </h2>
-        </motion.div>
+        </m.div>
 
         <div className="relative">
           {/* Vertical line */}
           <div className="absolute left-4 md:left-1/2 top-0 bottom-0 w-px bg-border md:-translate-x-px" />
 
           <div className="space-y-8 md:space-y-0">
-            {milestones.map((m, i) => {
+            {milestones.map((milestone, i) => {
               const isLeft = i % 2 === 0;
               return (
-                <motion.div
-                  key={m.year}
+                <m.div
+                  key={milestone.year}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
@@ -45,13 +45,13 @@ const TimelineSection = () => {
 
                   {/* Content */}
                   <div className={`pl-10 md:pl-0 md:w-1/2 ${isLeft ? "md:pr-12 md:text-right" : "md:pl-12 md:text-left"}`}>
-                    <p className="font-display text-2xl text-foreground tabular mb-1">{m.year}</p>
-                    <p className="font-body text-sm text-muted-foreground leading-relaxed">{m.event}</p>
+                    <p className="font-display text-2xl text-foreground tabular mb-1">{milestone.year}</p>
+                    <p className="font-body text-sm text-muted-foreground leading-relaxed">{milestone.event}</p>
                   </div>
 
                   {/* Spacer for other side */}
                   <div className="hidden md:block md:w-1/2" />
-                </motion.div>
+                </m.div>
               );
             })}
           </div>

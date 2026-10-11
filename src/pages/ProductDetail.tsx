@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { ChevronLeft, ChevronRight, FileText, Maximize2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -108,7 +108,7 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
             ]}
           />
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
@@ -121,6 +121,8 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
                   src={currentImage}
                   alt={`${product.name}${selectedColorLabel ? ` — ${selectedColorLabel}` : ""}`}
                   className="w-full h-full object-contain"
+                  // LCP element; lowercase because React 18 doesn't know `fetchPriority`.
+                  {...{ fetchpriority: "high" }}
                 />
                 {displayImages.length > 1 && selectedColor < 0 && (
                   <>
@@ -271,11 +273,11 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
               <StockState product={product} variant={variant} needsSelection={product.options.length > 0} />
               <PurchaseCta kind={kind} product={product} variant={variant} />
             </div>
-          </motion.div>
+          </m.div>
 
           {/* Official spec sheets — full catalogue pages, as published */}
           {product.specSheets && product.specSheets.length > 0 && (
-            <motion.div
+            <m.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-100px" }}
@@ -321,7 +323,7 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
                   </a>
                 ))}
               </div>
-            </motion.div>
+            </m.div>
           )}
         </div>
       </main>

@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 
 const stats = [
   { value: "50+", label: "Years of Service" },
@@ -13,7 +13,7 @@ const StatsBar = () => {
       <div className="container">
         <div className="grid grid-cols-2 md:grid-cols-4">
           {stats.map((stat, i) => (
-            <motion.div
+            <m.div
               key={stat.label}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -27,7 +27,7 @@ const StatsBar = () => {
               <p className="font-display text-[10px] text-muted-foreground">
                 {stat.label}
               </p>
-            </motion.div>
+            </m.div>
           ))}
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Handshake } from "lucide-react";
 import {
   Accordion,
@@ -38,7 +38,7 @@ const secondaryPartners = partners.slice(8);
 const needsWhiteBackdrop = new Set(["Sega", "JCT", "Graviera", "Alok", "S Kumars", "Digjam", "OCM"]);
 
 const PartnerTile = ({ partner, i }: { partner: { name: string; logo?: string; isText?: boolean }; i: number }) => (
-  <motion.div
+  <m.div
     initial={{ opacity: 0, y: 20 }}
     whileInView={{ opacity: 1, y: 0 }}
     viewport={{ once: true }}
@@ -64,7 +64,7 @@ const PartnerTile = ({ partner, i }: { partner: { name: string; logo?: string; i
     <p className="font-display text-[10px] md:text-xs text-muted-foreground group-hover:text-primary transition-colors uppercase tracking-wider">
       {partner.name}
     </p>
-  </motion.div>
+  </m.div>
 );
 
 const PartnershipsSection = () => {
@@ -73,7 +73,7 @@ const PartnershipsSection = () => {
   return (
     <section id="partnerships" className="py-20 md:py-32 bg-secondary/30 border-t border-border">
       <div className="container">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -94,7 +94,7 @@ const PartnershipsSection = () => {
           <p className="font-body text-muted-foreground text-sm max-w-2xl mx-auto">
             We are proud to be authorized dealers and strategic partners with some of the most trusted brands, bringing premium quality directly to our clients.
           </p>
-        </motion.div>
+        </m.div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border">
           {primaryPartners.map((partner, i) => (
@@ -102,7 +102,7 @@ const PartnershipsSection = () => {
           ))}
         </div>
 
-        <motion.div
+        <m.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
@@ -127,7 +127,7 @@ const PartnershipsSection = () => {
               </div>
             </AccordionItem>
           </Accordion>
-        </motion.div>
+        </m.div>
       </div>
     </section>
   );

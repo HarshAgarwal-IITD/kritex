@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
@@ -10,10 +10,11 @@ import CommitmentSection from "@/components/CommitmentSection";
 import TimelineSection from "@/components/TimelineSection";
 import HeritageSection from "@/components/HeritageSection";
 import PartnershipsSection from "@/components/PartnershipsSection";
-import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
 import { homeSeo } from "@/seo/pages";
+
+const ContactSection = lazy(() => import("@/components/ContactSection"));
 
 const Index = () => {
   const location = useLocation();
@@ -39,7 +40,10 @@ const Index = () => {
       <CommitmentSection />
       <TimelineSection />
       <HeritageSection />
-      <ContactSection />
+      {/* Last section; lazy so the form libraries (react-hook-form, zod) stay out of the entry bundle. */}
+      <Suspense fallback={null}>
+        <ContactSection />
+      </Suspense>
       <Footer />
     </div>
   );

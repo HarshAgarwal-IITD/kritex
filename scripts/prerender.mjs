@@ -12,7 +12,7 @@
  * reached, only the static pages (home, /products, /legal/*) are prerendered and a warning is printed;
  * the build still succeeds, and the missing pages fall back to the SPA shell as before.
  */
-import { mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 
@@ -54,10 +54,25 @@ if (!apiUrl) {
   }
 }
 
+// The LCP image to fetch before the JS runs: the home watermark (src/components/HeroSection.tsx)
+// and each product's main photo.
+const watermark = readdirSync(join(dist, "assets")).find((f) => /^logo-watermark-.*\.webp$/.test(f));
+const preloadsFor = (page) =>
+  page.path === "/"
+    ? [watermark && `/assets/${watermark}`].filter(Boolean)
+    : page.type === "product" && page.image
+      ? [page.image]
+      : [];
+const preloadTags = (page) =>
+  preloadsFor(page).map((href) => `<link rel="preload" as="image" href="${escapeXml(href)}" fetchpriority="high" />`);
+
+// The SPA fallback for every other route (vercel.json): the original shell, so /cart, /checkout etc.
+// don't inherit the home page's tags and image preloads now written into dist/index.html.
+writeFileSync(join(dist, "app-shell.html"), template);
+
 for (const page of pages) {
-  const html = shell.replace("</head>", `  ${seo.renderHead(page)}\n  </head>`);
-  // "/" overwrites the shell itself, so the SPA fallback (vercel.json) also gets the home tags; Helmet
-  // replaces them on other routes.
+  const head = [...preloadTags(page), seo.renderHead(page)].join("\n    ");
+  const html = shell.replace("</head>", `  ${head}\n  </head>`);
   const file = page.path === "/" ? join(dist, "index.html") : join(dist, page.path, "index.html");
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, html);
@@ -103,5 +118,5 @@ async function getJson(url, attempts = 3) {
 }
 
 function escapeXml(s) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }

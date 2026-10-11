@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useCategories } from "@/features/catalog/hooks";
 import { assetUrl } from "@/features/catalog/view";
@@ -17,7 +17,7 @@ const CatalogSection = () => {
   return (
     <section id="catalog" className="py-20 md:py-32">
       <div className="container">
-        <motion.div
+        <m.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
@@ -36,7 +36,7 @@ const CatalogSection = () => {
           >
             View All Products →
           </Link>
-        </motion.div>
+        </m.div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-px bg-border">
           {isPending &&
@@ -51,7 +51,7 @@ const CatalogSection = () => {
             ))}
           {categories.map((cat, i) => {
             const card = (
-              <motion.div
+              <m.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -105,7 +105,7 @@ const CatalogSection = () => {
                     )}
                   </div>
                 </div>
-              </motion.div>
+              </m.div>
             );
 
             return <div key={cat.slug}>{card}</div>;

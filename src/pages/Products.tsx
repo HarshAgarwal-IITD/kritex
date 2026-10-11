@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { motion } from "framer-motion";
+import { m } from "framer-motion";
 import { Link, useSearchParams } from "react-router-dom";
 import { X } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -81,7 +81,7 @@ const Products = () => {
         <div className="container">
           <Breadcrumbs items={[{ label: "Home", to: "/" }, { label: "All Products" }]} />
 
-          <motion.div
+          <m.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
@@ -92,7 +92,7 @@ const Products = () => {
             <p className="font-body text-muted-foreground text-sm max-w-lg">
               Browse Kritex's complete equipment catalog by category, or search for a specific item.
             </p>
-          </motion.div>
+          </m.div>
 
           {/* Category tiles */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-px bg-border mb-6">
