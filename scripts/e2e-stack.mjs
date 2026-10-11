@@ -146,6 +146,8 @@ function apiEnv() {
     NODE_PATH: path.join(serverDir, "node_modules"),
     NODE_ENV: "development", // dev mail log prints verification links/OTPs; Swagger on
     PORT: String(apiPort),
+    // The specs' tax fixtures are Maharashtra (PIN 400001 is intra-state), as in the server's own tests.
+    BUSINESS_STATE_CODE: "27",
     DATABASE_URL: databaseUrl,
     CORS_ORIGIN: webUrl,
     WEB_URL: webUrl,

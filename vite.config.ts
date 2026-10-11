@@ -10,6 +10,10 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    // Playwright writes HTML reports here mid-run; watching them reloads every open page (breaks e2e).
+    watch: {
+      ignored: ["**/playwright-report/**", "**/test-results/**"],
+    },
     // The API client uses a relative base URL in dev, so /api is proxied to kritex-server.
     // VITE_API_PROXY_TARGET points it elsewhere (the full-stack e2e harness uses its own API port).
     proxy: {

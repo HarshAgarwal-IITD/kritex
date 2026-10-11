@@ -54,6 +54,8 @@ test("customer browses, filters, buys from the PDP and lands on the confirmation
   await expect(drawer.getByTestId("cart-line")).toHaveCount(1);
   await drawer.getByRole("button", { name: "View Cart" }).click();
   await expect(page).toHaveURL(/\/cart$/);
+  // The cart page is lazy-loaded: wait for the drawer (and its cart line) to go before counting lines.
+  await expect(drawer).toBeHidden();
   await expect(page.getByTestId("cart-line")).toHaveCount(1);
   await expect(page.getByTestId("cart-line").getByTestId("quantity")).toHaveText("2");
   await page.getByRole("button", { name: "Checkout" }).click();
