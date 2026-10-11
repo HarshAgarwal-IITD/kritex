@@ -172,6 +172,8 @@ export function toCard(p: MockProductDetail): MockProductCard {
     compareAtPrice: p.compareAtPrice,
     saleChannel: p.saleChannel,
     inStock: p.inStock,
+    images: p.images,
+    options: p.options,
   };
 }
 

@@ -1,7 +1,6 @@
 import ProductCard from "@/components/ProductCard";
 import { AddToQuoteLink } from "@/features/quote/components/AddToQuote";
 import { formatPaise, formatPriceRange } from "../format";
-import { useProduct } from "../hooks";
 import type { ProductCardDto, SaleChannel } from "../types";
 import { assetUrl, colourVariants, galleryImages } from "../view";
 
@@ -11,17 +10,11 @@ const CTA: Record<SaleChannel, string> = {
   ENQUIRY_ONLY: "View Details",
 };
 
-/**
- * A product card fed by the API.
- *
- * The list endpoint's card DTO only carries the primary image, but the card shows every view plus
- * colour swatches. Until the contract adds `images[]`/swatches to the card (additive change, see
- * the web-catalog report), the full gallery comes from the PDP query, which also warms the cache
- * for the product page. The card renders immediately with the primary image.
- */
+/** A product card fed by the API: the list's card DTO carries the gallery and colour swatches. */
 const CatalogProductCard = ({ product, index }: { product: ProductCardDto; index: number }) => {
-  const { data: detail } = useProduct(product.slug);
-  const images = detail ? galleryImages(detail) : product.image ? [assetUrl(product.image.url)] : [];
+  const gallery = galleryImages(product);
+  // Products whose photos are all colour-specific still show their primary image.
+  const images = gallery.length > 0 ? gallery : product.image ? [assetUrl(product.image.url)] : [];
 
   return (
     <ProductCard
@@ -29,7 +22,7 @@ const CatalogProductCard = ({ product, index }: { product: ProductCardDto; index
       name={product.name}
       category={product.subCategory ?? product.category.name}
       images={images}
-      colorVariants={detail ? colourVariants(detail) : undefined}
+      colorVariants={colourVariants(product)}
       price={formatPriceRange(product.price)}
       compareAtPrice={product.price && product.compareAtPrice ? formatPaise(product.compareAtPrice) : null}
       ctaLabel={CTA[product.saleChannel]}

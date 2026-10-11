@@ -35,6 +35,7 @@ const Products = () => {
     setParams(
       (prev) => {
         const next = new URLSearchParams(prev);
+        next.delete("page"); // new filters start again at page 1
         for (const [key, value] of Object.entries(patch)) {
           if (!value || value === "all" || (key === "sort" && value === "newest")) next.delete(key);
           else next.set(key, value);

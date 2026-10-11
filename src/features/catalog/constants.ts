@@ -1,5 +1,5 @@
 /**
- * The storefront lists a whole category on one page (~30 products today); the API caps `limit` at 100.
- * Add pagination/"load more" once a category outgrows this.
+ * The storefront fetches a whole category in one request (~30 products today; the API caps `limit` at 100)
+ * and pages it client-side (ProductGrid, 12 per page). Switch to server paging once a category outgrows this.
  */
 export const LIST_LIMIT = 100;

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import { m } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -15,7 +15,17 @@ import NotFound from "./NotFound";
 
 /** `/products/:categorySlug`: one page for every category (replaces the per-category pages). */
 const CategoryPage = ({ categorySlug }: { categorySlug: string }) => {
-  const [activeType, setActiveType] = useState<string>("all");
+  const [activeType, setType] = useState<string>("all");
+  const [, setParams] = useSearchParams();
+  // A new sub-category starts again at page 1.
+  const setActiveType = (type: string) => {
+    setType(type);
+    setParams((prev) => {
+      const next = new URLSearchParams(prev);
+      next.delete("page");
+      return next;
+    });
+  };
 
   const categoriesQuery = useCategories();
   const category = categoriesQuery.data?.items.find((c) => c.slug === categorySlug);

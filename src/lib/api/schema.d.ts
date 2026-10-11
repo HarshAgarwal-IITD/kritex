@@ -3285,9 +3285,28 @@ export interface components {
                     alt: string | null;
                     url: string;
                 } | null;
+                /** @description Every image in display order: the card gallery and colour photos */
+                images: {
+                    alt: string | null;
+                    id: string;
+                    sortOrder: number;
+                    url: string;
+                    /** @description Option value this image belongs to (e.g. colour "Olive Green") */
+                    variantOptionValue: string | null;
+                }[];
                 /** @description At least one active variant has available stock */
                 inStock: boolean;
                 name: string;
+                /** @description Options with values and swatches: the card colour swatches */
+                options: {
+                    /** @example Size */
+                    name: string;
+                    /** @description value → CSS colour or image URL */
+                    swatches: {
+                        [key: string]: string;
+                    } | null;
+                    values: string[];
+                }[];
                 /** @description GST-inclusive price range; null for ENQUIRY_ONLY or unpriced products */
                 price: {
                     /**
