@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "./index.css";
+import { initSentry } from "./lib/sentry";
 
 async function enableMocks() {
   // Dynamic import keeps MSW out of the production bundle.
@@ -12,4 +13,5 @@ async function enableMocks() {
 
 enableMocks().then(() => {
   createRoot(document.getElementById("root")!).render(<App />);
+  initSentry();
 });

@@ -9,6 +9,12 @@ interface ImportMetaEnv {
   readonly VITE_ASSET_BASE_URL?: string;
   /** Public storefront origin for canonical/OG URLs (no trailing slash). Defaults to https://www.kritex.in. */
   readonly VITE_SITE_URL?: string;
+  /** Sentry DSN for browser error reports (public by design). Unset = off. */
+  readonly VITE_SENTRY_DSN?: string;
+  /** Sentry environment tag; defaults to the Vite mode ("production"). */
+  readonly VITE_SENTRY_ENVIRONMENT?: string;
+  /** Release tag: the Vercel commit SHA, injected by vite.config.ts. */
+  readonly VITE_SENTRY_RELEASE?: string;
 }
 
 interface ImportMeta {
