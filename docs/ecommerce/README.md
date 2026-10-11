@@ -18,7 +18,7 @@ into a full ecommerce platform. Update these files as decisions are made and wor
 ## Current status (2026-10-11)
 
 - **Live:** stages 0–4 are in production since 2026-10-10: API `https://api.kritex.in` (Render, Neon), storefront `https://www.kritex.in` (Vercel). `main` = `ecommerce` in both repos; both hosts auto-deploy `main`.
-- **Since the release:** verified-login enquiries (ADR-018), Google sign-in + fill-then-log-in enquiries + navbar (ADR-019), no guest orders (ADR-020), login-only tracking + failed-payment stock release + quote alerts (ADR-021), RL-2 limits + enquiry alerts + legal pages final (ADR-022). Seller: M/s Janki International (`kritex-server/src/config/seller.ts`). Test purchase, shipping, Razorpay webhook/KYC, Resend and Google sign-in are done by the owner.
+- **Since the release:** verified-login enquiries (ADR-018), Google sign-in + fill-then-log-in enquiries + navbar (ADR-019), no guest orders (ADR-020), login-only tracking + failed-payment stock release + quote alerts (ADR-021), RL-2 limits + enquiry alerts + legal pages final (ADR-022). Seller: M/s Garg Sales Corporation (`kritex-server/src/config/seller.ts`). Test purchase, shipping, Razorpay webhook/KYC, Resend and Google sign-in are done by the owner.
 - **Owner to-dos:** [PROGRESS.md → What's needed from the owner](PROGRESS.md#whats-needed-from-the-owner-updated-2026-10-11). Next engineering stage: Stage 5 (Launch prep).
 - **Run locally:** `cd ../kritex-server && docker compose up -d && npm run start:dev` (API :4000, docs at /api/docs), then `npm run dev` here (:8080, proxies /api).
 
