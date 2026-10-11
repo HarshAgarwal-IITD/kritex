@@ -4,23 +4,24 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { api, toApiError } from "@/lib/api/client";
 import { useCurrentUser } from "@/features/account/hooks";
-import { savePendingEnquiry } from "@/features/enquiry/pending";
+import { clearPendingEnquiry, loadPendingDraft, savePendingEnquiry } from "@/features/enquiry/pending";
 
 const buttonClass =
   "inline-block font-display text-xs bg-primary text-primary-foreground px-8 py-3 hover:bg-primary/90 transition-colors duration-300 active:translate-y-px disabled:opacity-50 disabled:pointer-events-none";
 
 /**
  * Inquiries need a signed-in account with a verified email (ADR-018); replies go to the account email.
- * Guests fill the form first: Submit saves it and sends them to log in, and PendingEnquirySender
- * sends it as soon as they're signed in.
+ * Guests fill the form first: Submit saves it and sends them to log in (or sign up with an emailed
+ * code). They come back here with the form filled in again and press Submit to send it.
  */
 const ContactSection = () => {
   const { user, isPending } = useCurrentUser();
   const navigate = useNavigate();
+  const [draft, setDraft] = useState(() => loadPendingDraft("contact"));
   const [formData, setFormData] = useState({
-    name: "",
-    organization: "",
-    requirements: ""
+    name: draft?.name ?? "",
+    organization: draft?.organization ?? "",
+    requirements: draft?.requirements ?? ""
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -46,6 +47,8 @@ const ContactSection = () => {
 
       if (error || !response.ok) throw toApiError(error, response);
 
+      clearPendingEnquiry();
+      setDraft(null);
       toast.success("Inquiry submitted. Our team will be in touch shortly.");
       setFormData({ name: user.name ?? "", organization: "", requirements: "" });
     } catch {
@@ -124,6 +127,11 @@ const ContactSection = () => {
                   />
                 </div>
               </div>
+              {user && draft && (
+                <p className="font-body text-xs text-primary border border-primary/40 bg-primary/5 px-4 py-3" role="status">
+                  You're signed in. We kept your inquiry: check the details and press Submit Inquiry to send it.
+                </p>
+              )}
               {user && (
                 <p className="font-body text-xs text-muted-foreground">
                   We'll reply to <span className="text-foreground">{user.email}</span>.

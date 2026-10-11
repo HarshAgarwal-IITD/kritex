@@ -121,6 +121,21 @@ export async function readMail(to: string, tag: string, timeoutMs = 10_000): Pro
   }
 }
 
+/** The 6-digit code in an email. */
+export const codeIn = (mail: string) => {
+  const m = mail.match(/\b(\d{6})\b/);
+  if (!m) throw new Error(`no code in email:\n${mail}`);
+  return m[1];
+};
+
+/** Verifies `email` with the emailed code (signs `ctx` in, like the UI does). */
+export async function verifyByCode(ctx: APIRequestContext, email: string) {
+  const otp = codeIn(await readMail(email, "otp-email-verification"));
+  const res = await ctx.post(`${API}/auth/email-otp/verify-email`, { data: { email, otp } });
+  expect(res.ok()).toBe(true);
+  return res;
+}
+
 export const firstLink = (mail: string) => {
   const m = mail.match(/https?:\/\/\S+/);
   if (!m) throw new Error(`no link in email:\n${mail}`);
@@ -142,14 +157,13 @@ export async function addSizesToCart(page: Page, slug: string, sizes: string[]) 
 }
 
 /**
- * Signs up `email`, opens the emailed verification link (which signs in) with `ctx`. Pass
+ * Signs up `email`, enters the emailed verification code (which signs in) with `ctx`. Pass
  * `page.request` to sign a browser page in: it shares the page's cookies. Orders need an account
  * (no guest checkout, ADR-020).
  */
 export async function signInBuyer(ctx: APIRequestContext, email = `e2e-buyer-${stamp()}@example.com`) {
   await json(await ctx.post(`${API}/auth/sign-up/email`, { data: { name: "E2E Buyer", email, password: "Sup3r-secret-pass" } }));
-  const verified = await ctx.get(firstLink(await readMail(email, "verify-email")));
-  expect(verified.ok()).toBe(true);
+  await verifyByCode(ctx, email);
   return email;
 }
 

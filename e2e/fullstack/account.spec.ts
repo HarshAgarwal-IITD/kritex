@@ -7,7 +7,7 @@ import {
   checkoutWithFakeGateway,
   createRetailProduct,
   expect,
-  firstLink,
+  codeIn,
   readMail,
   stamp,
   test,
@@ -35,7 +35,7 @@ test("sign up, verify, cart merge on login, orders list/detail, cancel", async (
   const email = `e2e-user-${stamp()}@example.com`;
   const password = "Sup3r-secret-pass";
 
-  // ---- Sign up → "check your email" (no session until verified).
+  // ---- Sign up → "enter the code we emailed" (no session until verified).
   await page.goto("/signup");
   await page.getByLabel("Full name").fill("E2E Customer");
   await page.getByLabel("Email").fill(email);
@@ -44,17 +44,18 @@ test("sign up, verify, cart merge on login, orders list/detail, cancel", async (
   await page.getByRole("button", { name: "Create Account" }).click();
   await expect(page.getByTestId("check-email")).toContainText(email);
 
-  // Unverified login is refused.
+  // Unverified password login asks for the (freshly emailed) code instead.
   await page.goto("/login");
   await page.getByLabel("Email").fill(email);
   await page.getByLabel("Password", { exact: true }).fill(password);
   await page.getByRole("button", { name: "Log In" }).click();
-  await expect(page.getByRole("button", { name: "Resend verification email" })).toBeVisible();
+  await expect(page.getByTestId("check-email")).toContainText("isn't verified yet");
 
-  // ---- Verify via the emailed link: Better Auth signs the user in and redirects to /account (TD-29).
-  const link = firstLink(await readMail(email, "verify-email"));
-  expect(new URL(link).origin).toBe(new URL(page.url()).origin);
-  await page.goto(link);
+  // ---- Enter the emailed code: the server verifies, signs the user in, and the page goes on to /account.
+  const mail = await readMail(email, "otp-email-verification");
+  expect(mail).not.toMatch(/https?:\/\//);
+  await page.getByLabel("Verification code").fill(codeIn(mail));
+  await page.getByRole("button", { name: "Verify & Continue" }).click();
   await expect(page).toHaveURL(/\/account$/);
   await expect(page.getByRole("button", { name: "Log out" })).toBeVisible();
 
@@ -124,7 +125,8 @@ test("a customer can't read another customer's order (IDOR)", async ({ page, bro
     await ctxPage.getByLabel("Confirm password", { exact: true }).fill(password);
     await ctxPage.getByRole("button", { name: "Create Account" }).click();
     await expect(ctxPage.getByTestId("check-email")).toBeVisible();
-    await ctxPage.goto(firstLink(await readMail(email, "verify-email")));
+    await ctxPage.getByLabel("Verification code").fill(codeIn(await readMail(email, "otp-email-verification")));
+    await ctxPage.getByRole("button", { name: "Verify & Continue" }).click();
     await expect(ctxPage).toHaveURL(/\/account$/);
   };
 

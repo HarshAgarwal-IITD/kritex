@@ -34,7 +34,7 @@ export interface SignUpEmailInput {
   name: string;
   email: string;
   password: string;
-  /** Where the emailed verification link lands after verifying. */
+  /** Unused since verification is by code; kept for older callers. */
   callbackURL?: string;
 }
 
@@ -94,11 +94,11 @@ export const authClient = {
 
   // ---- Storefront account flows (Stage 3). Additive; the admin only uses the methods above. ----
 
-  /** Creates the account and emails a verification link. No session until the email is verified. */
+  /** Creates the account and emails a 6-digit verification code. No session until the email is verified. */
   signUpEmail(input: SignUpEmailInput) {
     return request<{ token: string | null; user: AuthUser }>("/sign-up/email", { method: "POST", body: JSON.stringify(input) });
   },
-  /** Re-sends the verification link (e.g. after sign-in fails with EMAIL_NOT_VERIFIED). */
+  /** Emails a fresh verification code (sign-in while unverified already sends one). */
   sendVerificationEmail(input: { email: string; callbackURL?: string }) {
     return request<{ status: boolean }>("/send-verification-email", { method: "POST", body: JSON.stringify(input) });
   },
@@ -112,6 +112,13 @@ export const authClient = {
   /** Sends a 6-digit one-time code by email. */
   sendEmailOtp(input: { email: string; type: EmailOtpType }) {
     return request<{ success: boolean }>("/email-otp/send-verification-otp", { method: "POST", body: JSON.stringify(input) });
+  },
+  /** Verifies the email with the emailed code; the server signs the user in (session cookie). */
+  verifyEmailOtp(input: { email: string; otp: string }) {
+    return request<{ status: boolean; token: string | null; user: AuthUser }>("/email-otp/verify-email", {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
   },
   signInEmailOtp(input: { email: string; otp: string }) {
     return request<SignInEmailResult>("/sign-in/email-otp", { method: "POST", body: JSON.stringify(input) });

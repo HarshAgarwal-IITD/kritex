@@ -10,6 +10,7 @@ import {
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
+  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
@@ -19,6 +20,8 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { asset } from "@/lib/asset";
 import { useMe, useSignOut } from "../api/auth";
+import { useDashboard } from "../api/dashboard";
+import type { Dashboard } from "../api/types";
 import { adminPaths } from "../paths";
 
 interface NavItem {
@@ -26,19 +29,57 @@ interface NavItem {
   to: string;
   icon: LucideIcon;
   exact?: boolean;
+  /** Items waiting for staff, from the dashboard counts (polled every minute). */
+  pending?: (d: Dashboard) => { count: number; title: string };
 }
+
+const n = (count: number, one: string, many: string) => `${count} ${count === 1 ? one : many}`;
+
+const ordersByStatus = (d: Dashboard, status: Dashboard["orders"]["byStatus"][number]["status"]) =>
+  d.orders.byStatus.find((s) => s.status === status)?.count ?? 0;
 
 const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
   { label: "Overview", items: [{ label: "Dashboard", to: adminPaths.dashboard, icon: LayoutDashboard, exact: true }] },
   {
     label: "Sales",
     items: [
-      { label: "Orders", to: adminPaths.orders, icon: ShoppingBag },
-      { label: "Quotes", to: adminPaths.quotes, icon: ClipboardList },
+      {
+        label: "Orders",
+        to: adminPaths.orders,
+        icon: ShoppingBag,
+        pending: (d) => {
+          const paid = ordersByStatus(d, "PAID");
+          const returns = ordersByStatus(d, "RETURN_REQUESTED");
+          return {
+            count: paid + d.awaitingPaymentOrders + returns,
+            title: [
+              n(paid, "paid order to process", "paid orders to process"),
+              n(d.awaitingPaymentOrders, "bank transfer to confirm", "bank transfers to confirm"),
+              n(returns, "return request", "return requests"),
+            ].join(", "),
+          };
+        },
+      },
+      {
+        label: "Quotes",
+        to: adminPaths.quotes,
+        icon: ClipboardList,
+        pending: (d) => ({ count: d.pendingQuotes, title: n(d.pendingQuotes, "quote request to price", "quote requests to price") }),
+      },
       { label: "Customers", to: adminPaths.customers, icon: Users },
-      { label: "B2B approvals", to: adminPaths.b2bApprovals, icon: BadgeCheck },
+      {
+        label: "B2B approvals",
+        to: adminPaths.b2bApprovals,
+        icon: BadgeCheck,
+        pending: (d) => ({ count: d.pendingBusinessProfiles, title: n(d.pendingBusinessProfiles, "business profile to review", "business profiles to review") }),
+      },
       { label: "Coupons", to: adminPaths.coupons, icon: TicketPercent },
-      { label: "Enquiries", to: adminPaths.enquiries, icon: Inbox },
+      {
+        label: "Enquiries",
+        to: adminPaths.enquiries,
+        icon: Inbox,
+        pending: (d) => ({ count: d.newEnquiries, title: n(d.newEnquiries, "new enquiry", "new enquiries") }),
+      },
     ],
   },
   {
@@ -46,7 +87,12 @@ const NAV_GROUPS: { label: string; items: NavItem[] }[] = [
     items: [
       { label: "Products", to: adminPaths.products, icon: Package },
       { label: "Categories", to: adminPaths.categories, icon: FolderTree },
-      { label: "Inventory", to: adminPaths.inventory, icon: Boxes },
+      {
+        label: "Inventory",
+        to: adminPaths.inventory,
+        icon: Boxes,
+        pending: (d) => ({ count: d.lowStock.length, title: n(d.lowStock.length, "variant low on stock", "variants low on stock") }),
+      },
     ],
   },
 ];
@@ -59,6 +105,7 @@ export function AdminLayout() {
   const navigate = useNavigate();
   const me = useMe();
   const signOut = useSignOut();
+  const dashboard = useDashboard();
   const current = NAV_GROUPS.flatMap((g) => g.items).find((n) => isActive(n, pathname));
 
   return (
@@ -79,16 +126,29 @@ export function AdminLayout() {
               <SidebarGroupLabel className="font-display">{group.label}</SidebarGroupLabel>
               <SidebarGroupContent>
                 <SidebarMenu>
-                  {group.items.map((item) => (
-                    <SidebarMenuItem key={item.to}>
-                      <SidebarMenuButton asChild isActive={isActive(item, pathname)} tooltip={item.label}>
-                        <Link to={item.to}>
-                          <item.icon />
-                          <span>{item.label}</span>
-                        </Link>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
+                  {group.items.map((item) => {
+                    const pending = item.pending && dashboard.data ? item.pending(dashboard.data) : null;
+                    const label = pending?.count ? `${item.label} (${pending.count})` : item.label;
+                    return (
+                      <SidebarMenuItem key={item.to}>
+                        <SidebarMenuButton asChild isActive={isActive(item, pathname)} tooltip={label}>
+                          <Link to={item.to} aria-label={pending?.count ? `${item.label}, ${pending.title}` : undefined}>
+                            <item.icon />
+                            <span>{item.label}</span>
+                          </Link>
+                        </SidebarMenuButton>
+                        {pending && pending.count > 0 && (
+                          <SidebarMenuBadge
+                            title={pending.title}
+                            data-testid={`nav-badge-${item.to.split("/").pop()}`}
+                            className="bg-primary text-primary-foreground peer-hover/menu-button:text-primary-foreground peer-data-[active=true]/menu-button:text-primary-foreground"
+                          >
+                            {pending.count > 99 ? "99+" : pending.count}
+                          </SidebarMenuBadge>
+                        )}
+                      </SidebarMenuItem>
+                    );
+                  })}
                 </SidebarMenu>
               </SidebarGroupContent>
             </SidebarGroup>

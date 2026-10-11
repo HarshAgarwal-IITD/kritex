@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import type { APIRequestContext } from "@playwright/test";
-import { ADMIN_EMAIL, ADMIN_PASSWORD, API, adminApi, apiContext, createRetailProduct, expect, firstLink, json, readMail, stamp, test, type CreatedProduct } from "./fixtures";
+import { ADMIN_EMAIL, ADMIN_PASSWORD, API, adminApi, apiContext, createRetailProduct, expect, json, stamp, test, verifyByCode, type CreatedProduct } from "./fixtures";
 
 /**
  * QA-5: RFQ → quote → accept → order.
@@ -33,7 +33,7 @@ test("API: customer RFQ → admin quotes per line → customer accepts → order
   const email = `e2e-rfq-${stamp()}@example.com`;
   const customer = await apiContext();
   await json(await customer.post(`${API}/auth/sign-up/email`, { data: { name: "E2E Buyer", email, password: "Sup3r-secret-pass" } }));
-  await customer.get(firstLink(await readMail(email, "verify-email")));
+  await verifyByCode(customer, email);
 
   const detail = await json<{ variants: { id: string; title: string }[] }>(await customer.get(`${API}/products/${product.slug}`));
   const rfq = await customer.post(`${API}/quotes`, {
@@ -124,7 +124,7 @@ test("UI: customer requests a quote, admin responds, customer accepts → paid o
   const password = "Sup3r-secret-pass";
   const customer = await apiContext();
   await json(await customer.post(`${API}/auth/sign-up/email`, { data: { name: "E2E Buyer", email, password } }));
-  await customer.get(firstLink(await readMail(email, "verify-email")));
+  await verifyByCode(customer, email);
   await customer.dispose();
   await page.goto("/login");
   await page.getByLabel("Email").fill(email);

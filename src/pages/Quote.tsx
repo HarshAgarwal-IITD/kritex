@@ -12,7 +12,7 @@ import { useCurrentUser } from "@/features/account/hooks";
 import { gstinSchema, phoneSchema } from "@/features/checkout/address";
 import { lineKey, MAX_QUOTE_QUANTITY, quoteCart, useQuoteCart } from "@/features/quote/store";
 import { quoteErrorMessage, useCreateQuote } from "@/features/quote/hooks";
-import { savePendingEnquiry } from "@/features/enquiry/pending";
+import { clearPendingEnquiry, loadPendingDraft, savePendingEnquiry } from "@/features/enquiry/pending";
 import type { CreatedQuote, CreateQuoteInput, QuoteCartLine } from "@/features/quote/types";
 import { FormSkeleton } from "@/components/shop/Loaders";
 
@@ -157,21 +157,22 @@ const RfqPanel = (props: RfqProps) => {
 };
 
 /**
- * Signed in: sends straight away. Guest: saves the request and goes to log in; PendingEnquirySender
- * sends it once they're signed in (ADR-018) and they land on their quotes.
+ * Signed in: sends straight away. Guest: saves the request and goes to log in (or sign up with an
+ * emailed code, ADR-018); they come back here with the details filled in again and press Send.
  */
 const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string | null }) => {
   const { user } = useCurrentUser();
   const navigate = useNavigate();
   const create = useCreateQuote();
+  const [draft] = useState(() => loadPendingDraft("quote"));
   const form = useForm<RfqInput, unknown, RfqValues>({
     resolver: zodResolver(rfqSchema),
     values: {
-      contactName: user?.name ?? "",
-      organization: user?.businessProfile?.legalName ?? "",
-      phone: user?.phone ?? "",
-      gstin: user?.businessProfile?.gstin ?? "",
-      notes: "",
+      contactName: draft?.contactName ?? user?.name ?? "",
+      organization: draft?.organization ?? user?.businessProfile?.legalName ?? "",
+      phone: draft?.phone ?? user?.phone ?? "",
+      gstin: draft?.gstin ?? user?.businessProfile?.gstin ?? "",
+      notes: draft?.notes ?? "",
       website: "",
     },
     resetOptions: { keepDirtyValues: true },
@@ -203,6 +204,7 @@ const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string | null }) 
     }
     create.mutate(body, {
       onSuccess: (quote) => {
+        clearPendingEnquiry();
         quoteCart.clear();
         onSent(quote, email);
       },
@@ -212,6 +214,11 @@ const RfqForm = ({ lines, onSent, email }: RfqProps & { email: string | null }) 
   return (
     <form onSubmit={form.handleSubmit(onSubmit)} noValidate className={`${panelClass} relative space-y-5`} aria-label="Quote request">
       <h2 className={sectionTitleClass}>Your details</h2>
+      {email && draft && (
+        <p className="font-body text-xs text-primary border border-primary/40 bg-primary/5 px-4 py-3" role="status">
+          You're signed in. We kept your request: check the details and press Send Quote Request.
+        </p>
+      )}
       {email && (
         <p className="font-body text-xs text-muted-foreground -mt-2">
           We'll send the quote to <span className="text-foreground">{email}</span>.

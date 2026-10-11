@@ -17,7 +17,7 @@ export function authErrorMessage(err: ApiError): string {
     case "INVALID_EMAIL_OR_PASSWORD":
       return "Invalid email or password.";
     case "EMAIL_NOT_VERIFIED":
-      return "Please verify your email first. Check your inbox for the link we sent.";
+      return "Please verify your email first. We've emailed you a 6-digit code.";
     case "ACCOUNT_DISABLED":
     case "BANNED_USER":
       return "This account has been disabled. Contact us for help.";

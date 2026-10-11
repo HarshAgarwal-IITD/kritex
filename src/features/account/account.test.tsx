@@ -109,7 +109,7 @@ describe("login", () => {
 });
 
 describe("signup", () => {
-  it("creates the account, shows 'check your email', and unverified sign-in explains why", async () => {
+  it("creates the account, asks for the emailed code, and the code signs in", async () => {
     renderApp("/signup");
     await screen.findByRole("heading", { name: "Create Account" });
     type("Full name", "New Person");
@@ -126,14 +126,37 @@ describe("signup", () => {
     expect(await screen.findByTestId("check-email")).toHaveTextContent("new@example.com");
     expect(getAdminMockDb().users.find((u) => u.email === "new@example.com")?.emailVerified).toBe(false);
 
-    fireEvent.click(screen.getByRole("link", { name: /Go to log in/ }));
+    fireEvent.click(screen.getByRole("button", { name: "Resend code" }));
+    expect(await screen.findByText("We've sent a new code.")).toBeInTheDocument();
+    type("Verification code", "000000");
+    fireEvent.click(screen.getByRole("button", { name: "Verify & Continue" }));
+    expect(await screen.findByText(/That code isn't right/)).toBeInTheDocument();
+    type("Verification code", MOCK_OTP);
+    fireEvent.click(screen.getByRole("button", { name: "Verify & Continue" }));
+    await waitFor(() => expect(location()).toHaveTextContent(/^\/account$/));
+    expect(getAdminMockDb().users.find((u) => u.email === "new@example.com")?.emailVerified).toBe(true);
+  });
+
+  it("an unverified password sign-in asks for the emailed code instead", async () => {
+    renderApp("/signup");
+    await screen.findByRole("heading", { name: "Create Account" });
+    type("Full name", "New Person");
+    type("Email", "later@example.com");
+    type("Password", "longenough1");
+    type("Confirm password", "longenough1");
+    fireEvent.click(screen.getByRole("button", { name: "Create Account" }));
+    await screen.findByTestId("check-email");
+    fireEvent.click(screen.getByRole("button", { name: "Use another email" }));
+    fireEvent.click(await screen.findByRole("link", { name: "Log in" }));
+
     await screen.findByRole("heading", { name: "Log In" });
-    type("Email", "new@example.com");
+    type("Email", "later@example.com");
     type("Password", "longenough1");
     fireEvent.click(screen.getByRole("button", { name: "Log In" }));
-    expect(await screen.findByText(/Please verify your email first/)).toBeInTheDocument();
-    fireEvent.click(screen.getByRole("button", { name: "Resend verification email" }));
-    expect(await screen.findByText("Verification email sent.")).toBeInTheDocument();
+    expect(await screen.findByTestId("check-email")).toHaveTextContent(/isn't verified yet.*later@example.com/);
+    type("Verification code", MOCK_OTP);
+    fireEvent.click(screen.getByRole("button", { name: "Verify & Continue" }));
+    await waitFor(() => expect(location()).toHaveTextContent(/^\/account$/));
   });
 
   it("reports an existing account", async () => {

@@ -37,6 +37,20 @@ describe("admin dashboard", () => {
   });
 });
 
+describe("admin sidebar", () => {
+  it("shows how many items wait in each section, and nothing for sections with none", async () => {
+    renderAdmin("/admin/coupons");
+    const enquiries = await screen.findByTestId("nav-badge-enquiries");
+    expect(enquiries).toHaveTextContent("1");
+    expect(enquiries).toHaveAttribute("title", "1 new enquiry");
+    expect(screen.getByTestId("nav-badge-b2b-approvals")).toHaveTextContent("1");
+    expect(screen.getByTestId("nav-badge-orders")).toHaveAttribute("title", expect.stringContaining("1 bank transfer to confirm"));
+    expect(screen.getByRole("link", { name: /^Enquiries, 1 new enquiry$/ })).toHaveAttribute("href", "/admin/enquiries");
+    expect(screen.queryByTestId("nav-badge-customers")).not.toBeInTheDocument();
+    expect(screen.queryByTestId("nav-badge-inventory")).not.toBeInTheDocument(); // nothing low on stock
+  });
+});
+
 describe("admin inventory", () => {
   it("filters low stock by threshold and adjusts stock with a reason", async () => {
     renderAdmin("/admin/inventory");

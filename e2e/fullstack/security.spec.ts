@@ -12,6 +12,7 @@ import {
   readMail,
   stamp,
   test,
+  verifyByCode,
   type CreatedProduct,
 } from "./fixtures";
 
@@ -46,14 +47,11 @@ test.afterAll(async () => {
 
 // ---------------------------------------------------------------------------------------------- helpers
 
-/** Signs up, follows the emailed verification link (which signs in), returns the signed-in context. */
+/** Signs up, enters the emailed verification code (which signs in), returns the signed-in context. */
 async function newCustomer(email = `e2e-sec-${stamp()}@example.com`, name = "Sec Customer") {
   const ctx = await apiContext();
   await json(await ctx.post(`${API}/auth/sign-up/email`, { data: { name, email, password: PASSWORD } }));
-  // The name may itself contain a URL (SEC-CSV), so pick the verification link explicitly.
-  const mail = await readMail(email, "verify-email");
-  const res = await ctx.get(mail.match(/https?:\/\/\S*verify-email\S*/)?.[0] ?? firstLink(mail));
-  expect(res.ok()).toBe(true);
+  await verifyByCode(ctx, email);
   const me = await json<{ email: string; role: string }>(await ctx.get(`${API}/me`));
   expect(me).toMatchObject({ email, role: "CUSTOMER" });
   return ctx;

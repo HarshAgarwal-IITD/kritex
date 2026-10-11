@@ -41,7 +41,7 @@ describe("quote cart store", () => {
 });
 
 describe("RFQ (B2B-2)", () => {
-  it("a guest fills the RFQ, logs in, and it is sent automatically", async () => {
+  it("a guest fills the RFQ, logs in, comes back to the filled form and sends it", async () => {
     quoteCart.add({ productId: "prd_rapid-20-tactical-backpack", productSlug: "rapid-20-tactical-backpack", productName: "Rapid 20", image: null, quantity: 5 });
     renderApp("/quote");
     const send = await screen.findByRole("button", { name: "Send Quote Request" });
@@ -59,14 +59,22 @@ describe("RFQ (B2B-2)", () => {
     type("Password", MOCK_PASSWORD);
     fireEvent.click(screen.getByRole("button", { name: "Log In" }));
 
+    // Back on /quote with what they typed; nothing is sent until they press Send.
+    await waitFor(() => expect(location()).toBe("/quote"));
+    expect(await screen.findByText(/We kept your request/)).toBeInTheDocument();
+    expect(screen.getByLabelText("Your name")).toHaveValue("Gita Guest");
+    expect(screen.getByLabelText("Company / organisation")).toHaveValue("Guest Traders");
+    expect((screen.getByLabelText("Mobile number") as HTMLInputElement).value).toMatch(/9876543210$/); // saved normalised
+    expect(getB2bOpsMockDb().quotes.find((q) => q.contactName === "Gita Guest")).toBeUndefined();
+
+    fireEvent.click(screen.getByRole("button", { name: "Send Quote Request" }));
     await waitFor(() => expect(getB2bOpsMockDb().quotes.find((q) => q.contactName === "Gita Guest")).toBeDefined());
     expect(getB2bOpsMockDb().quotes.find((q) => q.contactName === "Gita Guest")).toMatchObject({
       userId: "usr_customer",
       email: "customer@example.com",
       organization: "Guest Traders",
     });
-    // Sent automatically after sign-in, then the customer lands on the new quote.
-    await waitFor(() => expect(location()).toMatch(/^\/account\/quotes\/KTQ-\d+$/));
+    expect(await screen.findByTestId("quote-number")).toBeInTheDocument();
     expect(quoteCart.get()).toEqual([]);
     expect(localStorage.getItem("kritex_pending_enquiry")).toBeNull();
   });

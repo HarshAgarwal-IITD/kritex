@@ -6,7 +6,7 @@ import { http, HttpResponse } from "msw";
 import { server } from "@/mocks/server";
 import { apiPath, getMockQueries } from "@/mocks/handlers";
 import { newQueryClient } from "@/features/catalog/test-utils";
-import { loadPendingEnquiry, clearPendingEnquiry } from "@/features/enquiry/pending";
+import { loadPendingEnquiry, clearPendingEnquiry, savePendingEnquiry } from "@/features/enquiry/pending";
 import { resetMocks } from "@/test/render-app";
 import ContactSection from "./ContactSection";
 
@@ -63,6 +63,22 @@ describe("ContactSection", () => {
       body: { name: "Asha Rao", organization: "Army HQ", requirements: "500 combat shirts" },
     });
     expect(sentQuery()).toBeUndefined();
+  });
+
+  it("after logging in, the saved inquiry is back in the form and is sent on Submit", async () => {
+    savePendingEnquiry({ kind: "contact", body: { name: "Asha Rao", organization: "Army HQ", requirements: "500 combat shirts" } });
+    renderSection();
+    expect(await screen.findByText(/We kept your inquiry/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Full Name")).toHaveValue("Asha Rao");
+    expect(screen.getByPlaceholderText("Ministry / Unit")).toHaveValue("Army HQ");
+    expect(screen.getByPlaceholderText(/Describe your procurement requirements/)).toHaveValue("500 combat shirts");
+    expect(sentQuery()).toBeUndefined();
+
+    fireEvent.click(screen.getByRole("button", { name: "Submit Inquiry" }));
+    await waitFor(() => expect(toastMock.success).toHaveBeenCalledTimes(1));
+    expect(sentQuery()).toMatchObject({ name: "Asha Rao", organization: "Army HQ", email: "customer@example.com" });
+    expect(loadPendingEnquiry()).toBeNull();
+    expect(screen.queryByText(/We kept your inquiry/)).not.toBeInTheDocument();
   });
 
   it("submits the inquiry to the API with the account email, shows a success toast and resets the form", async () => {

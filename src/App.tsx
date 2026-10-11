@@ -20,7 +20,6 @@ import LegalContact from "./pages/legal/Contact.tsx";
 import { AdminRoute } from "./admin/route";
 import CartPage from "./pages/Cart.tsx";
 import { CartDrawerProvider } from "./features/cart/components/CartDrawer";
-import PendingEnquirySender from "./features/enquiry/PendingEnquirySender";
 import RequireAuth from "./features/account/components/RequireAuth";
 import { PageLoader } from "@/components/shop/Loaders";
 
@@ -52,7 +51,6 @@ const RouteFallback = PageLoader;
 /** Every route plus the cart drawer. Exported so tests can mount it inside a MemoryRouter. */
 export const AppRoutes = () => (
   <CartDrawerProvider>
-    <PendingEnquirySender />
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<Index />} />

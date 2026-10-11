@@ -284,7 +284,7 @@ Final checks: **server** lint, typecheck, build, `openapi:check` OK; **364 unit 
 ## After the release (2026-10-10 → 11)
 
 - **Enquiries need a verified account** (ADR-018): `POST /queries` and `POST /quotes` use `@RequireVerifiedEmail()`; replies go to the account email.
-- **Fill first, log in on submit** (ADR-019): guests fill the contact form / RFQ; it is saved in `localStorage` and `PendingEnquirySender` sends it after sign-in.
+- **Fill first, log in on submit** (ADR-019): guests fill the contact form / RFQ; it is saved in `localStorage` and restored into the form after sign-in for the customer to send (2026-10-11; was auto-sent by `PendingEnquirySender`).
 - **Continue with Google** (ADR-019): Better Auth Google provider, account linking for Google, `GET /auth-options`. Production OAuth client configured by the owner; `GOOGLE_CLIENT_ID/SECRET` on Render.
 - **Email:** owner added `RESEND_API_KEY` on Render (2026-10-11). Verification, order and quote emails go through Resend once the kritex.in domain is verified there.
 - **No guest orders** (ADR-020): checkout quote/place need a verified account; `/checkout` is behind `RequireAuth`; carts still work for guests and merge on sign-in.
@@ -331,6 +331,13 @@ Render (free, Singapore, Docker) + Neon (free, Singapore) + Vercel for the site.
 - kritex-server `29b0eb2`: `Dockerfile` (runs `prisma migrate deploy` on boot), `render.yaml`, `TRUST_PROXY` env,
   prisma CLI moved to dependencies, README deploy guide. Image built and health-checked locally.
 - kritex-website: `vercel.json` proxies `/api/*` → `https://kritex-server.onrender.com`.
+
+## Auth codes, enquiry drafts, admin badges (2026-10-11)
+- **Email verification by code:** sign-up and an unverified password login email a 6-digit code (no link); the sign-up / login page asks for it in place (`VerifyEmailCode`) and continues to `?next=`. Server: `emailOTP({ overrideDefaultEmailVerification: true })`.
+- **Enquiry drafts restored, not auto-sent:** a guest's contact / RFQ draft comes back filled in after sign-in with a "we kept your inquiry" notice; it is sent when they press Submit. `PendingEnquirySender` removed.
+- **Staff alert inboxes in code:** `kritex-server/src/config/staff.ts` (`STAFF_ALERT_EMAILS`, default `kritex.jdp@gmail.com`); the env var is gone (an empty value on Render had silenced the alerts).
+- **Admin sidebar counts:** Orders (paid to process + bank transfers to confirm + return requests), Quotes, B2B approvals, Enquiries and Inventory (low stock) show badges from `GET /admin/dashboard`.
+- Deploy server and website together (the old site tells users to open a link).
 
 ## Open follow-ups / tech debt
 Tracked in [TASKS.md](TASKS.md) → "Tech-debt / follow-ups" (TD-1…TD-36, release blockers RL-1/RL-2), plus AUTH-6 and COM-16 added to Stages 2–3.

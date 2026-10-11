@@ -643,6 +643,17 @@ export const commerceHandlers = [
     return HttpResponse.json({ token: `tok_${user.id}`, user: { id: user.id, email: user.email, name: user.name, emailVerified: true } });
   }),
 
+  // Verifies the email with the emailed code and signs in (server: autoSignInAfterVerification).
+  http.post(apiPath("/api/v1/auth/email-otp/verify-email"), async ({ request }) => {
+    const body = (await request.json()) as { email?: string; otp?: string };
+    const email = body.email?.trim().toLowerCase() ?? "";
+    const user = getAdminMockDb().users.find((u) => u.email === email);
+    if (body.otp !== MOCK_OTP || !user) return HttpResponse.json({ code: "INVALID_OTP", message: "Invalid OTP" }, { status: 400 });
+    user.emailVerified = true;
+    setMockSession(user.email);
+    return HttpResponse.json({ status: true, token: `tok_${user.id}`, user: { id: user.id, email: user.email, name: user.name, emailVerified: true } });
+  }),
+
   // ---- Cart ----
   http.get(apiPath("/api/v1/cart"), () => HttpResponse.json<Cart>(cartDto())),
 

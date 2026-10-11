@@ -1,15 +1,17 @@
 import { useState } from "react";
-import { Link, Navigate, useSearchParams } from "react-router-dom";
+import { Link, Navigate, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { Loader2, MailCheck } from "lucide-react";
-import { Field, FormError, FormNotice } from "@/components/shop/Field";
-import { linkButtonClass, primaryButtonClass } from "@/components/shop/styles";
+import { Loader2 } from "lucide-react";
+import { Field, FormError } from "@/components/shop/Field";
+import { primaryButtonClass } from "@/components/shop/styles";
 import AuthShell from "@/features/account/components/AuthShell";
+import { loadPendingEnquiry, SAVED_ENQUIRY_INTRO } from "@/features/enquiry/pending";
 import GoogleSignIn from "@/features/account/components/GoogleSignIn";
+import VerifyEmailCode from "@/features/account/components/VerifyEmailCode";
 import { authErrorMessage, passwordRules, safeNext } from "@/features/account/auth-messages";
-import { useCurrentUser, useResendVerification, useSignup } from "@/features/account/hooks";
+import { useCurrentUser, useSignup } from "@/features/account/hooks";
 
 const signupSchema = z
   .object({
@@ -21,13 +23,17 @@ const signupSchema = z
   .refine((v) => v.password === v.confirm, { path: ["confirm"], message: "Passwords don't match" });
 type SignupValues = z.infer<typeof signupSchema>;
 
-/** `/signup` — creates the account, then asks the customer to verify their email (no session until verified). */
+/**
+ * `/signup?next=` — creates the account, then asks for the 6-digit code we emailed. The code signs
+ * the customer in and they go straight back to `next` (e.g. the enquiry form they were filling in).
+ */
 const Signup = () => {
   const [params] = useSearchParams();
   const next = safeNext(params.get("next"));
   const { isSignedIn, isPending } = useCurrentUser();
+  const navigate = useNavigate();
   const signup = useSignup();
-  const resend = useResendVerification();
+  const [justVerified, setJustVerified] = useState(false);
   const [sentTo, setSentTo] = useState<string | null>(null);
   const form = useForm<SignupValues>({
     resolver: zodResolver(signupSchema),
@@ -35,28 +41,15 @@ const Signup = () => {
   });
   const { errors } = form.formState;
 
-  if (!isPending && isSignedIn) return <Navigate to={next} replace />;
+  if (!isPending && isSignedIn && !justVerified) return <Navigate to={next} replace />;
 
   if (sentTo) {
     return (
-      <AuthShell title="Check your email" intro={null}>
-        <div className="space-y-5" data-testid="check-email">
-          <MailCheck size={24} className="text-primary" />
-          <p className="font-body text-sm text-muted-foreground">
-            We sent a verification link to <span className="font-display text-foreground">{sentTo}</span>. Open it to activate your
-            account, then log in.
-          </p>
-          {resend.isSuccess && <FormNotice>Verification email sent again.</FormNotice>}
-          {resend.isError && <FormError>{authErrorMessage(resend.error)}</FormError>}
-          <div className="flex justify-between">
-            <button type="button" className={linkButtonClass} disabled={resend.isPending} onClick={() => resend.mutate({ email: sentTo })}>
-              Resend email
-            </button>
-            <Link to={`/login?next=${encodeURIComponent(next)}`} className={linkButtonClass}>
-              Go to log in →
-            </Link>
-          </div>
-        </div>
+      <AuthShell title="Verify your email" intro={null}>
+        <VerifyEmailCode email={sentTo} onVerified={() => {
+            setJustVerified(true);
+            navigate(next, { replace: true });
+          }} onBack={() => setSentTo(null)} />
       </AuthShell>
     );
   }
@@ -67,7 +60,7 @@ const Signup = () => {
   return (
     <AuthShell
       title="Create Account"
-      intro="One account for orders, saved addresses and business pricing."
+      intro={loadPendingEnquiry() ? SAVED_ENQUIRY_INTRO : "One account for orders, saved addresses and business pricing."}
       footer={
         <>
           Already have an account?{" "}

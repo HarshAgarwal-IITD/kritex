@@ -5,12 +5,16 @@ type CreateQueryInput = paths["/api/v1/queries"]["post"]["requestBody"]["content
 
 /**
  * An enquiry a guest filled in before logging in (ADR-018). It is kept in localStorage while they
- * sign in (password, email code, Google, or sign-up + email verification in the same browser) and
- * sent by `PendingEnquirySender` as soon as a verified session exists.
+ * sign in (password, email code, Google, or sign-up + the emailed verification code) and the form
+ * restores it when they come back (`?next=`), so they review it and press Send. It is cleared once sent.
  */
 export type PendingEnquiry =
   | { kind: "contact"; body: CreateQueryInput; savedAt: number }
   | { kind: "quote"; body: CreateQuoteInput; savedAt: number };
+
+/** Login / sign-up intro while a draft is waiting. */
+export const SAVED_ENQUIRY_INTRO =
+  "Your inquiry is saved. Log in or create an account (we'll email you a 6-digit code) and we'll take you back to it to send.";
 
 export const PENDING_ENQUIRY_STORAGE_KEY = "kritex_pending_enquiry";
 /** Drafts older than this are dropped rather than sent out of the blue. */
@@ -42,6 +46,14 @@ export function loadPendingEnquiry(): PendingEnquiry | null {
     clearPendingEnquiry();
     return null;
   }
+}
+
+/** The saved draft of one form, if any (kept until it is sent). */
+export function loadPendingDraft(kind: "contact"): CreateQueryInput | null;
+export function loadPendingDraft(kind: "quote"): CreateQuoteInput | null;
+export function loadPendingDraft(kind: PendingEnquiry["kind"]): CreateQueryInput | CreateQuoteInput | null {
+  const enquiry = loadPendingEnquiry();
+  return enquiry?.kind === kind ? enquiry.body : null;
 }
 
 export function clearPendingEnquiry(): void {

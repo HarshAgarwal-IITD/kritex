@@ -8,9 +8,11 @@ import { cn } from "@/lib/utils";
 import { Field, FormError, FormNotice } from "@/components/shop/Field";
 import { linkButtonClass, primaryButtonClass } from "@/components/shop/styles";
 import AuthShell from "@/features/account/components/AuthShell";
+import { loadPendingEnquiry, SAVED_ENQUIRY_INTRO } from "@/features/enquiry/pending";
 import GoogleSignIn from "@/features/account/components/GoogleSignIn";
+import VerifyEmailCode from "@/features/account/components/VerifyEmailCode";
 import { authErrorMessage, safeNext } from "@/features/account/auth-messages";
-import { useCurrentUser, useLogin, useOtpLogin, useResendVerification, useSendLoginOtp } from "@/features/account/hooks";
+import { useCurrentUser, useLogin, useOtpLogin, useSendLoginOtp } from "@/features/account/hooks";
 
 const emailField = z.string().trim().toLowerCase().email("Enter a valid email");
 
@@ -22,10 +24,20 @@ const otpCodeSchema = z.object({ otp: z.string().trim().regex(/^\d{6}$/, "Enter 
 
 const PasswordLogin = ({ onDone }: { onDone: () => void }) => {
   const login = useLogin();
-  const resend = useResendVerification();
   const form = useForm<PasswordValues>({ resolver: zodResolver(passwordSchema), defaultValues: { email: "", password: "" } });
   const { errors } = form.formState;
-  const unverified = login.error?.code === "EMAIL_NOT_VERIFIED";
+
+  // Not verified yet: the server has just emailed a code. Entering it verifies and signs in.
+  if (login.error?.code === "EMAIL_NOT_VERIFIED") {
+    return (
+      <VerifyEmailCode
+        email={form.getValues("email")}
+        intro="Your email isn't verified yet. We sent a 6-digit code to"
+        onVerified={onDone}
+        onBack={() => login.reset()}
+      />
+    );
+  }
 
   return (
     <form onSubmit={form.handleSubmit((v) => login.mutate(v as Required<PasswordValues>, { onSuccess: onDone }))} noValidate className="space-y-5">
@@ -42,24 +54,7 @@ const PasswordLogin = ({ onDone }: { onDone: () => void }) => {
         }
         {...form.register("password")}
       />
-      {login.isError && (
-        <FormError>
-          {authErrorMessage(login.error)}
-          {unverified && (
-            <>
-              {" "}
-              <button
-                type="button"
-                className="underline"
-                disabled={resend.isPending || resend.isSuccess}
-                onClick={() => resend.mutate({ email: form.getValues("email") })}
-              >
-                {resend.isSuccess ? "Verification email sent." : "Resend verification email"}
-              </button>
-            </>
-          )}
-        </FormError>
-      )}
+      {login.isError && <FormError>{authErrorMessage(login.error)}</FormError>}
       <button type="submit" className={`${primaryButtonClass} w-full`} disabled={login.isPending}>
         {login.isPending && <Loader2 size={14} className="animate-spin" />}
         Log In
@@ -162,7 +157,7 @@ const Login = () => {
   return (
     <AuthShell
       title="Log In"
-      intro="Track orders, save addresses and check out faster."
+      intro={loadPendingEnquiry() ? SAVED_ENQUIRY_INTRO : "Track orders, save addresses and check out faster."}
       footer={
         <>
           New to Kritex?{" "}

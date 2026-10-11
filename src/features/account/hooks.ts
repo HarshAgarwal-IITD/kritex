@@ -148,13 +148,25 @@ export function useGoogleSignIn() {
 
 export function useSignup() {
   return useMutation<unknown, ApiError, Omit<SignUpEmailInput, "callbackURL">>({
-    mutationFn: (input) => authClient.signUpEmail({ ...input, callbackURL: siteUrl("/account") }),
+    mutationFn: (input) => authClient.signUpEmail(input),
   });
 }
 
+/** Emails a fresh 6-digit verification code. */
 export function useResendVerification() {
   return useMutation<unknown, ApiError, { email: string }>({
-    mutationFn: ({ email }) => authClient.sendVerificationEmail({ email, callbackURL: siteUrl("/account") }),
+    mutationFn: ({ email }) => authClient.sendVerificationEmail({ email }),
+  });
+}
+
+/** Enters the emailed verification code: verifies the address and signs the user in. */
+export function useVerifyEmailOtp() {
+  const qc = useQueryClient();
+  return useMutation<Me | null, ApiError, { email: string; otp: string }>({
+    mutationFn: async (input) => {
+      await authClient.verifyEmailOtp(input);
+      return afterSignIn(qc);
+    },
   });
 }
 
