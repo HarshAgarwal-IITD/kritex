@@ -323,7 +323,8 @@ Final checks: **server** lint, typecheck, build, `openapi:check` OK; **364 unit 
 | 9 | Seller details are code config (`kritex-server/src/config/seller.ts`: M/s Garg Sales Corporation (proprietor Harsh Agarwal), GSTIN 19FAEPA3026H1Z1, state 19) and on the legal pages; draft banner removed (2026-10-11). Still to fill in `src/pages/legal/placeholders.ts`: business hours, dispatch time, delivery time, who pays exchange shipping. Legal review recommended | Policy pages complete |
 | 10 | **CA review** of GST rules and the invoice format (questions a–f in ADR-015 / earlier list) | Tax correctness |
 | 11 | ~~Confirm RL-2 limits~~ ✅ built 2026-10-11 (ADR-022); adjust via Render env if needed | — |
-| 12 | Small: field duty jacket size "XX" (typo, correct size?); which categories are "coming soon" (Base Layers) | Catalogue copy |
+| 12 | Small: field duty jacket sizes printed "S / M / XL / XX / XXXL" (typo? shown as printed); which categories are "coming soon" (Base Layers) | Catalogue copy |
+| 14 | **Catalogue sheets (ADR-023), confirm:** Liberty Warrior closure (sheet: lace-up only; old data: side zip); Freedom boot pattern (sheet "solid", photo camo); Olive Green Tactical boot colour printed "Brown / Green"; "Thor & Atlash" spelling; Thor sheet doesn't say 100% waterproof; ISI mark on ISI/Liberty boots not claimed; PT shoe sheet (26.pdf) carries another company's contact details and shows other PT models; third-party branding in photos (FUEL gum boots, M.MILLER jacket, Cliff Climbers backpack); Olive Green / Black Defence jungle boots and 11 other jacket models appear in the PDFs but have no product | Catalogue accuracy |
 | 13 | Optional: Render Auto-Deploy → "After CI Checks Pass"; UptimeRobot on `https://api.kritex.in/api/v1/health` | Safer deploys; free-tier sleep |
 
 ## Hosting (2026-10-07)
@@ -338,6 +339,12 @@ Render (free, Singapore, Docker) + Neon (free, Singapore) + Vercel for the site.
 - **Staff alert inboxes in code:** `kritex-server/src/config/staff.ts` (`STAFF_ALERT_EMAILS`, default `kritex.jdp@gmail.com`); the env var is gone (an empty value on Render had silenced the alerts).
 - **Admin sidebar counts:** Orders (paid to process + bank transfers to confirm + return requests), Quotes, B2B approvals, Enquiries and Inventory (low stock) show badges from `GET /admin/dashboard`.
 - Deploy server and website together (the old site tells users to open a link).
+
+## Product pages: data sheets split up (2026-10-11 → 12)
+See ADR-023. Website `dbd2fdb`, server `3450b02` (both on `main`).
+- "Product Details" section replaces the full-page PDF sheet: structured description (Key Features, Materials & Construction, Colours, Sizes, Ideal For…) beside a grid of captioned detail images; the intro paragraph sits beside the gallery.
+- All 26 products: 44 detail images + 1 new gallery photo (field jacket, black) uploaded to R2 `kritex-assets`; production reseeded 2026-10-12. Products whose sheet has only the gallery photo (all boots, gum boots, DMS boots) are text-only; Liberty Jungle, Sega and Cosmo DMS are in no PDF.
+- Incident: the first reseed went to production by mistake (taken for a local DB) before the images were on R2; it was rolled back to the previous `catalog.json` within minutes and redone after the upload.
 
 ## Open follow-ups / tech debt
 Tracked in [TASKS.md](TASKS.md) → "Tech-debt / follow-ups" (TD-1…TD-36, release blockers RL-1/RL-2), plus AUTH-6 and COM-16 added to Stages 2–3.
