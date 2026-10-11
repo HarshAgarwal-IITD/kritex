@@ -60,11 +60,15 @@ describe("admin orders list", () => {
     fireEvent.click(screen.getByRole("button", { name: "Export CSV" }));
 
     await waitFor(() => expect(click).toHaveBeenCalled());
-    const csv = await new Promise<string>((resolve) => {
-      const reader = new FileReader();
-      reader.onload = () => resolve(String(reader.result));
-      reader.readAsText(saved!);
-    });
+    // The blob comes from fetch: Node's Blob (has .text()) on Node 22, jsdom's (FileReader only) on newer Nodes.
+    const csv =
+      typeof saved!.text === "function"
+        ? await saved!.text()
+        : await new Promise<string>((resolve) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(String(reader.result));
+            reader.readAsText(saved!);
+          });
     const lines = csv.trim().split("\n");
     expect(lines[0]).toMatch(/^order_number,created_at,status/);
     expect(lines).toHaveLength(3); // header + 2 items of the one PAID order
