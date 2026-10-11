@@ -1,6 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
 import { resetAdminMockDb, setMockSession } from "@/mocks/admin-handlers";
+import { server } from "@/mocks/server";
 import { getAdminCommerceDb } from "@/mocks/admin-commerce";
 import { chooseOption, renderAdmin, stubPointerApis } from "./render";
 
@@ -184,6 +186,20 @@ describe("admin order detail", () => {
     fireEvent.click(within(dialog).getByRole("button", { name: "Cancel order" }));
     await waitFor(() => expect(order("ord_1003").status).toBe("CANCELLED"));
     expect(screen.queryByRole("button", { name: "Refund" })).not.toBeInTheDocument(); // nothing captured
+  });
+
+  it("opens the invoice PDF through a fresh signed link", async () => {
+    const assign = vi.fn();
+    vi.spyOn(window, "location", "get").mockReturnValue({ ...window.location, assign });
+    server.use(
+      http.get("*/api/v1/orders/:number/invoice", ({ params }) =>
+        HttpResponse.json({ number: "KTX/26-27/0006", issuedAt: new Date().toISOString(), url: `https://r2.test/${String(params.number)}.pdf`, expiresAt: new Date().toISOString() }),
+      ),
+    );
+    renderAdmin("/admin/orders/ord_1006");
+    const customer = await screen.findByRole("region", { name: "Customer" });
+    fireEvent.click(within(customer).getByRole("button", { name: /Invoice KTX\// }));
+    await waitFor(() => expect(assign).toHaveBeenCalledWith("https://r2.test/KTX-100006.pdf"));
   });
 
   it("shows not found for an unknown order", async () => {

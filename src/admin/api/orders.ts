@@ -109,3 +109,14 @@ export const refundableAmount = (order: AdminOrder): number => order.refundableA
 
 /** Statuses offered in "Change status": the server's allowed transitions, minus CANCELLED (it has its own dialog). */
 export const statusTargets = (order: AdminOrder) => order.allowedTransitions.filter((s) => s !== "CANCELLED");
+
+/** Short-lived signed URL to an order's GST invoice PDF (fetched on click: the URL expires). */
+export function useOrderInvoiceLink() {
+  return useMutation<{ url: string }, ApiError, string>({
+    mutationFn: async (number) => {
+      const { data, error, response } = await api.GET("/api/v1/orders/{number}/invoice", { params: { path: { number } } });
+      if (error || !data) throw toApiError(error, response);
+      return data;
+    },
+  });
+}

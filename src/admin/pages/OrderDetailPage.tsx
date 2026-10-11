@@ -14,7 +14,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableFooter, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { refundableAmount, statusTargets, useAdminOrder, useOrderAction } from "../api/orders";
+import { refundableAmount, statusTargets, useAdminOrder, useOrderAction, useOrderInvoiceLink } from "../api/orders";
 import { PAYMENT_METHOD_LABELS, PAYMENT_STATUS_LABELS, type AdminOrder, type OrderAddress } from "../api/types";
 import { formatPaise } from "../lib/money";
 import { formatDateTime } from "../lib/format";
@@ -378,6 +378,13 @@ function AddressBlock({ title, address }: { title: string; address: OrderAddress
 const sameAddress = (a: OrderAddress, b: OrderAddress) => JSON.stringify(a) === JSON.stringify(b);
 
 function CustomerSection({ order }: { order: AdminOrder }) {
+  const invoice = useOrderInvoiceLink();
+  const openInvoice = (number: string) =>
+    invoice.mutate(number, {
+      // The signed URL is short-lived, so fetch it on click and go straight to it (a popup opened after an await gets blocked).
+      onSuccess: (link) => window.location.assign(link.url),
+      onError: (e) => toast.error(`Couldn't open the invoice: ${e.message}`),
+    });
   return (
     <Section title="Customer">
       <div className="space-y-1 text-sm">
@@ -409,7 +416,16 @@ function CustomerSection({ order }: { order: AdminOrder }) {
         <div className="space-y-1 text-xs text-muted-foreground">
           {order.invoice && (
             <p>
-              Invoice {order.invoice.number} · {formatDateTime(order.invoice.issuedAt)}
+              <button
+                type="button"
+                className="inline-flex items-center gap-1 text-primary hover:underline disabled:opacity-50"
+                onClick={() => openInvoice(order.number)}
+                disabled={invoice.isPending}
+              >
+                {invoice.isPending ? <Loader2 className="h-3 w-3 animate-spin" /> : <FileText className="h-3 w-3" />}
+                Invoice {order.invoice.number}
+              </button>{" "}
+              · {formatDateTime(order.invoice.issuedAt)}
             </p>
           )}
           {order.quoteNumber && <p>From quote {order.quoteNumber}</p>}
