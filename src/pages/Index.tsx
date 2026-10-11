@@ -12,7 +12,8 @@ import HeritageSection from "@/components/HeritageSection";
 import PartnershipsSection from "@/components/PartnershipsSection";
 import ContactSection from "@/components/ContactSection";
 import Footer from "@/components/Footer";
-import Seo, { SITE_URL } from "@/components/Seo";
+import Seo from "@/components/Seo";
+import { homeSeo } from "@/seo/pages";
 
 const Index = () => {
   const location = useLocation();
@@ -27,20 +28,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background">
-      <Seo
-        title="Defence & Industrial Supply"
-        description="Kritex engineers defence-grade apparel, tactical footwear and field equipment for the armed forces of India and Bhutan since 1976."
-        path="/"
-        jsonLd={{
-          "@context": "https://schema.org",
-          "@type": "Organization",
-          name: "Kritex",
-          url: SITE_URL,
-          logo: `${SITE_URL}/brand/logo_flower.png`,
-          email: "procurement@kritex.in",
-          foundingDate: "1976",
-        }}
-      />
+      <Seo {...homeSeo()} />
       <Navbar />
       <HeroSection />
       <StatsBar />

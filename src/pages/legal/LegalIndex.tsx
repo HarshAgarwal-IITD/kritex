@@ -2,13 +2,10 @@ import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import LegalLayout from "./LegalLayout";
 import { policies } from "./policies";
+import { LEGAL_INDEX_META } from "@/seo/pages";
 
 const LegalIndex = () => (
-  <LegalLayout
-    path="/legal"
-    title="Policies"
-    description="Kritex store policies: terms and conditions, privacy, refunds and returns, shipping, cancellation, and grievance contact."
-  >
+  <LegalLayout path="/legal" {...LEGAL_INDEX_META}>
     <p>
       These policies apply to purchases from the Kritex online store and to your use of kritex.in. Institutional and
       bulk procurement is also governed by the terms of the relevant quote or purchase order.

@@ -4,15 +4,14 @@ import { motion } from "framer-motion";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
+import { categorySeo } from "@/seo/pages";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useCategories, useProducts } from "@/features/catalog/hooks";
 import { LIST_LIMIT } from "@/features/catalog/constants";
 import ProductGrid from "@/features/catalog/components/ProductGrid";
 import { TextSkeleton } from "@/features/catalog/components/Skeletons";
-import { assetUrl } from "@/features/catalog/view";
 import NotFound from "./NotFound";
 
-const metaDescription = (text: string) => (text.length > 160 ? `${text.slice(0, 157).trimEnd()}...` : text);
 
 /** `/products/:categorySlug`: one page for every category (replaces the per-category pages). */
 const CategoryPage = ({ categorySlug }: { categorySlug: string }) => {
@@ -37,12 +36,7 @@ const CategoryPage = ({ categorySlug }: { categorySlug: string }) => {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {category && (
-        <Seo
-          title={category.name}
-          description={metaDescription(category.description ?? `${category.name} from Kritex.`)}
-          path={`/products/${category.slug}`}
-          image={category.image ? assetUrl(category.image) : undefined}
-        />
+        <Seo {...categorySeo(category)} />
       )}
       <Navbar />
 

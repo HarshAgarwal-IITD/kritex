@@ -46,7 +46,7 @@ describe("legal pages", () => {
     expect(screen.getByRole("heading", { level: 1, name: heading })).toBeInTheDocument();
     expect(screen.queryByTestId("legal-draft-banner")).toBeNull();
     await waitFor(() => expect(document.title).toBe(`${heading} | Kritex`));
-    expect(document.head.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe(`https://kritex.in${path}`);
+    expect(document.head.querySelector('link[rel="canonical"]')?.getAttribute("href")).toBe(`https://www.kritex.in${path}`);
   });
 
   it("policy pages show the last-updated date", () => {

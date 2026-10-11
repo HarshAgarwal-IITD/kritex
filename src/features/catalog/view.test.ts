@@ -71,7 +71,7 @@ describe("productJsonLd", () => {
     const ld = productJsonLd(p, galleryImages(p));
     expect(ld.offers).toBeUndefined();
     expect(ld.category).toBe("Combat Apparel > T-Shirts");
-    expect((ld.image as string[])[0]).toBe("https://kritex.in/products/og-polo-tshirt/og-polo-tshirt-1.png");
+    expect((ld.image as string[])[0]).toBe("https://www.kritex.in/products/og-polo-tshirt/og-polo-tshirt-1.png");
   });
 
   it("adds an INR offer for priced products", () => {

@@ -22,7 +22,7 @@ import {
   type Selection,
 } from "@/features/catalog/view";
 import { PriceBlock, PurchaseCta, StockState } from "@/features/catalog/components/PurchasePanel";
-import { productJsonLd } from "@/features/catalog/seo";
+import { productSeo } from "@/seo/pages";
 import { ProductDetailSkeleton } from "@/features/catalog/components/Skeletons";
 import QueryError from "@/features/catalog/components/QueryError";
 
@@ -94,17 +94,7 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Seo
-        title={product.seo.title ?? product.name}
-        description={
-          product.seo.description ??
-          (description.length > 160 ? `${description.slice(0, 157).trimEnd()}...` : description)
-        }
-        path={`/product/${product.slug}`}
-        image={displayImages[0]}
-        type="product"
-        jsonLd={productJsonLd(product, displayImages)}
-      />
+      <Seo {...productSeo(product)} />
       <Navbar />
 
       <main className="flex-grow pt-32 pb-20">

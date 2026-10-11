@@ -5,6 +5,7 @@ import { X } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
+import { productsSeo } from "@/seo/pages";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { useCategories, useProducts } from "@/features/catalog/hooks";
 import { LIST_LIMIT } from "@/features/catalog/constants";
@@ -73,11 +74,7 @@ const Products = () => {
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Seo
-        title="All Products"
-        description="Browse Kritex's complete catalog of tactical footwear, combat apparel and load-bearing equipment for defence and industrial use."
-        path="/products"
-      />
+      <Seo {...productsSeo()} />
       <Navbar />
 
       <main className="flex-grow pt-32 pb-20">

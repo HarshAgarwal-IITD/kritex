@@ -4,7 +4,7 @@ export const SITE_NAME = "Kritex";
 export const DEFAULT_OG_IMAGE = "/brand/logo_flower.png";
 
 /** Public site origin used for canonical/OG URLs. No trailing slash. */
-export const SITE_URL: string = (import.meta.env.VITE_SITE_URL || "https://kritex.in").replace(/\/+$/, "");
+export const SITE_URL: string = (import.meta.env.VITE_SITE_URL || "https://www.kritex.in").replace(/\/+$/, "");
 
 const absolute = (pathOrUrl: string): string =>
   /^https?:\/\//i.test(pathOrUrl)

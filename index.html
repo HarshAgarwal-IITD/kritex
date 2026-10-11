@@ -12,8 +12,9 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <!--
-      Default SEO tags for crawlers that don't run JS. Pages override them via <Seo> (react-helmet-async);
-      data-rh="true" lets Helmet replace these instead of adding duplicates.
+      Default SEO tags for crawlers that don't run JS. The build (scripts/prerender.mjs) replaces them with
+      each public page's own tags in dist/<path>/index.html; in the browser, pages set them via <Seo>
+      (react-helmet-async), and data-rh="true" lets Helmet replace these instead of adding duplicates.
     -->
     <meta data-rh="true" name="description" content="Kritex engineers defence-grade apparel, tactical footwear and field equipment for the armed forces of India and Bhutan since 1976." />
     <meta data-rh="true" property="og:site_name" content="Kritex" />
@@ -21,12 +22,12 @@
     <meta data-rh="true" property="og:locale" content="en_IN" />
     <meta data-rh="true" property="og:title" content="Defence &amp; Industrial Supply | Kritex" />
     <meta data-rh="true" property="og:description" content="Kritex engineers defence-grade apparel, tactical footwear and field equipment for the armed forces of India and Bhutan since 1976." />
-    <meta data-rh="true" property="og:url" content="https://kritex.in/" />
-    <meta data-rh="true" property="og:image" content="https://kritex.in/brand/logo_flower.png" />
+    <meta data-rh="true" property="og:url" content="https://www.kritex.in/" />
+    <meta data-rh="true" property="og:image" content="https://www.kritex.in/brand/logo_flower.png" />
     <meta data-rh="true" name="twitter:card" content="summary_large_image" />
     <meta data-rh="true" name="twitter:title" content="Defence &amp; Industrial Supply | Kritex" />
     <meta data-rh="true" name="twitter:description" content="Kritex engineers defence-grade apparel, tactical footwear and field equipment for the armed forces of India and Bhutan since 1976." />
-    <meta data-rh="true" name="twitter:image" content="https://kritex.in/brand/logo_flower.png" />
+    <meta data-rh="true" name="twitter:image" content="https://www.kritex.in/brand/logo_flower.png" />
   </head>
   <body>
     <div id="root"></div>

@@ -40,7 +40,7 @@ const LegalLayout = ({ path, title, description, hideLastUpdated, children }: Le
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
-      <Seo title={meta.title} description={meta.description} path={path} />
+      <Seo {...meta} path={path} />
       <Navbar />
 
       <main className="flex-grow pt-32 pb-20">

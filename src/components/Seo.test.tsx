@@ -18,15 +18,15 @@ describe("Seo", () => {
 
     await waitFor(() => expect(document.title).toBe("All Products | Kritex"));
     expect(meta('meta[name="description"]')).toBe("Browse the catalog.");
-    expect(canonical()).toBe("https://kritex.in/products");
+    expect(canonical()).toBe("https://www.kritex.in/products");
     expect(meta('meta[property="og:title"]')).toBe("All Products | Kritex");
     expect(meta('meta[property="og:description"]')).toBe("Browse the catalog.");
-    expect(meta('meta[property="og:url"]')).toBe("https://kritex.in/products");
+    expect(meta('meta[property="og:url"]')).toBe("https://www.kritex.in/products");
     expect(meta('meta[property="og:type"]')).toBe("website");
-    expect(meta('meta[property="og:image"]')).toBe("https://kritex.in/brand/logo_flower.png");
+    expect(meta('meta[property="og:image"]')).toBe("https://www.kritex.in/brand/logo_flower.png");
     expect(meta('meta[name="twitter:card"]')).toBe("summary_large_image");
     expect(meta('meta[name="twitter:title"]')).toBe("All Products | Kritex");
-    expect(meta('meta[name="twitter:image"]')).toBe("https://kritex.in/brand/logo_flower.png");
+    expect(meta('meta[name="twitter:image"]')).toBe("https://www.kritex.in/brand/logo_flower.png");
     expect(document.head.querySelector('meta[name="robots"]')).toBeNull();
   });
 
@@ -43,7 +43,7 @@ describe("Seo", () => {
     );
 
     await waitFor(() => expect(document.title).toBe("Combat Boot | Kritex"));
-    expect(meta('meta[property="og:image"]')).toBe("https://kritex.in/products/boot.png");
+    expect(meta('meta[property="og:image"]')).toBe("https://www.kritex.in/products/boot.png");
     expect(meta('meta[name="robots"]')).toBe("noindex, nofollow");
     const ld = document.head.querySelector('script[type="application/ld+json"]');
     expect(JSON.parse(ld?.textContent ?? "{}")).toMatchObject({ "@type": "Product", name: "Combat Boot" });
@@ -52,6 +52,6 @@ describe("Seo", () => {
   it("leaves absolute image URLs untouched", async () => {
     renderSeo(<Seo title="X" description="Y" path="/" image="https://cdn.example.com/a.png" />);
     await waitFor(() => expect(meta('meta[property="og:image"]')).toBe("https://cdn.example.com/a.png"));
-    expect(canonical()).toBe("https://kritex.in/");
+    expect(canonical()).toBe("https://www.kritex.in/");
   });
 });
