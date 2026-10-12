@@ -1,12 +1,14 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { m } from "framer-motion";
+import { useSkipEntrance } from "@/lib/first-view";
 import { ChevronLeft, ChevronRight, Maximize2 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Seo from "@/components/Seo";
 import { cn } from "@/lib/utils";
+import { resized, srcSet } from "@/lib/image";
 import { SwatchFill } from "@/components/ProductCard";
 import { useProduct } from "@/features/catalog/hooks";
 import type { ProductDetail as ProductDetailDto } from "@/features/catalog/types";
@@ -70,6 +72,7 @@ const ProductDetail = () => {
 };
 
 const ProductView = ({ product }: { product: ProductDetailDto }) => {
+  const skipEntrance = useSkipEntrance();
   const [activeImage, setActiveImage] = useState(0);
   const [selection, setSelection] = useState<Selection>({});
 
@@ -112,7 +115,7 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
           />
 
           <m.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
             className="grid grid-cols-1 lg:grid-cols-2 gap-12"
@@ -122,6 +125,8 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
               <div className="relative aspect-square overflow-hidden bg-neutral-100 p-8 border border-border">
                 <img
                   src={currentImage}
+                  srcSet={srcSet(currentImage)}
+                  sizes="(min-width: 1024px) 45vw, 92vw"
                   alt={`${product.name}${selectedColorLabel ? ` — ${selectedColorLabel}` : ""}`}
                   className="w-full h-full object-contain"
                   // LCP element; lowercase because React 18 doesn't know `fetchPriority`.
@@ -168,7 +173,7 @@ const ProductView = ({ product }: { product: ProductDetailDto }) => {
                           : "border-border opacity-50 hover:opacity-90"
                       )}
                     >
-                      <img src={image} alt="" className="h-full w-full object-contain" loading="lazy" />
+                      <img src={resized(image, 128)} alt="" className="h-full w-full object-contain" loading="lazy" />
                     </button>
                   ))}
                 </div>

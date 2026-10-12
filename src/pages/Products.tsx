@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { m } from "framer-motion";
+import { useSkipEntrance } from "@/lib/first-view";
 import { Link, useSearchParams } from "react-router-dom";
 import { X } from "lucide-react";
 import Navbar from "@/components/Navbar";
@@ -22,6 +23,7 @@ type FilterKey = "category" | "type" | "q" | "sort" | "size" | "colour";
 const isSort = (v: string | null): v is ProductSort => SORT_OPTIONS.some((o) => o.value === v);
 
 const Products = () => {
+  const skipEntrance = useSkipEntrance();
   const [params, setParams] = useSearchParams();
   const activeCategory = params.get("category") ?? "all";
   const activeType = params.get("type") ?? "all";
@@ -83,7 +85,7 @@ const Products = () => {
           <Breadcrumbs items={[{ label: "Home", to: "/" }, { label: "All Products" }]} />
 
           <m.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
             className="mb-12"

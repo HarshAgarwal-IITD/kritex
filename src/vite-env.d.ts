@@ -7,6 +7,8 @@ interface ImportMetaEnv {
   readonly VITE_USE_MOCKS?: string;
   /** Object store origin for images (e.g. https://assets.kritex.in). Unset = serve from /public. */
   readonly VITE_ASSET_BASE_URL?: string;
+  /** "cloudflare" = serve resized photos through Cloudflare Image Transformations (src/lib/image.ts). */
+  readonly VITE_IMAGE_RESIZE?: string;
   /** Public storefront origin for canonical/OG URLs (no trailing slash). Defaults to https://www.kritex.in. */
   readonly VITE_SITE_URL?: string;
   /** Sentry DSN for browser error reports (public by design). Unset = off. */

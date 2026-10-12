@@ -11,6 +11,7 @@ import { AdminRoute } from "./admin/route";
 import { CartDrawerProvider } from "./features/cart/components/CartDrawer";
 import RequireAuth from "./features/account/components/RequireAuth";
 import { PageLoader } from "@/components/shop/Loaders";
+import { queryClient } from "@/lib/query-client";
 
 // Checkout, auth and account pages are split out of the main bundle.
 // Only the home page is in the entry bundle; every other route loads on first visit.
@@ -109,25 +110,33 @@ export const AppRoutes = () => (
   </CartDrawerProvider>
 );
 
-const queryClient = new QueryClient();
-
 /** framer-motion's animation features, fetched after the first render (components use `m`, not `motion`). */
 const motionFeatures = () => import("@/lib/motion-features").then((mod) => mod.default);
 
-const App = () => (
+/**
+ * Everything around the router. Shared with the build-time prerender (src/seo/prerender.tsx), which
+ * renders the same tree with a StaticRouter, so the HTML it writes matches what the browser hydrates.
+ */
+export const AppProviders = ({ client, children }: { client: QueryClient; children: JSX.Element }) => (
   <HelmetProvider>
-    <QueryClientProvider client={queryClient}>
+    <QueryClientProvider client={client}>
       <LazyMotion features={motionFeatures} strict>
         <TooltipProvider>
           <Toaster />
           <Sonner />
-          <BrowserRouter>
-            <AppRoutes />
-          </BrowserRouter>
+          {children}
         </TooltipProvider>
       </LazyMotion>
     </QueryClientProvider>
   </HelmetProvider>
+);
+
+const App = () => (
+  <AppProviders client={queryClient}>
+    <BrowserRouter>
+      <AppRoutes />
+    </BrowserRouter>
+  </AppProviders>
 );
 
 export default App;

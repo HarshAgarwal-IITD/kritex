@@ -10,6 +10,8 @@ export const MAX_QUOTE_QUANTITY = 99999;
 const MAX_LINES = 50;
 
 type Listener = () => void;
+const NO_LINES: QuoteCartLine[] = [];
+const getServerSnapshot = () => NO_LINES;
 const listeners = new Set<Listener>();
 let lines: QuoteCartLine[] = load();
 
@@ -95,7 +97,8 @@ export const lineKey = (l: Pick<QuoteCartLine, "productId" | "variantId">) => `$
 
 /** The quote cart's lines (re-renders on change). */
 export function useQuoteCart(): QuoteCartLine[] {
-  return useSyncExternalStore(quoteCart.subscribe, quoteCart.get, quoteCart.get);
+  // Server snapshot: empty, as in the prerendered HTML; the stored cart shows right after hydration.
+  return useSyncExternalStore(quoteCart.subscribe, quoteCart.get, getServerSnapshot);
 }
 
 export function useQuoteCount(): number {

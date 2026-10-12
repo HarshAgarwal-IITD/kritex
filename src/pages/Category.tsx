@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { m } from "framer-motion";
+import { useSkipEntrance } from "@/lib/first-view";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
@@ -15,6 +16,7 @@ import NotFound from "./NotFound";
 
 /** `/products/:categorySlug`: one page for every category (replaces the per-category pages). */
 const CategoryPage = ({ categorySlug }: { categorySlug: string }) => {
+  const skipEntrance = useSkipEntrance();
   const [activeType, setType] = useState<string>("all");
   const [, setParams] = useSearchParams();
   // A new sub-category starts again at page 1.
@@ -61,7 +63,7 @@ const CategoryPage = ({ categorySlug }: { categorySlug: string }) => {
           />
 
           <m.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.19, 1, 0.22, 1] }}
             className="mb-12"

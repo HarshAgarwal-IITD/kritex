@@ -5,8 +5,13 @@
  *
  * For every public page it writes dist/<path>/index.html: the SPA shell with that page's title,
  * description, canonical, Open Graph/Twitter tags and JSON-LD, so crawlers and link previews
- * (WhatsApp, Facebook, LinkedIn) that don't run JS see the right page. The app still renders
- * client-side; Helmet replaces these tags on load. Also writes sitemap.xml and adds it to robots.txt.
+ * (WhatsApp, Facebook, LinkedIn) that don't run JS see the right page. Helmet replaces these tags on load.
+ *
+ * The page body is prerendered too: #root holds the rendered page (as a signed-out visitor with an empty
+ * cart sees it) and window.__KRITEX_QUERY_STATE__ the catalog data it came from, so the browser shows
+ * the page before the JS has loaded, and src/main.tsx hydrates it. If a page fails to render, it keeps
+ * the empty #root (rendered client-side, as before) and a warning is printed.
+ * Also writes sitemap.xml and adds it to robots.txt.
  *
  * Catalog pages need the API: VITE_API_URL (set on Vercel). Without it, or if the API can't be
  * reached, only the static pages (home, /products, /legal/*) are prerendered and a warning is printed;
@@ -54,15 +59,11 @@ if (!apiUrl) {
   }
 }
 
-// The LCP image to fetch before the JS runs: the home watermark (src/components/HeroSection.tsx)
-// and each product's main photo.
+// The home page's LCP image (src/components/HeroSection.tsx), fetched first. Product photos need no
+// preload: they are <img> tags in the prerendered HTML, and a preload of the full-size URL would
+// download a second copy when the page picks a resized one from srcset.
 const watermark = readdirSync(join(dist, "assets")).find((f) => /^logo-watermark-.*\.webp$/.test(f));
-const preloadsFor = (page) =>
-  page.path === "/"
-    ? [watermark && `/assets/${watermark}`].filter(Boolean)
-    : page.type === "product" && page.image
-      ? [page.image]
-      : [];
+const preloadsFor = (page) => (page.path === "/" && watermark ? [`/assets/${watermark}`] : []);
 const preloadTags = (page) =>
   preloadsFor(page).map((href) => `<link rel="preload" as="image" href="${escapeXml(href)}" fetchpriority="high" />`);
 
@@ -70,9 +71,23 @@ const preloadTags = (page) =>
 // don't inherit the home page's tags and image preloads now written into dist/index.html.
 writeFileSync(join(dist, "app-shell.html"), template);
 
+if (!shell.includes('<div id="root"></div>')) throw new Error('prerender: dist/index.html has no <div id="root"></div>');
+const bodyErrors = [];
+
 for (const page of pages) {
   const head = [...preloadTags(page), seo.renderHead(page)].join("\n    ");
-  const html = shell.replace("</head>", `  ${head}\n  </head>`);
+  let html = shell.replace("</head>", `  ${head}\n  </head>`);
+  try {
+    const body = await seo.renderPage(page.path);
+    html = html.replace(
+      '<div id="root"></div>',
+      () =>
+        `<div id="root" data-prerendered="${escapeXml(page.path)}">${body.html}</div>\n    ` +
+        `<script>window.__KRITEX_QUERY_STATE__=${scriptJson(body.state)}</script>`,
+    );
+  } catch (e) {
+    bodyErrors.push(`${page.path}: ${e instanceof Error ? e.message : String(e)}`);
+  }
   const file = page.path === "/" ? join(dist, "index.html") : join(dist, page.path, "index.html");
   mkdirSync(dirname(file), { recursive: true });
   writeFileSync(file, html);
@@ -90,7 +105,10 @@ writeFileSync(join(dist, "robots.txt"), `${robots}\n\nSitemap: ${seo.SITE_URL}/s
 
 rmSync(ssrDir, { recursive: true, force: true });
 
-console.log(`prerender: ${pages.length} page(s), sitemap with ${urls.length} URL(s).`);
+console.log(
+  `prerender: ${pages.length} page(s) (${pages.length - bodyErrors.length} with body HTML), sitemap with ${urls.length} URL(s).`,
+);
+for (const err of bodyErrors) console.warn(`prerender: WARNING body not prerendered for ${err}`);
 if (catalogError) {
   console.warn(`prerender: WARNING catalog pages skipped (${catalogError}); categories and products use the SPA shell.`);
 }
@@ -119,4 +137,12 @@ async function getJson(url, attempts = 3) {
 
 function escapeXml(s) {
   return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+}
+
+/** JSON safe inside an inline <script> (no "</script>", "<!--" or line separators). */
+function scriptJson(value) {
+  return JSON.stringify(value)
+    .replace(/</g, "\\u003c")
+    .replace(/\u2028/g, "\\u2028")
+    .replace(/\u2029/g, "\\u2029");
 }

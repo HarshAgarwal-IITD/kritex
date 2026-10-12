@@ -1,4 +1,5 @@
 import { m } from "framer-motion";
+import { useSkipEntrance } from "@/lib/first-view";
 import heroImg from "@/assets/hero-textile.webp";
 // 556px, 20 KB: drawn as a faint silhouette, and the home page LCP element.
 import watermarkImg from "@/assets/logo-watermark.webp";
@@ -11,6 +12,7 @@ import watermarkImg from "@/assets/logo-watermark.webp";
 const HIGH_PRIORITY = { fetchpriority: "high" } as const;
 
 const HeroSection = () => {
+  const skipEntrance = useSkipEntrance();
   return (
     <section className="relative h-screen flex items-end overflow-hidden">
       {/* Background image */}
@@ -38,7 +40,7 @@ const HeroSection = () => {
       <div className="relative container pb-20 md:pb-32">
         <div className="max-w-3xl">
           <m.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: [0.19, 1, 0.22, 1] }}
             className="font-display text-xs text-primary mb-4 tabular"
@@ -46,7 +48,7 @@ const HeroSection = () => {
             Trusted by Forces Since 1976
           </m.p>
           <m.h1
-            initial={{ opacity: 0, y: 30 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1, ease: [0.19, 1, 0.22, 1] }}
             className="text-4xl md:text-6xl lg:text-7xl font-bold text-foreground leading-[0.95] mb-6"
@@ -58,7 +60,7 @@ const HeroSection = () => {
             Endurance.
           </m.h1>
           <m.p
-            initial={{ opacity: 0, y: 20 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2, ease: [0.19, 1, 0.22, 1] }}
             className="font-body text-muted-foreground max-w-lg mb-8 text-sm md:text-base"
@@ -66,7 +68,7 @@ const HeroSection = () => {
             Engineering defense-grade apparel and tactical hardware for the armed forces of India and Bhutan since 1976.
           </m.p>
           <m.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={skipEntrance ? false : { opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3, ease: [0.19, 1, 0.22, 1] }}
             className="flex gap-4"

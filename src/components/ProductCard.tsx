@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { m } from "framer-motion";
+import { useSkipEntrance } from "@/lib/first-view";
 import { Link } from "react-router-dom";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { resized, srcSet } from "@/lib/image";
 
 export interface ProductSpec {
   label: string;
@@ -20,10 +22,11 @@ export interface ColorVariant {
 }
 
 /** Renders a colour swatch's fill: swatch image, CSS colour, or the colour's product photo. */
-export const SwatchFill = ({ variant }: { variant: ColorVariant }) =>
-  variant.swatch || !variant.swatchColor ? (
+export const SwatchFill = ({ variant }: { variant: ColorVariant }) => {
+  const photo = variant.swatch ?? variant.image;
+  return variant.swatch || !variant.swatchColor ? (
     <img
-      src={variant.swatch ?? variant.image}
+      src={photo && resized(photo, 48)}
       alt={variant.label}
       className={cn("h-full w-full", variant.swatch ? "object-cover" : "object-contain p-0.5")}
       loading="lazy"
@@ -31,6 +34,7 @@ export const SwatchFill = ({ variant }: { variant: ColorVariant }) =>
   ) : (
     <span role="img" aria-label={variant.label} className="block h-full w-full" style={{ background: variant.swatchColor }} />
   );
+};
 
 export interface ProductCardProps {
   id?: string;
@@ -50,6 +54,8 @@ export interface ProductCardProps {
   ctaLabel?: string;
   /** Optional footer action rendered above the card link (e.g. "Add to quote"). */
   action?: React.ReactNode;
+  /** The first card on the page: its photo is likely the page's largest element, so load it first. */
+  priority?: boolean;
 }
 
 const ProductCard = ({
@@ -65,7 +71,9 @@ const ProductCard = ({
   compareAtPrice,
   ctaLabel = "View Details & Enquire",
   action,
+  priority = false,
 }: ProductCardProps) => {
+  const skipEntrance = useSkipEntrance();
   const [activeImage, setActiveImage] = useState(0);
   const [selectedColor, setSelectedColor] = useState<number | null>(null);
   const hasMultipleImages = images.length > 1;
@@ -87,7 +95,7 @@ const ProductCard = ({
 
   return (
     <m.article
-      initial={{ opacity: 0, y: 30 }}
+      initial={skipEntrance ? false : { opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.08, ease: [0.19, 1, 0.22, 1] }}
@@ -100,8 +108,11 @@ const ProductCard = ({
         <img
           src={currentImage}
           alt={`${name}${selectedColorLabel ? ` — ${selectedColorLabel}` : ` — view ${activeImage + 1}`}`}
+          srcSet={srcSet(currentImage)}
+          sizes="(min-width: 1024px) 30vw, (min-width: 768px) 45vw, 90vw"
           className="w-full h-full object-contain transition-transform duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-105"
-          loading="lazy"
+          // Lowercase: React 18 doesn't know `fetchPriority`.
+          {...(priority ? { loading: "eager", fetchpriority: "high" } : { loading: "lazy" })}
         />
 
         {hasMultipleImages && selectedColor === null && (
@@ -145,7 +156,7 @@ const ProductCard = ({
                   : "border-transparent opacity-50 hover:opacity-90"
               )}
             >
-              <img src={image} alt="" className="h-full w-full object-contain" loading="lazy" />
+              <img src={resized(image, 96)} alt="" className="h-full w-full object-contain" loading="lazy" />
             </button>
           ))}
         </div>

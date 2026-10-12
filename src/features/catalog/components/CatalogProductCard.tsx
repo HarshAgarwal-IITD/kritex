@@ -36,6 +36,7 @@ const CatalogProductCard = ({ product, index }: { product: ProductCardDto; index
         )
       }
       index={index}
+      priority={index === 0}
     />
   );
 };
