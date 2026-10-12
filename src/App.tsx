@@ -1,4 +1,4 @@
-import { lazy, Suspense, useLayoutEffect } from "react";
+import { lazy, Suspense, useEffect, useLayoutEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Route, Routes, useLocation, useNavigationType } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
@@ -56,10 +56,13 @@ const RouteFallback = PageLoader;
  * page scrolled down. Reset to the top on every new navigation; back/forward (POP) and #hash links
  * keep their own scroll behaviour.
  */
+// useLayoutEffect warns during the build-time prerender (no DOM there); the effect only matters in the browser.
+const useBrowserLayoutEffect = typeof window === "undefined" ? useEffect : useLayoutEffect;
+
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
   const navType = useNavigationType();
-  useLayoutEffect(() => {
+  useBrowserLayoutEffect(() => {
     if (navType !== "POP" && !hash) window.scrollTo(0, 0);
   }, [pathname, hash, navType]);
   return null;
