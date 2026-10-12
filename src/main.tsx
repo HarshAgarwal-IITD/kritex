@@ -1,6 +1,6 @@
 import { createRoot, hydrateRoot } from "react-dom/client";
 import { hydrate, type DehydratedState } from "@tanstack/react-query";
-import App from "./App.tsx";
+import App, { preloadRoute } from "./App.tsx";
 import { queryClient } from "./lib/query-client";
 import "./index.css";
 import { initSentry } from "./lib/sentry";
@@ -28,11 +28,13 @@ const trimSlash = (path: string) => path.replace(/(.)\/+$/, "$1");
  * React hydrates it (attaches to that HTML) instead of rendering from scratch. Any other URL for the same
  * file (e.g. /products?page=2, which Vercel serves from /products/index.html) renders client-side.
  */
-function start() {
+async function start() {
   const root = document.getElementById("root")!;
   const prerendered = root.dataset.prerendered;
   const state = window.__KRITEX_QUERY_STATE__;
   if (prerendered && state && !location.search && trimSlash(location.pathname) === prerendered) {
+    // The page's lazy chunks first: hydration must not suspend (see src/lib/lazy-page.ts).
+    await preloadRoute(prerendered).catch(() => undefined);
     hydrate(queryClient, state);
     hydrateRoot(
       root,
@@ -45,7 +47,6 @@ function start() {
   }
 }
 
-enableMocks().then(() => {
-  start();
-  initSentry();
-});
+enableMocks()
+  .then(start)
+  .finally(initSentry);

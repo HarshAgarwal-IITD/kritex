@@ -1,31 +1,32 @@
 import { lazy, Suspense, useEffect, useLayoutEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes, useLocation, useNavigationType } from "react-router-dom";
+import { BrowserRouter, matchPath, Route, Routes, useLocation, useNavigationType } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LazyMotion } from "framer-motion";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import Index from "./pages/Index.tsx";
+import Index, { preloadIndex } from "./pages/Index.tsx";
 import { AdminRoute } from "./admin/route";
 import { CartDrawerProvider } from "./features/cart/components/CartDrawer";
 import RequireAuth from "./features/account/components/RequireAuth";
 import { PageLoader } from "@/components/shop/Loaders";
 import { queryClient } from "@/lib/query-client";
+import { lazyPage } from "@/lib/lazy-page";
 
 // Checkout, auth and account pages are split out of the main bundle.
 // Only the home page is in the entry bundle; every other route loads on first visit.
-const NotFound = lazy(() => import("./pages/NotFound.tsx"));
-const Products = lazy(() => import("./pages/Products.tsx"));
-const Category = lazy(() => import("./pages/Category.tsx"));
-const ProductDetail = lazy(() => import("./pages/ProductDetail.tsx"));
-const LegalIndex = lazy(() => import("./pages/legal/LegalIndex.tsx"));
-const Terms = lazy(() => import("./pages/legal/Terms.tsx"));
-const Privacy = lazy(() => import("./pages/legal/Privacy.tsx"));
-const Returns = lazy(() => import("./pages/legal/Returns.tsx"));
-const Shipping = lazy(() => import("./pages/legal/Shipping.tsx"));
-const Cancellation = lazy(() => import("./pages/legal/Cancellation.tsx"));
-const LegalContact = lazy(() => import("./pages/legal/Contact.tsx"));
+const NotFound = lazyPage(() => import("./pages/NotFound.tsx"));
+const Products = lazyPage(() => import("./pages/Products.tsx"));
+const Category = lazyPage(() => import("./pages/Category.tsx"));
+const ProductDetail = lazyPage(() => import("./pages/ProductDetail.tsx"));
+const LegalIndex = lazyPage(() => import("./pages/legal/LegalIndex.tsx"));
+const Terms = lazyPage(() => import("./pages/legal/Terms.tsx"));
+const Privacy = lazyPage(() => import("./pages/legal/Privacy.tsx"));
+const Returns = lazyPage(() => import("./pages/legal/Returns.tsx"));
+const Shipping = lazyPage(() => import("./pages/legal/Shipping.tsx"));
+const Cancellation = lazyPage(() => import("./pages/legal/Cancellation.tsx"));
+const LegalContact = lazyPage(() => import("./pages/legal/Contact.tsx"));
 const CartPage = lazy(() => import("./pages/Cart.tsx"));
 const Checkout = lazy(() => import("./pages/Checkout.tsx"));
 const CheckoutSuccess = lazy(() => import("./pages/CheckoutResult.tsx").then((m) => ({ default: m.CheckoutSuccess })));
@@ -47,6 +48,28 @@ const TrackLookup = lazy(() => import("./pages/Track.tsx").then((m) => ({ defaul
 const TrackOrder = lazy(() => import("./pages/Track.tsx").then((m) => ({ default: m.TrackOrder })));
 
 const guard = (el: JSX.Element) => <RequireAuth>{el}</RequireAuth>;
+
+/** The prerendered routes (scripts/prerender.mjs) and the lazy chunks each one renders. */
+const prerenderedRoutes: [path: string, preload: () => Promise<unknown>][] = [
+  ["/", preloadIndex],
+  ["/products", Products.preload],
+  ["/products/:categorySlug", Category.preload],
+  ["/product/:id", ProductDetail.preload],
+  ["/legal", LegalIndex.preload],
+  ["/legal/terms", Terms.preload],
+  ["/legal/privacy", Privacy.preload],
+  ["/legal/returns", Returns.preload],
+  ["/legal/shipping", Shipping.preload],
+  ["/legal/cancellation", Cancellation.preload],
+  ["/legal/contact", LegalContact.preload],
+];
+
+/** Loads the lazy chunks of the page at `pathname`, so hydrating its prerendered HTML never suspends. */
+// eslint-disable-next-line react-refresh/only-export-components
+export const preloadRoute = async (pathname: string) => {
+  const route = prerenderedRoutes.find(([path]) => matchPath(path, pathname));
+  await route?.[1]();
+};
 
 /** Blank page-height placeholder while a lazy route loads (keeps the dark background, no layout jump). */
 const RouteFallback = PageLoader;

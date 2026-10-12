@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect } from "react";
+import { Suspense, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import HeroSection from "@/components/HeroSection";
@@ -13,8 +13,13 @@ import PartnershipsSection from "@/components/PartnershipsSection";
 import Footer from "@/components/Footer";
 import Seo from "@/components/Seo";
 import { homeSeo } from "@/seo/pages";
+import { lazyPage } from "@/lib/lazy-page";
 
-const ContactSection = lazy(() => import("@/components/ContactSection"));
+const ContactSection = lazyPage(() => import("@/components/ContactSection"));
+
+/** The home page's lazy chunks (hydrating the prerendered page needs them loaded first). */
+// eslint-disable-next-line react-refresh/only-export-components
+export const preloadIndex = ContactSection.preload;
 
 const Index = () => {
   const location = useLocation();
