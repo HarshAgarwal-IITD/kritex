@@ -1,7 +1,12 @@
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { HelmetProvider } from "react-helmet-async";
 import { mockCategories, mockProducts } from "@/mocks/catalog";
-import { categorySeo, homeSeo, legalPaths, policySeo, productSeo, renderHead, SITE_URL } from "./prerender";
+import { categorySeo, homeSeo, legalPaths, policySeo, productSeo, renderHead, renderPage, SITE_URL } from "./prerender";
+
+type CatalogList = { items: { name: string; slug: string }[] };
+
+const listFrom = (state: Awaited<ReturnType<typeof renderPage>>["state"]) =>
+  state.queries.find((q) => q.queryKey[1] === "products")?.state.data as CatalogList;
 
 describe("prerender head", () => {
   // Helmet only produces server output without a DOM, as in the real (Node) build.
@@ -34,5 +39,34 @@ describe("prerender head", () => {
 
   it("uses the www origin, which is where kritex.in redirects", () => {
     expect(SITE_URL).toBe("https://www.kritex.in");
+  });
+});
+
+describe("renderPage (build-time prerender)", () => {
+  it("renders /products with its catalog data, visible without JS", async () => {
+    const { html, state } = await renderPage("/products");
+
+    expect(html).toContain("All Products");
+    const first = listFrom(state).items[0];
+    expect(html).toContain(first.name);
+    // Only public catalog data is embedded: no session, cart or account queries.
+    expect(state.queries.length).toBeGreaterThan(0);
+    for (const q of state.queries) expect(q.queryKey[0]).toBe("catalog");
+    // The heading and cards start visible (no entrance animation on a prerendered first view).
+    expect(html).not.toContain("opacity:0");
+  });
+
+  it("renders a product page", async () => {
+    const { state } = await renderPage("/products");
+    const { slug, name } = listFrom(state).items[0];
+
+    const page = await renderPage(`/product/${slug}`);
+
+    expect(page.html).toMatch(new RegExp(`<h1[^>]*>${name}</h1>`));
+    expect(page.state.queries.map((q) => q.queryKey)).toContainEqual(["catalog", "product", slug]);
+  });
+
+  it("fails for a product the API doesn't have, so the build keeps the client-rendered shell", async () => {
+    await expect(renderPage("/product/no-such-product")).rejects.toThrow(/"product","no-such-product"/);
   });
 });

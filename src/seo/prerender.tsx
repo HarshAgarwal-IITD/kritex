@@ -61,12 +61,15 @@ export async function renderPage(path: string): Promise<{ html: string; state: D
       .getAll()
       .filter((q) => isPublicQuery(q) && q.state.status === "pending");
     if (waiting.length === 0) break;
-    await Promise.all(waiting.map((q) => q.fetch()));
+    await Promise.all(
+      waiting.map((q) =>
+        q.fetch().catch((e: unknown) => {
+          throw new Error(`${JSON.stringify(q.queryKey)}: ${e instanceof Error ? e.message : String(e)}`);
+        }),
+      ),
+    );
     html = await render();
   }
-
-  const failed = client.getQueryCache().getAll().find((q) => isPublicQuery(q) && q.state.status === "error");
-  if (failed) throw new Error(`${JSON.stringify(failed.queryKey)}: ${failed.state.error}`);
 
   return {
     html,
