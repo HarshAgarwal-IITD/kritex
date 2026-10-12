@@ -19,8 +19,8 @@ describe("catalog hooks", () => {
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     const items = result.current.data!.items;
     expect(items.map((c) => c.slug)).toEqual(["tactical-footwear", "combat-apparel", "load-bearing", "base-layers"]);
-    expect(items.find((c) => c.slug === "combat-apparel")?.productCount).toBe(6);
-    expect(items.find((c) => c.slug === "base-layers")?.productCount).toBe(0);
+    expect(items.find((c) => c.slug === "combat-apparel")?.productCount).toBe(3);
+    expect(items.find((c) => c.slug === "base-layers")?.productCount).toBe(3);
   });
 
   it("useProducts sends filters as query params and omits empty ones", async () => {
@@ -35,7 +35,7 @@ describe("catalog hooks", () => {
     expect(url?.searchParams.get("category")).toBe("combat-apparel");
     expect(url?.searchParams.get("sort")).toBe("price_asc");
     expect(url?.searchParams.has("q")).toBe(false);
-    expect(result.current.data!.total).toBe(6);
+    expect(result.current.data!.total).toBe(3);
     // Priced products first for price_asc.
     expect(result.current.data!.items[0].price).not.toBeNull();
   });
@@ -44,7 +44,7 @@ describe("catalog hooks", () => {
     const { result } = renderHook(() => useProduct("combat-performance-tshirt"), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     const p = result.current.data!;
-    expect(p.category.slug).toBe("combat-apparel");
+    expect(p.category.slug).toBe("base-layers");
     expect(p.options.map((o) => o.name)).toEqual(["Size", "Colour"]);
     expect(p.variants).toHaveLength(25);
   });

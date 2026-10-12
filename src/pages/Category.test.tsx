@@ -11,7 +11,7 @@ describe("Category page", () => {
     renderCategory("combat-apparel");
     expect(await screen.findByRole("heading", { level: 1, name: "Combat Apparel" })).toBeInTheDocument();
     expect(screen.getByText(/Explore our complete range of combat apparel/)).toBeInTheDocument();
-    await waitFor(() => expect(cardNames()).toHaveLength(6));
+    await waitFor(() => expect(cardNames()).toHaveLength(3));
 
     fireEvent.click(screen.getByRole("button", { name: "Tactical Outerwear (1)" }));
     expect(cardNames()).toEqual(["Field Duty Tactical Jacket"]);
@@ -25,10 +25,10 @@ describe("Category page", () => {
   });
 
   it("shows prices on priced product cards", async () => {
-    renderCategory("combat-apparel");
+    renderCategory("base-layers");
     expect(await screen.findByText("₹1,299.00")).toBeInTheDocument();
     // Enquiry-only and B2B-only cards get "Add to quote"; retail cards don't.
-    expect(screen.getByRole("button", { name: "Add Tactical Cargo Shorts to quote" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add Tactical Combat OG Polo T-Shirt to quote" })).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Add Tactical Combat Full Sleeve T-Shirt to quote" })).toBeNull();
   });
 

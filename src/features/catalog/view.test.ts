@@ -70,7 +70,7 @@ describe("productJsonLd", () => {
     const p = product("og-polo-tshirt");
     const ld = productJsonLd(p, galleryImages(p));
     expect(ld.offers).toBeUndefined();
-    expect(ld.category).toBe("Combat Apparel > T-Shirts");
+    expect(ld.category).toBe("Base Layers > T-Shirts");
     expect((ld.image as string[])[0]).toBe("https://www.kritex.in/products/og-polo-tshirt/og-polo-tshirt-1.png");
   });
 

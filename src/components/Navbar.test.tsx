@@ -1,6 +1,10 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { fireEvent, screen } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
 import { renderRoute } from "@/features/catalog/test-utils";
+import { server } from "@/mocks/server";
+import { apiPath } from "@/mocks/handlers";
+import { mockCategories } from "@/mocks/catalog";
 import { resetMocks } from "@/test/render-app";
 import Navbar from "./Navbar";
 
@@ -38,6 +42,8 @@ describe("Navbar", () => {
   });
 
   it("lists API categories in the mobile products menu, marking empty ones as coming soon", async () => {
+    const items = mockCategories.map((c) => (c.slug === "base-layers" ? { ...c, productCount: 0 } : c));
+    server.use(http.get(apiPath("/api/v1/categories"), () => HttpResponse.json({ items })));
     renderRoute(<Navbar />);
     fireEvent.click(screen.getByRole("button", { name: "Toggle menu" }));
     fireEvent.click(screen.getByRole("button", { name: "Products" }));

@@ -24,7 +24,7 @@ describe("ProductDetail", () => {
     expect(screen.queryByTestId("price")).toBeNull();
     expect(screen.queryByTestId("stock-state")).toBeNull();
     const crumbs = screen.getByRole("navigation", { name: "Breadcrumb" });
-    expect(within(crumbs).getByRole("link", { name: "Combat Apparel" })).toHaveAttribute("href", "/products/combat-apparel");
+    expect(within(crumbs).getByRole("link", { name: "Base Layers" })).toHaveAttribute("href", "/products/base-layers");
 
     // Enquiry-only: Add to Quote (no mailto) puts the selected option into the quote cart.
     fireEvent.click(screen.getByRole("button", { name: "M" }));

@@ -12,6 +12,7 @@ import { productCategories } from "@/data/productCategories";
 import { tacticalFootwearProducts, type ColorVariant, type SpecSheet } from "@/data/tacticalFootwear";
 import { combatApparelProducts } from "@/data/combatApparel";
 import { loadBearingProducts } from "@/data/loadBearing";
+import { baseLayersProducts } from "@/data/baseLayers";
 
 type Json<P extends keyof paths, M extends "get"> = paths[P][M] extends {
   responses: { 200: { content: { "application/json": infer T } } };
@@ -37,9 +38,11 @@ const CATEGORY_COPY: Record<string, string> = {
   "tactical-footwear":
     "Explore our complete range of tactical and combat footwear. Engineered for durability, comfort, and performance in all environments.",
   "combat-apparel":
-    "Explore our complete range of combat apparel — t-shirts, cargo trousers and tactical outerwear engineered for durability, comfort, and performance in the field.",
+    "Explore our complete range of combat apparel — cargo trousers, shorts and tactical outerwear engineered for durability, comfort, and performance in the field.",
   "load-bearing":
     "Rucksacks, packs and carrying equipment engineered for organized, modular gear storage in the field.",
+  "base-layers":
+    "Breathable, moisture-wicking combat t-shirts engineered to be worn on their own or under kit, in all conditions.",
 };
 
 /** Demo commerce data layered on top of the static catalog (the real seed leaves all ENQUIRY_ONLY). */
@@ -67,6 +70,7 @@ const sources: { categorySlug: string; products: SourceProduct[] }[] = [
   { categorySlug: "tactical-footwear", products: tacticalFootwearProducts },
   { categorySlug: "combat-apparel", products: combatApparelProducts },
   { categorySlug: "load-bearing", products: loadBearingProducts },
+  { categorySlug: "base-layers", products: baseLayersProducts },
 ];
 
 const skuCode = (slug: string) =>

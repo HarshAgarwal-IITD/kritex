@@ -14,7 +14,6 @@ describe("Products page", () => {
     expect(screen.getByTestId("page-summary")).toHaveTextContent("1–12 of 26 products");
     expect(cardNames()[0]).toBe("Kritex PT Shoe — White");
     expect(screen.getByText("26 items")).toBeInTheDocument();
-    expect(screen.getByText("Coming Soon")).toBeInTheDocument();
     // Card links go to the PDP by slug.
     expect(screen.getByRole("link", { name: "View details for Sega DMS Boot" })).toHaveAttribute("href", "/product/sega-dms-boot");
   });
@@ -24,7 +23,7 @@ describe("Products page", () => {
     await waitFor(() => expect(cardNames()).toHaveLength(12));
 
     fireEvent.click(screen.getByRole("button", { name: /Combat Apparel/ }));
-    await waitFor(() => expect(cardNames()).toHaveLength(6));
+    await waitFor(() => expect(cardNames()).toHaveLength(3));
     expect(screen.getByTestId("location")).toHaveTextContent("/products?category=combat-apparel");
 
     fireEvent.click(await screen.findByRole("button", { name: "Combat Trousers (2)" }));
@@ -69,7 +68,7 @@ describe("Products page", () => {
     expect(screen.getByTestId("page-summary")).toHaveTextContent("13–24 of 26 products");
 
     fireEvent.click(screen.getByRole("button", { name: /Combat Apparel/ }));
-    await waitFor(() => expect(cardNames()).toHaveLength(6));
+    await waitFor(() => expect(cardNames()).toHaveLength(3));
     expect(screen.getByTestId("location")).toHaveTextContent("/products?category=combat-apparel");
     expect(screen.queryByRole("navigation", { name: "Product pages" })).not.toBeInTheDocument();
   });

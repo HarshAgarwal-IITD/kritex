@@ -5,6 +5,7 @@ import tshirtsImg from "@/assets/product-tshirts.jpg";
 import { tacticalFootwearProducts } from "@/data/tacticalFootwear";
 import { combatApparelProducts } from "@/data/combatApparel";
 import { loadBearingProducts } from "@/data/loadBearing";
+import { baseLayersProducts } from "@/data/baseLayers";
 
 export interface ProductCategory {
   slug: string;
@@ -27,7 +28,7 @@ export const productCategories: ProductCategory[] = [
   {
     slug: "combat-apparel",
     title: "Combat Apparel",
-    description: "T-shirts, cargo trousers and tactical outerwear built for extended operational wear.",
+    description: "Cargo trousers, shorts and tactical outerwear built for extended operational wear.",
     image: apparelImg,
     available: true,
     productCount: combatApparelProducts.length,
@@ -45,7 +46,7 @@ export const productCategories: ProductCategory[] = [
     title: "Base Layers",
     description: "Base layer garments engineered for comfort under any conditions.",
     image: tshirtsImg,
-    available: false,
-    productCount: 0,
+    available: true,
+    productCount: baseLayersProducts.length,
   },
 ];
