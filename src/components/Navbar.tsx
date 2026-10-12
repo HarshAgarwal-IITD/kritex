@@ -18,10 +18,7 @@ import { asset } from "@/lib/asset";
 import { cn } from "@/lib/utils";
 
 /** Plain links after the Products menu. `#…` targets are sections of the home page. */
-const navLinks = [
-  { label: "Clients", href: "#clients" },
-  { label: "Track Order", to: "/track" },
-];
+const navLinks: { label: string; to?: string; href?: string }[] = [{ label: "Track Order", to: "/track" }];
 
 const countBadge =
   "absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 font-display text-[9px] text-primary-foreground tabular";

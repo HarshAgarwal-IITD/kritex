@@ -1,6 +1,6 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useLayoutEffect } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Route, Routes, useLocation, useNavigationType } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
 import { LazyMotion } from "framer-motion";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -50,9 +50,24 @@ const guard = (el: JSX.Element) => <RequireAuth>{el}</RequireAuth>;
 /** Blank page-height placeholder while a lazy route loads (keeps the dark background, no layout jump). */
 const RouteFallback = PageLoader;
 
+/**
+ * The router keeps the previous page's scroll offset, so a link clicked mid-page opened the next
+ * page scrolled down. Reset to the top on every new navigation; back/forward (POP) and #hash links
+ * keep their own scroll behaviour.
+ */
+const ScrollToTop = () => {
+  const { pathname, hash } = useLocation();
+  const navType = useNavigationType();
+  useLayoutEffect(() => {
+    if (navType !== "POP" && !hash) window.scrollTo(0, 0);
+  }, [pathname, hash, navType]);
+  return null;
+};
+
 /** Every route plus the cart drawer. Exported so tests can mount it inside a MemoryRouter. */
 export const AppRoutes = () => (
   <CartDrawerProvider>
+    <ScrollToTop />
     <Suspense fallback={<RouteFallback />}>
       <Routes>
         <Route path="/" element={<Index />} />
