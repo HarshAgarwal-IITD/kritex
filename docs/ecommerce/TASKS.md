@@ -183,15 +183,15 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 ## Stage 5: Launch prep
 
 ### Agent `deploy` [both]
-- [ ] DEP-1 [S] Multi-stage Dockerfile; `app.set('trust proxy', …)` so throttling sees client IPs; Railway/Render service; managed Postgres (ap-south-1); `prisma migrate deploy` on release; staging + prod envs
-- [ ] DEP-2 [W] Cloudflare Pages/Vercel with PR previews; domains `kritex.in`, `api.kritex.in` (+ staging); cookie domain `.kritex.in`
-- [ ] DEP-3 [S] R2 bucket + CDN domain; migrate `public/products` images; update image URLs
+- [x] DEP-1 [S] (live since 2026-10-10 on Render `kritex-server-sp`, Neon) Multi-stage Dockerfile; `app.set('trust proxy', …)` so throttling sees client IPs; Railway/Render service; managed Postgres (ap-south-1); `prisma migrate deploy` on release; staging + prod envs
+- [x] DEP-2 [W] (Vercel, `www.kritex.in` + `api.kritex.in`) Cloudflare Pages/Vercel with PR previews; domains `kritex.in`, `api.kritex.in` (+ staging); cookie domain `.kritex.in`
+- [x] DEP-3 [S] (`kritex-assets` → `assets.kritex.in`; invoices in a private bucket) R2 bucket + CDN domain; migrate `public/products` images; update image URLs
 - [x] DEP-4 [both] (2026-10-11 → 12) Sentry in both repos (errors only, EU region); UptimeRobot on `/api/v1/health` every 5 min; daily `pg_dump` to R2 (`kritex-server/.github/workflows/db-backup.yml`, docs/BACKUPS.md) + restore drill passed
 - [ ] DEP-5 [S] Razorpay + Shiprocket live keys and webhook URLs (after activation)
 
 ### Agent `web-seo-perf` [W]
 - [x] SEO-1 Prerender catalog routes + PDPs at build (product list from API); sitemap.xml; robots.txt. Bodies prerendered + hydrated since 2026-10-12 (ADR-007 amendment)
-- [ ] SEO-2 JSON-LD Product/Offer/BreadcrumbList; OG images
+- [x] SEO-2 JSON-LD Product/Offer/BreadcrumbList; OG images. Done 2026-10-13 (`55ff6b0`): Organization + WebSite on home, BreadcrumbList on products/category/product pages, offers carry India shipping and the 7-day exchange policy, 1200x630 default preview (`scripts/og-image.mjs`), sitemap image entries, real 404s for unknown URLs and `X-Robots-Tag: noindex` on private routes (vercel.json)
 - [ ] SEO-3 Image optimisation (WebP/AVIF, srcset, lazy), code-splitting; Lighthouse mobile ≥ 90. Done 2026-10-13: Cloudflare-resized AVIF/WebP + srcset, lazy below the fold, 12 products per page, self-hosted font. Local Lighthouse mobile: home 92, products 85, PDP 87, legal 99. Left: home hero image (143 KB, bundled) and partner logos are not resized; re-run Lighthouse on the live site
 - [ ] SEO-4 Analytics (GA4 or Plausible) + ecommerce events
 
@@ -242,7 +242,7 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [ ] TD-35 [S] ENQUIRY_ONLY items often have no stock, so accepting a quote for them fails with OUT_OF_STOCK until staff set stock; consider "made to order" quotes. No `quote.rejected` email yet
 - [ ] TD-36 [W] Admin: no route to regenerate a Shiprocket label / request pickup after creation in the UI flow beyond the new endpoints; quote variant picker uses the public product endpoint (hidden for inactive variants)
 - [x] TD-37 [S] (fixed 2026-10-10: fixture dated 2099) `test/shipping.e2e-spec.ts` "creates a shipment … webhook DELIVERED" fails since 2026-10-10: its webhook fixture timestamps (2026-10-10/11) now sort before the AWB/pickup events created at `now`. Make the fixture times relative to now
-- [ ] TD-38 [both] Prerendered HTML carries prices/stock from the last deploy (refetched on load). Optional: Vercel deploy hook (`VERCEL_DEPLOY_HOOK_URL` on Render) called, debounced, after admin catalog edits
+- [x] TD-38 [both] (server `4aef42b`: set `VERCEL_DEPLOY_HOOK_URL` on Render to turn it on) Prerendered HTML carries prices/stock from the last deploy (refetched on load). Optional: Vercel deploy hook (`VERCEL_DEPLOY_HOOK_URL` on Render) called, debounced, after admin catalog edits
 - [ ] TD-39 [W] Products page: "Sort" shows no value in the prerendered HTML (Radix Select fills it after hydration); "Add to quote" buttons on cards are below the 24 px touch-target size; card titles are h3 without an h2 (Lighthouse heading order)
 - [ ] TD-5 [W] Rename package.json `name` from `vite_react_shadcn_ts` to `kritex-website`
 
