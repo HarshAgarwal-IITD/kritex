@@ -37,6 +37,14 @@ describe("prerender head", () => {
     for (const path of legalPaths()) expect(renderHead(policySeo(path))).toContain(`href="${SITE_URL}${path}"`);
   });
 
+  it("escapes product text inside JSON-LD, so it can't close the script tag (SEC-9)", () => {
+    const product = { ...mockProducts[0], name: 'Boot </script><script>alert(1)</script>' };
+    const head = renderHead(productSeo(product));
+    const ld = head.match(/<script data-rh="true" type="application\/ld\+json">(.*?)<\/script>/)![1];
+    expect(ld).not.toContain("<");
+    expect(JSON.parse(ld)).toMatchObject({ name: product.name });
+  });
+
   it("uses the www origin, which is where kritex.in redirects", () => {
     expect(SITE_URL).toBe("https://www.kritex.in");
   });

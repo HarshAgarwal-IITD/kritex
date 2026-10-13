@@ -54,7 +54,8 @@ const Seo = ({ title, description, path, image, noindex, jsonLd, type = "website
 
       {ldBlocks.map((block, i) => (
         <script key={i} type="application/ld+json">
-          {JSON.stringify(block)}
+          {/* "<" escaped: the prerendered HTML holds this text raw, so a "</script>" in a product name would end the tag (SEC-9). */}
+          {JSON.stringify(block).replace(/</g, "\\u003c")}
         </script>
       ))}
     </Helmet>
