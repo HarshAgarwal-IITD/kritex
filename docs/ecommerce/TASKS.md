@@ -186,13 +186,13 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [ ] DEP-1 [S] Multi-stage Dockerfile; `app.set('trust proxy', …)` so throttling sees client IPs; Railway/Render service; managed Postgres (ap-south-1); `prisma migrate deploy` on release; staging + prod envs
 - [ ] DEP-2 [W] Cloudflare Pages/Vercel with PR previews; domains `kritex.in`, `api.kritex.in` (+ staging); cookie domain `.kritex.in`
 - [ ] DEP-3 [S] R2 bucket + CDN domain; migrate `public/products` images; update image URLs
-- [ ] DEP-4 [both] Sentry (not set up yet in either repo), uptime monitor on `/api/v1/health`, DB backups + restore drill
+- [x] DEP-4 [both] (2026-10-11 → 12) Sentry in both repos (errors only, EU region); UptimeRobot on `/api/v1/health` every 5 min; daily `pg_dump` to R2 (`kritex-server/.github/workflows/db-backup.yml`, docs/BACKUPS.md) + restore drill passed
 - [ ] DEP-5 [S] Razorpay + Shiprocket live keys and webhook URLs (after activation)
 
 ### Agent `web-seo-perf` [W]
-- [ ] SEO-1 Prerender catalog routes + PDPs at build (product list from API); sitemap.xml; robots.txt
+- [x] SEO-1 Prerender catalog routes + PDPs at build (product list from API); sitemap.xml; robots.txt. Bodies prerendered + hydrated since 2026-10-12 (ADR-007 amendment)
 - [ ] SEO-2 JSON-LD Product/Offer/BreadcrumbList; OG images
-- [ ] SEO-3 Image optimisation (WebP/AVIF, srcset, lazy), code-splitting; Lighthouse mobile ≥ 90
+- [ ] SEO-3 Image optimisation (WebP/AVIF, srcset, lazy), code-splitting; Lighthouse mobile ≥ 90. Done 2026-10-13: Cloudflare-resized AVIF/WebP + srcset, lazy below the fold, 12 products per page, self-hosted font. Local Lighthouse mobile: home 92, products 85, PDP 87, legal 99. Left: home hero image (143 KB, bundled) and partner logos are not resized; re-run Lighthouse on the live site
 - [ ] SEO-4 Analytics (GA4 or Plausible) + ecommerce events
 
 ### Agent `data-import` [S]
@@ -235,13 +235,15 @@ Checks: server lint/typecheck/build OK, 83 unit + 193 e2e tests; web 0 lint erro
 - [ ] TD-28 [W] PIN-code lookup is approximate (state by prefix, city for ~20 metros); consider an India Post dataset or API
 - [ ] TD-29 [both] Verification email `callbackURL` is `/account`; confirm Better Auth signs the user in after verifying (else they land on /login)
 - [ ] TD-30 [W] Add `checkout.razorpay.com` to any future CSP
-- [ ] TD-31 [both] Remaining low/info security findings SEC-4…SEC-20 (SECURITY-REVIEW.md): tokens in request logs, Origin check on /checkout for guest cookies, exchange variant check, captured-amount check, STAFF vs ADMIN permissions, JSON-LD escaping before prerender, CSP, dependency advisories
+- [ ] TD-31 [both] Remaining low/info security findings SEC-4…SEC-20 (SECURITY-REVIEW.md): tokens in request logs, Origin check on /checkout for guest cookies, exchange variant check, captured-amount check, STAFF vs ADMIN permissions, CSP, dependency advisories (SEC-9 JSON-LD escaping fixed 2026-10-13)
 - [ ] TD-32 [S] Shiprocket may reject webhook URLs containing "shiprocket"; add a neutral alias (e.g. `/webhooks/courier-tracking`) when configuring it
 - [ ] TD-33 [S] Credit notes for cancelled/refunded invoiced orders; invoices in a private R2 bucket/prefix (now: media bucket, random keys, signed links)
 - [ ] TD-34 [W] Real Razorpay Checkout asked for the mobile number although `prefill.contact` (`+91…`) is sent; check on a manual test payment and send the 10-digit form if needed. The opt-in e2e (`E2E_RAZORPAY=1`) stops at that step
 - [ ] TD-35 [S] ENQUIRY_ONLY items often have no stock, so accepting a quote for them fails with OUT_OF_STOCK until staff set stock; consider "made to order" quotes. No `quote.rejected` email yet
 - [ ] TD-36 [W] Admin: no route to regenerate a Shiprocket label / request pickup after creation in the UI flow beyond the new endpoints; quote variant picker uses the public product endpoint (hidden for inactive variants)
 - [x] TD-37 [S] (fixed 2026-10-10: fixture dated 2099) `test/shipping.e2e-spec.ts` "creates a shipment … webhook DELIVERED" fails since 2026-10-10: its webhook fixture timestamps (2026-10-10/11) now sort before the AWB/pickup events created at `now`. Make the fixture times relative to now
+- [ ] TD-38 [both] Prerendered HTML carries prices/stock from the last deploy (refetched on load). Optional: Vercel deploy hook (`VERCEL_DEPLOY_HOOK_URL` on Render) called, debounced, after admin catalog edits
+- [ ] TD-39 [W] Products page: "Sort" shows no value in the prerendered HTML (Radix Select fills it after hydration); "Add to quote" buttons on cards are below the 24 px touch-target size; card titles are h3 without an h2 (Lighthouse heading order)
 - [ ] TD-5 [W] Rename package.json `name` from `vite_react_shadcn_ts` to `kritex-website`
 
 ## Stage 6: Go-live (see EXECUTION.md)

@@ -219,6 +219,8 @@ approvals; `OrderEvent` already covers orders. Rate-limit or page the CSV export
 
 ### SEC-9 (Low): JSON-LD is not escaped for HTML; this becomes stored XSS once pages are prerendered (SEO-1)
 
+**Status: fixed 2026-10-13** (`Seo.tsx` escapes `<` as `\u003c`; test in `src/seo/prerender.test.tsx`).
+
 **Location:** `kritex-website/src/components/Seo.tsx:55-58`. The script contains `{JSON.stringify(block)}`, which holds
 product names and descriptions.
 

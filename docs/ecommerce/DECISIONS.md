@@ -98,6 +98,25 @@ Migrating to Next.js would mean rewriting routing and data loading across the wh
 
 **Revisit** if SEO results disappoint after launch. Migrating to Next.js or TanStack Start later is still possible.
 
+**Amended 2026-10-12: page bodies are prerendered and hydrated** (for speed: on a slow phone the screen stayed blank
+for ~4.6 s until the JS ran).
+- `npm run build` = client build + SSR build of `src/seo/prerender.tsx` + `scripts/prerender.mjs`. For each public page
+  (home, `/products`, categories, PDPs, `/legal/*`) the script writes the head tags **and** the rendered body into
+  `#root` (`data-prerendered="<path>"`), plus the catalog data it came from as `window.__KRITEX_QUERY_STATE__`.
+- `renderPage()` renders the real tree (`AppProviders` + `StaticRouter` + `AppRoutes`) and fetches only public catalog
+  queries (`["catalog", …]`). Session, cart and account queries stay pending, so the HTML is the signed-out view.
+- `src/main.tsx` hydrates that HTML (`hydrateRoot`) when the URL is exactly the prerendered path; any other URL served
+  from the same file (e.g. `/products?page=2`) renders client-side. Before hydrating it loads the page's lazy chunks
+  (`preloadRoute`, `src/lib/lazy-page.ts`); otherwise a Suspense boundary still waiting for its chunk is thrown away on
+  the first update (React #421).
+- Rules for code on prerendered pages: render the same thing on the server and on the first client render (no
+  `window`/`localStorage` reads during render; `useSyncExternalStore` needs an empty server snapshot); entrance
+  animations above the fold use `useSkipEntrance()` (`src/lib/first-view.ts`) so content isn't hidden at opacity 0.
+- If a page fails to render at build (API down, unknown product), it keeps the empty `#root` and renders
+  client-side; the build prints a warning.
+- **Staleness:** prices and stock in the HTML are from the last deploy. The catalog queries refetch on load (stale
+  after 5 min), and checkout always prices on the server. Option: a Vercel deploy hook called after catalog edits.
+
 ---
 
 ## ADR-008: Hosting
@@ -115,6 +134,17 @@ Migrating to Next.js would mean rewriting routing and data loading across the wh
 Considered: AWS/Azure (too much setup and upkeep at this size; revisit if we need private networking or scale),
 DigitalOcean Bangalore (good paid option if data must sit in India), Railway (no permanent free tier),
 Render Postgres (free DB is deleted after 30 days), Supabase (pauses after 1 week idle), Oracle Always Free VM (self-managed).
+
+**2026-10-12:** the live API service had been created by hand in Render's default region (Oregon), so every
+query crossed the Pacific (product list ~2.7 s). It was recreated in Singapore as `kritex-server-sp`
+(`https://kritex-server-sp.onrender.com`, Docker); `api.kritex.in` moved to it and the old service was deleted.
+Product list now ~0.2–0.3 s. An UptimeRobot check on `https://api.kritex.in/api/v1/health` every 5 min keeps the
+free instance awake (750 free hours/month cover one always-on service).
+
+**Images (2026-10-13):** Cloudflare Image Transformations are enabled for the kritex.in zone (account → Images →
+Transformations; free up to 5,000 unique transformations/month). `src/lib/image.ts` serves product photos, thumbnails
+and the logo through `assets.kritex.in/cdn-cgi/image/width=…,format=auto/…` (AVIF/WebP at the displayed size);
+`VITE_IMAGE_RESIZE=off` turns it off.
 
 **Data location.** Singapore for now. The DPDP Act does not require Indian data to stay in India in general;
 moving the API and DB to an India region later is a host change, not a code change.

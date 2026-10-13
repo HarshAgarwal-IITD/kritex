@@ -295,7 +295,7 @@ Final checks: **server** lint, typecheck, build, `openapi:check` OK; **364 unit 
 
 ## Deployment (as of 2026-10-09)
 
-- **Live:** the API runs on **Render** (`https://kritex-server.onrender.com`) with Postgres on **Neon** (Singapore). The website on Vercel proxies `/api/*` to it (`vercel.json`).
+- **Live:** the API runs on **Render** (since 2026-10-12: `https://kritex-server-sp.onrender.com`, Singapore, behind `api.kritex.in`; originally `kritex-server.onrender.com`, deleted) with Postgres on **Neon** (Singapore). The website on Vercel proxies `/api/*` to it (`vercel.json`).
 - **Production deploys `main` in both repos** (owner decision 2026-10-09, ADR-008). `ecommerce` is never deployed. What is live today is the Express prototype on `main` (`117f8cc`: `GET /api/health`, `POST/GET /api/queries`, `x-powered-by: Express`), matching the live website on `main`. `render.yaml` on `ecommerce` now also says `branch: main`.
 - **Migrations are compatible:** `ecommerce` keeps the prototype's `20260922093957_init`, and the Docker image runs `prisma migrate deploy` on boot, so the release adds the 5 newer migrations on top of the existing Neon data.
 - **Release = merge `ecommerce` into `main`** (owner approval required). Before merging:
@@ -320,12 +320,14 @@ Final checks: **server** lint, typecheck, build, `openapi:check` OK; **364 unit 
 | 6 | Security housekeeping: change the admin password; delete `SEED_ADMIN_*` and `ADMIN_API_KEY` on Render; reset the Neon password (shared in chat) and update Render; rotate the Cloudflare R2 token/keys pasted into `kritex-website/.env` and move them to the server | Credentials were exposed |
 | 7 | **Storage:** on Render set `STORAGE_DRIVER=r2` + `R2_ACCOUNT_ID/ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET/PUBLIC_URL` | Render's disk is wiped on deploy (uploads, invoice PDFs) |
 | 8 | **Catalogue data:** prices, HSN, GST, stock, weights in `kritex-server/prisma/seed/product-data-template.csv`; which products are RETAIL / B2B-only / enquiry-only (Q1) | The live catalogue is enquiry-only with no prices |
-| 9 | Seller details are code config (`kritex-server/src/config/seller.ts`: M/s Garg Sales Corporation (proprietor Harsh Agarwal), GSTIN 19FAEPA3026H1Z1, state 19) and on the legal pages; draft banner removed (2026-10-11). Still to fill in `src/pages/legal/placeholders.ts`: business hours, dispatch time, delivery time, who pays exchange shipping. Legal review recommended | Policy pages complete |
+| 9 | Seller details are code config (`kritex-server/src/config/seller.ts`: M/s Garg Sales Corporation (proprietor Harsh Agarwal), GSTIN 19FAEPA3026H1Z1, state 19) and on the legal pages; draft banner removed (2026-10-11). Legal placeholders filled 2026-10-12 (Mon–Sat 10:00–19:00 IST, dispatch 1–2 business days, delivery 3–7, Kritex pays exchange return shipping). Legal review recommended | Policy pages complete |
 | 10 | **CA review** of GST rules and the invoice format (questions a–f in ADR-015 / earlier list) | Tax correctness |
 | 11 | ~~Confirm RL-2 limits~~ ✅ built 2026-10-11 (ADR-022); adjust via Render env if needed | — |
 | 12 | Small: field duty jacket sizes printed "S / M / XL / XX / XXXL" (typo? shown as printed); which categories are "coming soon" (Base Layers) | Catalogue copy |
 | 14 | **Catalogue sheets (ADR-023), confirm:** Liberty Warrior closure (sheet: lace-up only; old data: side zip); Freedom boot pattern (sheet "solid", photo camo); Olive Green Tactical boot colour printed "Brown / Green"; "Thor & Atlash" spelling; Thor sheet doesn't say 100% waterproof; ISI mark on ISI/Liberty boots not claimed; PT shoe sheet (26.pdf) carries another company's contact details and shows other PT models; third-party branding in photos (FUEL gum boots, M.MILLER jacket, Cliff Climbers backpack); Olive Green / Black Defence jungle boots and 11 other jacket models appear in the PDFs but have no product | Catalogue accuracy |
-| 13 | Optional: Render Auto-Deploy → "After CI Checks Pass"; UptimeRobot on `https://api.kritex.in/api/v1/health` | Safer deploys; free-tier sleep |
+| 13 | Optional: Render Auto-Deploy → "After CI Checks Pass". ~~UptimeRobot~~ ✅ set up 2026-10-12 (5 min) | Safer deploys |
+| 15 | **Render Starter plan** (~$7/mo) on `kritex-server-sp` before real orders | Free plan sleeps if the monitor misses; Starter never sleeps |
+| 16 | Razorpay **purpose code** (only asked when enabling international payments): not needed for India-only sales; if forced, P0103 (advance receipts against export contracts) | International payments |
 
 ## Hosting (2026-10-07)
 Render (free, Singapore, Docker) + Neon (free, Singapore) + Vercel for the site. Details in ADR-008.
@@ -345,6 +347,29 @@ See ADR-023. Website `dbd2fdb`, server `3450b02` (both on `main`).
 - "Product Details" section replaces the full-page PDF sheet: structured description (Key Features, Materials & Construction, Colours, Sizes, Ideal For…) beside a grid of captioned detail images; the intro paragraph sits beside the gallery.
 - All 26 products: 44 detail images + 1 new gallery photo (field jacket, black) uploaded to R2 `kritex-assets`; production reseeded 2026-10-12. Products whose sheet has only the gallery photo (all boots, gum boots, DMS boots) are text-only; Liberty Jungle, Sega and Cosmo DMS are in no PDF.
 - Incident: the first reseed went to production by mistake (taken for a local DB) before the images were on R2; it was rolled back to the previous `catalog.json` within minutes and redone after the upload.
+
+## Speed (2026-10-12 → 13)
+Website `ee58b62`…`a80ce54`, server `0872b9c` (all on `main`). Before → after on the live site:
+
+| | Before | After |
+|---|---|---|
+| Product list API | ~2.7 s (Render service in Oregon, DB in Singapore) | ~0.2–0.3 s (service moved to Singapore) |
+| Products page requests | 31 API calls, all 26 products | 5 calls, 12 per page (`?page=`) |
+| Slow phone (slow 4G, 4× CPU), first content | ~4.6 s blank (Lighthouse) | 1.6–2.1 s |
+| Slow phone, main content | 5.4–7.7 s | 2.0–2.7 s |
+| Products page image bytes | 831 KB | 205 KB |
+
+- **Pagination:** 12 products per page, client-side over the existing list (`ProductGrid`, `PAGE_SIZE`); filter changes
+  reset `page`. Cards use the list's `images[]`/`options[]` (server, additive) instead of one detail request per card.
+- **Server region:** see the ADR-008 note. UptimeRobot keeps it awake.
+- **Prerendered bodies + hydration:** see the ADR-007 amendment.
+- **Font:** Geist Mono self-hosted in `public/fonts` and preloaded (no render-blocking Google Fonts CSS);
+  `vercel.json` sends `immutable` cache headers for `/assets` and `/fonts`.
+- **Images:** Cloudflare Transformations (ADR-008 note); first card photo eager + high priority, others lazy.
+- **SEC-9 fixed:** JSON-LD escapes `<`.
+- **Lighthouse:** a local production build scored mobile performance home 92, products 85, PDP 87, legal 99. Live
+  Lighthouse couldn't run that day (NO_FCP on every site, including example.com: a local tool problem); re-run it.
+- **Tests (2026-10-13):** web 182 unit, 22/22 visual, full-stack 24/24 (one SEC-COUPON concurrency flake, passed on re-run).
 
 ## Open follow-ups / tech debt
 Tracked in [TASKS.md](TASKS.md) → "Tech-debt / follow-ups" (TD-1…TD-36, release blockers RL-1/RL-2), plus AUTH-6 and COM-16 added to Stages 2–3.
