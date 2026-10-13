@@ -1,7 +1,8 @@
 import { Helmet } from "react-helmet-async";
 
 export const SITE_NAME = "Kritex";
-export const DEFAULT_OG_IMAGE = "/brand/logo_flower.png";
+/** 1200x630 link-preview card (scripts/og-image.mjs). */
+export const DEFAULT_OG_IMAGE = "/brand/og-default.jpg";
 
 /** Public site origin used for canonical/OG URLs. No trailing slash. */
 export const SITE_URL: string = (import.meta.env.VITE_SITE_URL || "https://www.kritex.in").replace(/\/+$/, "");
@@ -45,6 +46,9 @@ const Seo = ({ title, description, path, image, noindex, jsonLd, type = "website
       <meta property="og:description" content={description} />
       <meta property="og:url" content={url} />
       <meta property="og:image" content={imageUrl} />
+      {!image && <meta property="og:image:width" content="1200" />}
+      {!image && <meta property="og:image:height" content="630" />}
+      <meta property="og:image:alt" content={title} />
       <meta property="og:locale" content="en_IN" />
 
       <meta name="twitter:card" content="summary_large_image" />

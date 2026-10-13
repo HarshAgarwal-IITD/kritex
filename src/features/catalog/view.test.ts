@@ -83,6 +83,18 @@ describe("productJsonLd", () => {
       availability: "https://schema.org/InStock",
     });
   });
+
+  it("adds India shipping and the 7-day exchange policy to the offer", () => {
+    const p = product("full-sleeve-combat-tshirt");
+    const offer = productJsonLd(p, galleryImages(p)).offers as {
+      shippingDetails: { shippingRate: unknown; shippingDestination: { addressCountry: string } };
+      hasMerchantReturnPolicy: unknown;
+    };
+    // ₹1,299 is over the ₹999 free-shipping threshold.
+    expect(offer.shippingDetails.shippingRate).toEqual({ "@type": "MonetaryAmount", value: "0.00", currency: "INR" });
+    expect(offer.shippingDetails.shippingDestination.addressCountry).toBe("IN");
+    expect(offer.hasMerchantReturnPolicy).toMatchObject({ merchantReturnDays: 7, applicableCountry: "IN" });
+  });
 });
 
 describe("assetUrl", () => {

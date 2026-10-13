@@ -23,10 +23,10 @@ describe("Seo", () => {
     expect(meta('meta[property="og:description"]')).toBe("Browse the catalog.");
     expect(meta('meta[property="og:url"]')).toBe("https://www.kritex.in/products");
     expect(meta('meta[property="og:type"]')).toBe("website");
-    expect(meta('meta[property="og:image"]')).toBe("https://www.kritex.in/brand/logo_flower.png");
+    expect(meta('meta[property="og:image"]')).toBe("https://www.kritex.in/brand/og-default.jpg");
     expect(meta('meta[name="twitter:card"]')).toBe("summary_large_image");
     expect(meta('meta[name="twitter:title"]')).toBe("All Products | Kritex");
-    expect(meta('meta[name="twitter:image"]')).toBe("https://www.kritex.in/brand/logo_flower.png");
+    expect(meta('meta[name="twitter:image"]')).toBe("https://www.kritex.in/brand/og-default.jpg");
     expect(document.head.querySelector('meta[name="robots"]')).toBeNull();
   });
 

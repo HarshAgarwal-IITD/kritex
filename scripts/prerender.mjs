@@ -70,6 +70,12 @@ const preloadTags = (page) =>
 // The SPA fallback for every other route (vercel.json): the original shell, so /cart, /checkout etc.
 // don't inherit the home page's tags and image preloads now written into dist/index.html.
 writeFileSync(join(dist, "app-shell.html"), template);
+// Vercel serves 404.html, with a 404 status, for any URL that is neither a file nor one of the app's routes
+// (vercel.json), so unknown URLs aren't indexed as "soft 404s". The app renders its NotFound page in it.
+writeFileSync(
+  join(dist, "404.html"),
+  shell.replace("</head>", `  <title>Page Not Found | Kritex</title>\n    <meta name="robots" content="noindex" />\n  </head>`),
+);
 
 if (!shell.includes('<div id="root"></div>')) throw new Error('prerender: dist/index.html has no <div id="root"></div>');
 const bodyErrors = [];
@@ -93,13 +99,20 @@ for (const page of pages) {
   writeFileSync(file, html);
 }
 
-const urls = pages.filter((p) => !p.noindex).map((p) => `${seo.SITE_URL}${p.path === "/" ? "/" : p.path}`);
+// Image entries help Google Images find product photos (the main one of each page with its own image).
+const indexable = pages.filter((p) => !p.noindex);
+const urlEntry = (p) => {
+  const loc = `  <url><loc>${escapeXml(`${seo.SITE_URL}${p.path === "/" ? "/" : p.path}`)}</loc>`;
+  const image = p.image && /^https?:\/\//.test(p.image) ? `<image:image><image:loc>${escapeXml(p.image)}</image:loc></image:image>` : "";
+  return `${loc}${image}</url>`;
+};
 writeFileSync(
   join(dist, "sitemap.xml"),
-  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls
-    .map((u) => `  <url><loc>${escapeXml(u)}</loc></url>`)
+  `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">\n${indexable
+    .map(urlEntry)
     .join("\n")}\n</urlset>\n`,
 );
+const urls = indexable;
 const robots = readFileSync(join(dist, "robots.txt"), "utf8").replace(/\n*Sitemap:.*$/gm, "").trimEnd();
 writeFileSync(join(dist, "robots.txt"), `${robots}\n\nSitemap: ${seo.SITE_URL}/sitemap.xml\n`);
 

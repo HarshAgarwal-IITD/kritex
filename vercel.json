@@ -1,12 +1,29 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": false,
   "rewrites": [
     {
-      "source": "/(.*)",
+      "source": "/(product|products)/:slug",
+      "destination": "/app-shell.html"
+    },
+    {
+      "source": "/:page(cart|checkout|login|signup|forgot-password|reset-password|account|quote|track|admin)",
+      "destination": "/app-shell.html"
+    },
+    {
+      "source": "/:page(cart|checkout|login|signup|forgot-password|reset-password|account|quote|track|admin)/:rest*",
       "destination": "/app-shell.html"
     }
   ],
   "headers": [
+    {
+      "source": "/:page(cart|checkout|login|signup|forgot-password|reset-password|account|quote|track|admin|app-shell.html|404.html)",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
+    },
+    {
+      "source": "/:page(cart|checkout|login|signup|forgot-password|reset-password|account|quote|track|admin)/:rest*",
+      "headers": [{ "key": "X-Robots-Tag", "value": "noindex" }]
+    },
     {
       "source": "/assets/(.*)",
       "headers": [

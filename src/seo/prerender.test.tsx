@@ -25,13 +25,19 @@ describe("prerender head", () => {
     expect(head).toContain(`<link data-rh="true" rel="canonical" href="${SITE_URL}/product/${product.slug}"/>`);
     expect(head).toContain('property="og:type" content="product"');
     expect(head).toMatch(/property="og:image" content="[^"]+"/);
-    const ld = JSON.parse(head.match(/<script data-rh="true" type="application\/ld\+json">(.*?)<\/script>/)![1]);
-    expect(ld).toMatchObject({ "@type": "Product", name: product.name });
+    const lds = [...head.matchAll(/<script data-rh="true" type="application\/ld\+json">(.*?)<\/script>/g)].map((m) => JSON.parse(m[1]));
+    expect(lds[0]).toMatchObject({ "@type": "Product", name: product.name });
+    expect(lds[1]).toMatchObject({ "@type": "BreadcrumbList" });
+    expect(lds[1].itemListElement.at(-1)).toMatchObject({ position: 4, item: `${SITE_URL}/product/${product.slug}` });
     expect(head.match(/data-rh="true"/g)!.length).toBeGreaterThan(10);
   });
 
   it("covers the home, category and every policy page", () => {
-    expect(renderHead(homeSeo())).toContain('"@type":"Organization"');
+    const home = renderHead(homeSeo());
+    expect(home).toContain('"@type":"Organization"');
+    expect(home).toContain('"@type":"WebSite"');
+    expect(home).toContain(`content="${SITE_URL}/brand/og-default.jpg"`);
+    expect(renderHead(categorySeo(mockCategories[0]))).toContain('"@type":"BreadcrumbList"');
     expect(renderHead(categorySeo(mockCategories[0]))).toContain(`${SITE_URL}/products/${mockCategories[0].slug}`);
     expect(legalPaths()).toContain("/legal/privacy");
     for (const path of legalPaths()) expect(renderHead(policySeo(path))).toContain(`href="${SITE_URL}${path}"`);
