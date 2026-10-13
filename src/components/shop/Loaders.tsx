@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { asset } from "@/lib/asset";
+import { resized } from "@/lib/image";
 import { cn } from "@/lib/utils";
 
 /**
@@ -33,7 +34,7 @@ const PageLoaderView = () => (
     aria-label="Loading page"
     className="fixed inset-0 z-40 flex flex-col items-center justify-center gap-6 bg-background"
   >
-    <img src={asset("/brand/yellow_full.png")} alt="" className="h-12 object-contain opacity-90 motion-safe:animate-pulse" />
+    <img src={resized(asset("/brand/yellow_full.png"), 360)} alt="" className="h-12 object-contain opacity-90 motion-safe:animate-pulse" />
     <div className="h-px w-40 overflow-hidden bg-border">
       <div className="h-full w-1/3 bg-primary motion-safe:animate-[loader-slide_1.1s_ease-in-out_infinite]" />
     </div>

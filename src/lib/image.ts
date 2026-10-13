@@ -1,10 +1,11 @@
 /**
  * Resized copies of object-store photos via Cloudflare Image Transformations
  * (`<asset origin>/cdn-cgi/image/<options>/<path>`), so a 48 px thumbnail doesn't download the
- * full ~750×1000 photo. Needs Images → Transformations enabled on the kritex.in zone; set
- * VITE_IMAGE_RESIZE=cloudflare once it is. Unset, every URL is returned unchanged.
+ * full ~750×1000 photo. Needs Images → Transformations enabled for the kritex.in zone (Cloudflare
+ * account → Images → Transformations; on since 2026-10-13). VITE_IMAGE_RESIZE=off turns it off.
+ * Only photos under VITE_ASSET_BASE_URL are resized; with it unset (dev, tests) URLs are unchanged.
  */
-const ENABLED = import.meta.env.VITE_IMAGE_RESIZE === "cloudflare";
+const ENABLED = import.meta.env.VITE_IMAGE_RESIZE !== "off";
 const ASSET_ORIGIN = (() => {
   try {
     return new URL(import.meta.env.VITE_ASSET_BASE_URL ?? "").origin;

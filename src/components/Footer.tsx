@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useCategories } from "@/features/catalog/hooks";
 import { asset } from "@/lib/asset";
+import { resized } from "@/lib/image";
 import { policies } from "@/pages/legal/policies";
 
 const Footer = () => {
@@ -56,7 +57,7 @@ const Footer = () => {
         </nav>
 
         <div className="flex flex-col items-center justify-center gap-6">
-          <img src={asset("/brand/yellow_full.png")} alt="Kritex Logo" className="h-[80px] md:h-[100px] object-contain drop-shadow-sm" loading="lazy" />
+          <img src={resized(asset("/brand/yellow_full.png"), 800)} alt="Kritex Logo" className="h-[80px] md:h-[100px] object-contain drop-shadow-sm" loading="lazy" />
           <div className="flex flex-col items-center gap-2 text-center">
             <span className="font-display text-sm tracking-wide text-muted-foreground">
               Defense & Industrial Supply

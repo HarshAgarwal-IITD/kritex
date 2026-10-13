@@ -13,13 +13,13 @@ afterEach(() => vi.unstubAllEnvs());
 
 describe("resized images", () => {
   it("returns URLs unchanged when resizing is off", async () => {
-    const { resized, srcSet } = await load(undefined);
+    const { resized, srcSet } = await load("off");
     expect(resized(photo, 96)).toBe(photo);
     expect(srcSet(photo)).toBeUndefined();
   });
 
-  it("routes object-store photos through Cloudflare transformations", async () => {
-    const { resized, srcSet } = await load("cloudflare");
+  it("routes object-store photos through Cloudflare transformations by default", async () => {
+    const { resized, srcSet } = await load(undefined);
     expect(resized(photo, 96)).toBe(
       "https://assets.example.com/cdn-cgi/image/width=96,fit=scale-down,quality=80,format=auto/products/jacket/jacket-1.webp?v=2",
     );

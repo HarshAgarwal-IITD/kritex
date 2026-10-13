@@ -15,6 +15,7 @@ import { useCartCount } from "@/features/cart/hooks";
 import { useQuoteCount } from "@/features/quote/store";
 import { useCurrentUser, useLogout } from "@/features/account/hooks";
 import { asset } from "@/lib/asset";
+import { resized } from "@/lib/image";
 import { cn } from "@/lib/utils";
 
 /** Plain links after the Products menu. `#…` targets are sections of the home page. */
@@ -174,7 +175,7 @@ const Navbar = () => {
     >
       <div className="container flex h-16 items-center justify-between gap-6">
         <Link to="/" className="font-display text-lg tracking-tight text-foreground -ml-2 shrink-0" aria-label="Kritex home">
-          <img src={asset("/brand/yellow_full.png")} alt="Kritex" className="h-[44px] object-contain drop-shadow-sm" />
+          <img src={resized(asset("/brand/yellow_full.png"), 360)} alt="Kritex" className="h-[44px] object-contain drop-shadow-sm" />
         </Link>
 
         {/* Desktop: navigation */}
